@@ -1,0 +1,143 @@
+---
+abstract: 'Structured data file IO with OO paradigm'
+author:
+  - 'Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>'
+build_requires:
+  Exception::Class: 1.23
+  Test::More: 0.74
+  Text::Diff: 1.37
+configure_requires:
+  Module::Build: 0.32
+  version: 0.74
+generated_by: 'Module::Build version 0.3607'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: File-DataClass
+no_index:
+  directory:
+    - t
+provides:
+  File::DataClass:
+    file: lib/File/DataClass.pm
+    version: 0.1.228
+  File::DataClass::Cache:
+    file: lib/File/DataClass/Cache.pm
+    version: 0.1.209
+  File::DataClass::Combinator:
+    file: lib/File/DataClass/Combinator.pm
+    version: 0.1.201
+  File::DataClass::Constants:
+    file: lib/File/DataClass/Constants.pm
+    version: 0.1.201
+  File::DataClass::Constraints:
+    file: lib/File/DataClass/Constraints.pm
+    version: 0.1.201
+  File::DataClass::Exception:
+    file: lib/File/DataClass/Exception.pm
+    version: 0.1.224
+  File::DataClass::HashMerge:
+    file: lib/File/DataClass/HashMerge.pm
+    version: 0.1.219
+  File::DataClass::IO:
+    file: lib/File/DataClass/IO.pm
+    version: 0.1.213
+  File::DataClass::List:
+    file: lib/File/DataClass/List.pm
+    version: 0.1.202
+  File::DataClass::Result:
+    file: lib/File/DataClass/Result.pm
+    version: 0.1.211
+  File::DataClass::ResultSet:
+    file: lib/File/DataClass/ResultSet.pm
+    version: 0.1.203
+  File::DataClass::ResultSource:
+    file: lib/File/DataClass/ResultSource.pm
+    version: 0.1.202
+  File::DataClass::ResultSource::WithLanguage:
+    file: lib/File/DataClass/ResultSource/WithLanguage.pm
+    version: 0.1.201
+  File::DataClass::Schema:
+    file: lib/File/DataClass/Schema.pm
+    version: 0.1.209
+  File::DataClass::Storage:
+    file: lib/File/DataClass/Storage.pm
+    version: 0.1.219
+  File::DataClass::Storage::JSON:
+    file: lib/File/DataClass/Storage/JSON.pm
+    version: 0.1.223
+  File::DataClass::Storage::XML:
+    file: lib/File/DataClass/Storage/XML.pm
+    version: 0.1.223
+  File::DataClass::Storage::XML::Bare:
+    file: lib/File/DataClass/Storage/XML/Bare.pm
+    version: 0.1.212
+  File::DataClass::Storage::XML::Simple:
+    file: lib/File/DataClass/Storage/XML/Simple.pm
+    version: 0.1.212
+  File::DataClass::Util:
+    file: lib/File/DataClass/Util.pm
+    version: 0.1.219
+  File::MailAlias:
+    file: lib/File/MailAlias.pm
+    version: 0.1.199
+  File::MailAlias::Storage:
+    file: lib/File/MailAlias/Storage.pm
+    version: 0.1.157
+  File::MealMaster:
+    file: lib/File/MealMaster.pm
+    version: 0.1.219
+  File::MealMaster::Result:
+    file: lib/File/MealMaster/Result.pm
+    version: 0.1.219
+  File::MealMaster::Storage:
+    file: lib/File/MealMaster/Storage.pm
+    version: 0.1.219
+  File::UnixAuth:
+    file: lib/File/UnixAuth.pm
+    version: 0.1.200
+  File::UnixAuth::Result:
+    file: lib/File/UnixAuth/Result.pm
+    version: 0.1.223
+  File::UnixAuth::Storage:
+    file: lib/File/UnixAuth/Storage.pm
+    version: 0.1.223
+requires:
+  CHI: 0.33
+  Carp: 0
+  Class::MOP: 0.84
+  Class::Null: 1.09
+  Data::Section: 0.09341
+  Date::Format: 2.22
+  Exception::Class: 1.23
+  File::Path: 2.07
+  File::Temp: 0.2
+  Hash::Merge: 0.08
+  IO::Dir: 1.06
+  IO::File: 1.14
+  IPC::SRLock: 0.5.0
+  JSON: 2.16
+  MRO::Compat: 0.09
+  MealMaster: 0.28
+  Moose: 0.92
+  MooseX::ClassAttribute: 0.1
+  Scalar::Util: 1.19
+  Sub::Exporter: 0.982
+  Template: 2.18
+  Template::Stash: 2.9
+  Text::Wrap: 2005.082401
+  Try::Tiny: 0.06
+  XML::Bare: 0.3
+  XML::DTD: 0.09
+  XML::Simple: 2.14
+  namespace::autoclean: 0.09
+  namespace::clean: 0.11
+  overload: 1.04
+  perl: 5.008
+  version: 0.74
+resources:
+  bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
+  homepage: http://www.roxsoft.co.uk
+  license: http://dev.perl.org/licenses/
+version: 0.1.228

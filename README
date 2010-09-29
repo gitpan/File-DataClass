@@ -1,0 +1,82 @@
+Name
+    File::DataClass - Structured data file IO with OO paradigm
+
+Version
+    0.1.$Revision: 228 $
+
+Synopsis
+       use File::DataClass::Schema;
+
+       $schema = File::DataClass::Schema->new
+          ( path    => [ qw(path to a file) ],
+            result_source_attributes => { source_name => {}, },
+            tempdir => [ qw(path to a directory) ] );
+
+       $schema->source( q(source_name) )->attributes( [ qw(list of attr names) ] );
+       $rs = $schema->resultset( q(source_name) );
+       $result = $rs->find( { name => q(id of field element to find) } );
+       $result->$attr_name( $some_new_value );
+       $result->update;
+       @result = $rs->search( { 'attr name' => q(some value) } );
+
+Description
+    Provides CRUD methods for structured data stored in files of different
+    formats
+
+    The documentation for this distribution starts in the class
+    File::DataClass::Schema
+
+Configuration and Environment
+    Defines these class attributes. They are set on first use by methods in
+    File::DataClass::Schema
+
+    Cache
+       This is a Cache::Cache object which is used to cache the results of
+       reading a file. Maybe of type "F_DC_Cache"
+
+    Lock
+       A lock object that has the methods "set" and "reset". Maybe of type
+       "F_DC_Lock"
+
+    exception_class
+       A classname that is expected to have a class method "throw". Defaults
+       to File::DataClass::Exception and is of type "F_DC_Exception"
+
+Subroutines/Methods
+    None
+
+Diagnostics
+    None
+
+Dependencies
+    namespace::autoclean
+    File::DataClass::Exception
+    MooseX::ClassAttribute
+
+Incompatibilities
+    There are no known incompatibilities in this module
+
+Bugs and Limitations
+    There are no known bugs in this module. Please report problems to the
+    address below. Patches are welcome
+
+Acknowledgements
+    Larry Wall - For the Perl programming language
+
+    The class structure and API where taken from DBIx::Class
+
+    The API for the file IO was taken from IO::All
+
+Author
+    Peter Flanigan, "<Support at RoxSoft.co.uk>"
+
+License and Copyright
+    Copyright (c) 2010 Peter Flanigan. All rights reserved
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself. See perlartistic
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT WARRANTY; without even the implied warranty of MERCHANTABILITY
+    or FITNESS FOR A PARTICULAR PURPOSE
+
