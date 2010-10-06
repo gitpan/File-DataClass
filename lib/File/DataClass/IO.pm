@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 213 2010-09-21 23:37:01Z pjf $
+# @(#)$Id: IO.pm 234 2010-10-06 14:10:46Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 213 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::Exception;
@@ -841,11 +841,12 @@ __END__
 =pod
 
 =head1 Name
+
 File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.1.$Revision: 213 $
+0.2.$Revision: 234 $
 
 =head1 Synopsis
 

@@ -1,4 +1,4 @@
-# @(#)$Id: Build.PL 225 2010-09-28 16:34:23Z pjf $
+# @(#)$Id: Build.PL 234 2010-10-06 14:10:46Z pjf $
 # Definitions
 
 my $SIGN      = 1;
@@ -47,18 +47,7 @@ my $REQUIRES  = {
 use strict;
 use warnings;
 
-use English qw( -no_match_vars );
-
-sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
-
-BEGIN {
-   eval { require 5.008; }; $EVAL_ERROR and whimper 'Perl minimum 5.8';
-}
-
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 225 $ =~ /\d+/gmx );
-
-use File::Spec::Functions;
-use Module::Build;
+use English qw(-no_match_vars);
 
 sub repository {
    # Accessor for the SVN repository information
@@ -69,6 +58,20 @@ sub repository {
 
    return $info && $info->root !~ m{ \A file: }mx ? $info->root : undef;
 }
+
+sub testing { !! ($ENV{AUTOMATED_TESTING} || $ENV{PERL_CR_SMOKER_CURRENT}
+              || ($ENV{PERL5OPT} || q()) =~ m{ CPAN-Reporter }mx) }
+
+sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
+
+BEGIN {
+   eval { require 5.008; }; $EVAL_ERROR and whimper 'Perl minimum 5.8';
+}
+
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
+
+use File::Spec::Functions;
+use Module::Build;
 
 my $class_path = catfile( q(lib), split m{ :: }mx, $MODULE.q(.pm) );
 my $distname   = $MODULE; $distname =~ s{ :: }{-}gmx;
@@ -87,12 +90,14 @@ Module::Build->new
                              'Text::Diff'       => 1.37, },
      configure_requires => { 'Module::Build'    => 0.32,
                              'version'          => 0.74, },
+     create_license     => 1,
      create_packlist    => 0,
      create_readme      => 1,
      dist_version_from  => $class_path,
      license            => $LICENSE,
      module_name        => $MODULE,
-     no_index           => { directory => [ qw(t) ] },
+     no_index           => { directory  => [ qw(t) ], },
+     notes              => { stop_tests => testing,   },
      requires           => $REQUIRES,
      resources          => $resources,
      sign               => $SIGN, )->create_build_script; # Goal

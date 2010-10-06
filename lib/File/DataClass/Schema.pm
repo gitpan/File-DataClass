@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 209 2010-07-14 15:21:48Z pjf $
+# @(#)$Id: Schema.pm 234 2010-10-06 14:10:46Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 209 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 
 use Class::Null;
 use File::DataClass::Constants;
@@ -22,7 +22,7 @@ with    qw(File::DataClass::Constraints File::DataClass::Util);
 has 'cache'                    => is => 'ro', isa => 'F_DC_Cache',
    lazy_build                  => TRUE;
 has 'cache_attributes'         => is => 'ro', isa => 'HashRef',
-   default                     => sub { {} };
+   default                     => sub { { unlink_on_exit => TRUE } };
 has 'debug'                    => is => 'ro', isa => 'Bool',
    default                     => FALSE;
 has 'lock'                     => is => 'ro', isa => 'F_DC_Lock',
@@ -200,7 +200,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.1.$Revision: 209 $
+0.2.$Revision: 234 $
 
 =head1 Synopsis
 

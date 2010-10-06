@@ -28,6 +28,7 @@ lib/File/MealMaster/Storage.pm
 lib/File/UnixAuth.pm
 lib/File/UnixAuth/Result.pm
 lib/File/UnixAuth/Storage.pm
+LICENSE
 MANIFEST			This list of files
 META.yml
 README

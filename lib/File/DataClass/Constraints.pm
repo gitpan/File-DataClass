@@ -1,10 +1,10 @@
-# @(#)$Id: Constraints.pm 201 2010-02-17 02:39:42Z pjf $
+# @(#)$Id: Constraints.pm 234 2010-10-06 14:10:46Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 201 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 
 use File::DataClass::IO;
 use Moose::Role;
@@ -66,7 +66,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.1.$Revision: 201 $
+0.2.$Revision: 234 $
 
 =head1 Synopsis
 

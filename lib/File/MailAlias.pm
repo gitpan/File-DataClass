@@ -1,11 +1,11 @@
-# @(#)$Id: MailAlias.pm 199 2010-02-04 21:52:47Z pjf $
+# @(#)$Id: MailAlias.pm 234 2010-10-06 14:10:46Z pjf $
 
 package File::MailAlias;
 
 use strict;
 use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 199 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use English  qw( -no_match_vars );
@@ -152,7 +152,7 @@ File::MailAlias - Domain model for the system mail aliases file
 
 =head1 Version
 
-0.1.$Revision: 199 $
+0.2.$Revision: 234 $
 
 =head1 Synopsis
 

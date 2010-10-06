@@ -21,88 +21,88 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: 0.1.228
+    version: 0.2.234
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
-    version: 0.1.209
+    version: 0.2.234
   File::DataClass::Combinator:
     file: lib/File/DataClass/Combinator.pm
-    version: 0.1.201
+    version: 0.2.234
   File::DataClass::Constants:
     file: lib/File/DataClass/Constants.pm
-    version: 0.1.201
+    version: 0.2.234
   File::DataClass::Constraints:
     file: lib/File/DataClass/Constraints.pm
-    version: 0.1.201
+    version: 0.2.234
   File::DataClass::Exception:
     file: lib/File/DataClass/Exception.pm
-    version: 0.1.224
+    version: 0.2.234
   File::DataClass::HashMerge:
     file: lib/File/DataClass/HashMerge.pm
-    version: 0.1.219
+    version: 0.2.234
   File::DataClass::IO:
     file: lib/File/DataClass/IO.pm
-    version: 0.1.213
+    version: 0.2.234
   File::DataClass::List:
     file: lib/File/DataClass/List.pm
-    version: 0.1.202
+    version: 0.2.234
   File::DataClass::Result:
     file: lib/File/DataClass/Result.pm
-    version: 0.1.211
+    version: 0.2.234
   File::DataClass::ResultSet:
     file: lib/File/DataClass/ResultSet.pm
-    version: 0.1.203
+    version: 0.2.234
   File::DataClass::ResultSource:
     file: lib/File/DataClass/ResultSource.pm
-    version: 0.1.202
+    version: 0.2.234
   File::DataClass::ResultSource::WithLanguage:
     file: lib/File/DataClass/ResultSource/WithLanguage.pm
-    version: 0.1.201
+    version: 0.2.234
   File::DataClass::Schema:
     file: lib/File/DataClass/Schema.pm
-    version: 0.1.209
+    version: 0.2.234
   File::DataClass::Storage:
     file: lib/File/DataClass/Storage.pm
-    version: 0.1.219
+    version: 0.2.234
   File::DataClass::Storage::JSON:
     file: lib/File/DataClass/Storage/JSON.pm
-    version: 0.1.223
+    version: 0.2.234
   File::DataClass::Storage::XML:
     file: lib/File/DataClass/Storage/XML.pm
-    version: 0.1.223
+    version: 0.2.234
   File::DataClass::Storage::XML::Bare:
     file: lib/File/DataClass/Storage/XML/Bare.pm
-    version: 0.1.212
+    version: 0.2.234
   File::DataClass::Storage::XML::Simple:
     file: lib/File/DataClass/Storage/XML/Simple.pm
-    version: 0.1.212
+    version: 0.2.234
   File::DataClass::Util:
     file: lib/File/DataClass/Util.pm
-    version: 0.1.219
+    version: 0.2.234
   File::MailAlias:
     file: lib/File/MailAlias.pm
-    version: 0.1.199
+    version: 0.2.234
   File::MailAlias::Storage:
     file: lib/File/MailAlias/Storage.pm
-    version: 0.1.157
+    version: 0.2.234
   File::MealMaster:
     file: lib/File/MealMaster.pm
-    version: 0.1.219
+    version: 0.2.234
   File::MealMaster::Result:
     file: lib/File/MealMaster/Result.pm
-    version: 0.1.219
+    version: 0.2.234
   File::MealMaster::Storage:
     file: lib/File/MealMaster/Storage.pm
-    version: 0.1.219
+    version: 0.2.234
   File::UnixAuth:
     file: lib/File/UnixAuth.pm
-    version: 0.1.200
+    version: 0.2.234
   File::UnixAuth::Result:
     file: lib/File/UnixAuth/Result.pm
-    version: 0.1.223
+    version: 0.2.234
   File::UnixAuth::Storage:
     file: lib/File/UnixAuth/Storage.pm
-    version: 0.1.223
+    version: 0.2.234
 requires:
   CHI: 0.33
   Carp: 0
@@ -140,4 +140,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: 0.1.228
+version: 0.2.234

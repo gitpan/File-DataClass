@@ -1,4 +1,4 @@
-# @(#)$Id: Exception.pm 224 2010-09-28 13:45:13Z pjf $
+# @(#)$Id: Exception.pm 234 2010-10-06 14:10:46Z pjf $
 
 package File::DataClass::Exception;
 
@@ -9,7 +9,7 @@ use Exception::Class
    'File::DataClass::Exception::Base' => { fields => [ qw(args rv) ] };
 
 use overload '""' => sub { shift->to_string }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 224 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 use base qw(File::DataClass::Exception::Base);
 
 use Carp;
@@ -92,7 +92,7 @@ File::DataClass::Exception - Exception base class
 
 =head1 Version
 
-0.1.$Revision: 224 $
+0.2.$Revision: 234 $
 
 =head1 Synopsis
 

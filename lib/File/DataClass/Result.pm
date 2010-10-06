@@ -1,10 +1,10 @@
-# @(#)$Id: Result.pm 211 2010-08-05 22:35:10Z pjf $
+# @(#)$Id: Result.pm 234 2010-10-06 14:10:46Z pjf $
 
 package File::DataClass::Result;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 211 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 
 use Moose;
 
@@ -69,7 +69,7 @@ File::DataClass::Result - Result object definition
 
 =head1 Version
 
-0.1.$Revision: 211 $
+0.2.$Revision: 234 $
 
 =head1 Synopsis
 

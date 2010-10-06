@@ -1,26 +1,26 @@
-# @(#)$Id: 65mealmaster.t 219 2010-09-22 19:57:05Z pjf $
+# @(#)$Id: 65mealmaster.t 234 2010-10-06 14:10:46Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 219 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
 
 use English qw(-no_match_vars);
 use File::DataClass::IO;
+use Module::Build;
 use Test::More;
 use Text::Diff;
 
 BEGIN {
-   if ($ENV{AUTOMATED_TESTING} || $ENV{PERL_CR_SMOKER_CURRENT}
-       || ($ENV{PERL5OPT} || q()) =~ m{ CPAN-Reporter }mx) {
-      plan skip_all => q(CPAN Testing stopped);
-   }
+   Module::Build->current->notes->{stop_tests}
+      and plan skip_all => q(CPAN Testing stopped);
 
    plan tests => 4;
-   use_ok( q(File::MealMaster) );
 }
+
+use_ok( q(File::MealMaster) );
 
 my $args   = { path => [ qw(t recipes.mmf) ], tempdir => q(t) };
 my $schema = File::MealMaster->new( $args );

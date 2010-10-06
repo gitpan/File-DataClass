@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 157 2009-11-10 03:07:54Z pjf $
+# @(#)$Id: Storage.pm 234 2010-10-06 14:10:46Z pjf $
 
 package File::MailAlias::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 157 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 
 use Date::Format;
 use File::DataClass::Constants;
@@ -133,7 +133,7 @@ File::MailAlias::Storage - Storage class file the mail alias file
 
 =head1 Version
 
-0.1.$Revision: 157 $
+0.2.$Revision: 234 $
 
 =head1 Synopsis
 
