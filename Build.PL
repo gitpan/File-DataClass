@@ -1,4 +1,4 @@
-# @(#)$Id: Build.PL 234 2010-10-06 14:10:46Z pjf $
+# @(#)$Id: Build.PL 238 2011-01-26 18:13:06Z pjf $
 # Definitions
 
 my $SIGN      = 1;
@@ -68,7 +68,7 @@ BEGIN {
    eval { require 5.008; }; $EVAL_ERROR and whimper 'Perl minimum 5.8';
 }
 
-use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
 
 use File::Spec::Functions;
 use Module::Build;

@@ -1,10 +1,10 @@
-# @(#)$Id: Bare.pm 234 2010-10-06 14:10:46Z pjf $
+# @(#)$Id: Bare.pm 238 2011-01-26 18:13:06Z pjf $
 
 package File::DataClass::Storage::XML::Bare;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::Bare;
@@ -81,7 +81,9 @@ sub _read_filter {
          }
       }
 
+      exists $data->{_i   } and delete $data->{_i};
       exists $data->{_pos } and delete $data->{_pos};
+      exists $data->{_z   } and delete $data->{_z};
       exists $data->{value} and $data->{value} =~ m{ \A [\n\s]+ \z }mx
          and delete $data->{value};
    }
@@ -143,7 +145,7 @@ File::DataClass::Storage::XML::Bare - Read/write XML data storage model
 
 =head1 Version
 
-0.2.$Revision: 234 $
+0.3.$Revision: 238 $
 
 =head1 Synopsis
 

@@ -1,10 +1,10 @@
-# @(#)$Id: JSON.pm 234 2010-10-06 14:10:46Z pjf $
+# @(#)$Id: JSON.pm 238 2011-01-26 18:13:06Z pjf $
 
 package File::DataClass::Storage::JSON;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
 
 use JSON qw();
 use Moose;
@@ -42,7 +42,7 @@ File::DataClass::Storage::JSON - Read/write JSON data storage model
 
 =head1 Version
 
-0.2.$Revision: 234 $
+0.3.$Revision: 238 $
 
 =head1 Synopsis
 

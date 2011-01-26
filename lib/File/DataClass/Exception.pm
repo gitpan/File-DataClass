@@ -1,15 +1,14 @@
-# @(#)$Id: Exception.pm 234 2010-10-06 14:10:46Z pjf $
+# @(#)$Id: Exception.pm 238 2011-01-26 18:13:06Z pjf $
 
 package File::DataClass::Exception;
 
 use strict;
 use warnings;
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
 
 use Exception::Class
-   'File::DataClass::Exception::Base' => { fields => [ qw(args rv) ] };
+   'File::DataClass::Exception::Base' => { fields => [ qw(args out rv) ] };
 
-use overload '""' => sub { shift->to_string }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 234 $ =~ /\d+/gmx );
 use base qw(File::DataClass::Exception::Base);
 
 use Carp;
@@ -26,6 +25,7 @@ sub new {
    return $self->next::method( args           => [],
                                error          => 'Error unknown',
                                ignore_package => $IGNORE,
+                               out            => NUL,
                                @rest );
 }
 
@@ -37,18 +37,34 @@ sub catch {
    return $e ? $self->new( error => NUL.$e ) : undef;
 }
 
-sub stacktrace {
-   my $self = shift; my ($frame, $l_no, %seen, $text); my $i = 1;
+sub full_message {
+   my $self = shift; my $text = $self->error or return;
 
-   while (defined ($frame = $self->trace->frame( $i++ ))) {
-      next if ($l_no = $seen{ $frame->package } and $l_no == $frame->line);
+   # Expand positional parameters of the form [_<n>]
+   0 > index $text, LOCALIZE and return $text;
 
-      $text .= $frame->package.' line '.$frame->line."\n";
+   my @args = @{ $self->args }; push @args, map { NUL } 0 .. 10;
 
-      $seen{ $frame->package } = $frame->line;
-   }
+   $text =~ s{ \[ _ (\d+) \] }{$args[ $1 - 1 ]}gmx;
 
    return $text;
+}
+
+sub stacktrace {
+   my ($self, $skip) = @_; my ($l_no, @lines, %seen, $subr);
+
+   for my $frame (reverse $self->trace->frames) {
+      unless ($l_no = $seen{ $frame->package } and $l_no == $frame->line) {
+         $subr and push @lines, join SPC, $subr, 'line', $frame->line;
+         $seen{ $frame->package } = $frame->line;
+      }
+
+      $subr = $frame->subroutine;
+   }
+
+   defined $skip or $skip = 1; pop @lines while ($skip--);
+
+   return (join "\n", reverse @lines)."\n";
 }
 
 sub throw {
@@ -67,19 +83,6 @@ sub throw_on_error {
    return;
 }
 
-sub to_string {
-   my $self = shift; my $text = $self->error or return;
-
-   # Expand positional parameters of the form [_<n>]
-   0 > index $text, LOCALIZE and return $text;
-
-   my @args = @{ $self->args }; push @args, map { NUL } 0 .. 10;
-
-   $text =~ s{ \[ _ (\d+) \] }{$args[ $1 - 1 ]}gmx;
-
-   return $text;
-}
-
 1;
 
 __END__
@@ -92,7 +95,7 @@ File::DataClass::Exception - Exception base class
 
 =head1 Version
 
-0.2.$Revision: 234 $
+0.3.$Revision: 238 $
 
 =head1 Synopsis
 
@@ -127,11 +130,17 @@ but indirectly through L</catch> and L</throw>
 Catches and returns a thrown exception or generates a new exception if
 I<EVAL_ERROR> has been set
 
+=head2 full_message
+
+   $printable_string = $e->full_message
+
+What an instance of this class stringifies to
+
 =head2 stacktrace
 
-   $lines = $e->stacktrace;
+   $lines = $e->stacktrace( $num_lines_to_skip );
 
-Return the stack trace
+Return the stack trace. Defaults to skipping one (the first) line of output
 
 =head2 throw
 
@@ -151,12 +160,6 @@ in this case
 
 Calls L</catch> and if the was an exception L</throw>s it
 
-=head2 to_string
-
-   $printable_string = $e->to_string
-
-What an instance of this class stringifies to
-
 =head1 Diagnostics
 
 None
@@ -170,9 +173,11 @@ should be suppressed in the stack trace output
 
 =over 3
 
-=item L<overload>
-
 =item L<Exception::Class>
+
+=item L<File::DataClass::Constants>
+
+=item L<MRO::Compat>
 
 =item L<Scalar::Util>
 
