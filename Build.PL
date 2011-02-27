@@ -1,4 +1,4 @@
-# @(#)$Id: Build.PL 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Build.PL 239 2011-02-22 13:08:14Z pjf $
 # Definitions
 
 my $SIGN      = 1;
@@ -66,9 +66,10 @@ sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 BEGIN {
    eval { require 5.008; }; $EVAL_ERROR and whimper 'Perl minimum 5.8';
+   $ENV{PATH}   =~ m{ \A /home/sand }mx and whimper 'Stopped Konig';
 }
 
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 239 $ =~ /\d+/gmx );
 
 use File::Spec::Functions;
 use Module::Build;
