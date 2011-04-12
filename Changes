@@ -1,5 +1,16 @@
 Revision history for File::DataClass
 
+0.3.259  2011-04-12
+         - Suppressed dcollins CPAN testing
+         - Added force_array to storage attributes so that arrays can
+           be specified through the constructor call
+         - Set lock_class to 'none' to prevent the creation of a lock object
+         - Added cache_class schema attribute. Set to 'none' to defeat cache
+         - Changed _utf8 attribute to is_utf8 for sense and clarity
+         - Moved boilerplate M::B subclass code to inc/Bob.pm
+         - Upgraded Module::Build
+         - Tweaked cache construction and tightend cache typing
+
 0.3.239  2011-02-22
          - Suppressed Konig CPAN testing again
 

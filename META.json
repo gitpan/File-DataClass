@@ -1,0 +1,199 @@
+{
+   "abstract" : "Structured data file IO with OO paradigm",
+   "author" : [
+      "Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110580",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "File-DataClass",
+   "no_index" : {
+      "directory" : [
+         "examples",
+         "inc",
+         "t"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Exception::Class" : "1.23",
+            "Test::More" : "0.74",
+            "Text::Diff" : "1.37"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.32",
+            "version" : "0.74"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "CHI" : "0.33",
+            "Carp" : 0,
+            "Class::MOP" : "0.84",
+            "Class::Null" : "1.09",
+            "Data::Section" : "0.09341",
+            "Date::Format" : "2.22",
+            "Exception::Class" : "1.23",
+            "File::Path" : "2.07",
+            "File::Temp" : "0.2",
+            "Hash::Merge" : "0.08",
+            "IO::Dir" : "1.06",
+            "IO::File" : "1.14",
+            "IPC::SRLock" : "v0.5.0",
+            "JSON" : "2.16",
+            "MRO::Compat" : "0.09",
+            "MealMaster" : "0.28",
+            "Moose" : "0.92",
+            "MooseX::ClassAttribute" : "0.1",
+            "Scalar::Util" : "1.19",
+            "Sub::Exporter" : "0.982",
+            "Template" : "2.18",
+            "Template::Stash" : "2.9",
+            "Text::Wrap" : "2005.082401",
+            "Try::Tiny" : "0.06",
+            "XML::Bare" : "0.3",
+            "XML::DTD" : "0.09",
+            "XML::Simple" : "2.14",
+            "namespace::autoclean" : "0.09",
+            "namespace::clean" : "0.11",
+            "overload" : "1.04",
+            "perl" : "5.008",
+            "version" : "0.74"
+         }
+      }
+   },
+   "provides" : {
+      "File::DataClass" : {
+         "file" : "lib/File/DataClass.pm",
+         "version" : "v0.3.259"
+      },
+      "File::DataClass::Cache" : {
+         "file" : "lib/File/DataClass/Cache.pm",
+         "version" : "v0.3.253"
+      },
+      "File::DataClass::Combinator" : {
+         "file" : "lib/File/DataClass/Combinator.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::Constants" : {
+         "file" : "lib/File/DataClass/Constants.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::Constraints" : {
+         "file" : "lib/File/DataClass/Constraints.pm",
+         "version" : "v0.3.254"
+      },
+      "File::DataClass::Exception" : {
+         "file" : "lib/File/DataClass/Exception.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::HashMerge" : {
+         "file" : "lib/File/DataClass/HashMerge.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::IO" : {
+         "file" : "lib/File/DataClass/IO.pm",
+         "version" : "v0.3.258"
+      },
+      "File::DataClass::List" : {
+         "file" : "lib/File/DataClass/List.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::Result" : {
+         "file" : "lib/File/DataClass/Result.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::ResultSet" : {
+         "file" : "lib/File/DataClass/ResultSet.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::ResultSource" : {
+         "file" : "lib/File/DataClass/ResultSource.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::ResultSource::WithLanguage" : {
+         "file" : "lib/File/DataClass/ResultSource/WithLanguage.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::Schema" : {
+         "file" : "lib/File/DataClass/Schema.pm",
+         "version" : "v0.3.253"
+      },
+      "File::DataClass::Storage" : {
+         "file" : "lib/File/DataClass/Storage.pm",
+         "version" : "v0.3.248"
+      },
+      "File::DataClass::Storage::JSON" : {
+         "file" : "lib/File/DataClass/Storage/JSON.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::Storage::XML" : {
+         "file" : "lib/File/DataClass/Storage/XML.pm",
+         "version" : "v0.3.254"
+      },
+      "File::DataClass::Storage::XML::Bare" : {
+         "file" : "lib/File/DataClass/Storage/XML/Bare.pm",
+         "version" : "v0.3.238"
+      },
+      "File::DataClass::Storage::XML::Simple" : {
+         "file" : "lib/File/DataClass/Storage/XML/Simple.pm",
+         "version" : "v0.3.251"
+      },
+      "File::DataClass::Util" : {
+         "file" : "lib/File/DataClass/Util.pm",
+         "version" : "v0.3.238"
+      },
+      "File::MailAlias" : {
+         "file" : "lib/File/MailAlias.pm",
+         "version" : "v0.3.256"
+      },
+      "File::MailAlias::Storage" : {
+         "file" : "lib/File/MailAlias/Storage.pm",
+         "version" : "v0.3.238"
+      },
+      "File::MealMaster" : {
+         "file" : "lib/File/MealMaster.pm",
+         "version" : "v0.3.253"
+      },
+      "File::MealMaster::Result" : {
+         "file" : "lib/File/MealMaster/Result.pm",
+         "version" : "v0.3.238"
+      },
+      "File::MealMaster::Storage" : {
+         "file" : "lib/File/MealMaster/Storage.pm",
+         "version" : "v0.3.238"
+      },
+      "File::UnixAuth" : {
+         "file" : "lib/File/UnixAuth.pm",
+         "version" : "v0.3.238"
+      },
+      "File::UnixAuth::Result" : {
+         "file" : "lib/File/UnixAuth/Result.pm",
+         "version" : "v0.3.238"
+      },
+      "File::UnixAuth::Storage" : {
+         "file" : "lib/File/UnixAuth/Storage.pm",
+         "version" : "v0.3.238"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass"
+      },
+      "homepage" : "http://www.roxsoft.co.uk",
+      "license" : [
+         "http://dev.perl.org/licenses/"
+      ]
+   },
+   "version" : "0.3.259"
+}

@@ -1,8 +1,8 @@
-# @(#)$Id: 20data-class.t 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: 20data-class.t 252 2011-04-02 00:29:17Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 252 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -17,9 +17,9 @@ BEGIN {
    my $current = eval { Module::Build->current };
 
    $current and $current->notes->{stop_tests}
-            and plan skip_all => q(CPAN Testing stopped);
+            and plan skip_all => $current->notes->{stop_tests};
 
-   plan tests => 22;
+   plan tests => 25;
 }
 
 sub test {
@@ -39,15 +39,24 @@ sub test {
 
 use_ok( q(File::DataClass::Schema) );
 
-my $path   = catfile( qw(t default.xml) );
-my $dumped = catfile( qw(t dumped.xml) );
-my $schema = File::DataClass::Schema->new
-   ( path => [ qw(t default.xml) ], tempdir => q(t) );
+my $path       = catfile( qw(t default.xml) );
+my $dumped     = catfile( qw(t dumped.xml) );
+my $cache_file = catfile( qw(t file-dataclass-schema.dat) );
+my $schema     = File::DataClass::Schema->new
+   ( cache_class => q(none),               lock_class => q(none),
+     path        => [ qw(t default.xml) ], tempdir    => q(t) );
 
 isa_ok( $schema, q(File::DataClass::Schema) );
+ok( ! -f $cache_file, 'Cache file not created' );
+
+$schema = File::DataClass::Schema->new
+   ( path => [ qw(t default.xml) ], tempdir => q(t) );
+
+ok( ! -f $cache_file, 'Cache file not created too early' );
 
 my $e = test( $schema, qw(load nonexistant_file) );
 
+ok( -f $cache_file, 'Cache file found' );
 is( $e, 'File nonexistant_file cannot open', 'Cannot open nonexistant_file' );
 
 my $data = test( $schema, qw(load t/default.xml t/default_en.xml) );
@@ -175,11 +184,11 @@ ok( !$diff, 'Can translate from XML to JSON' );
 
 # Cleanup
 
-io( $dumped    )->unlink;
-io( $translate )->unlink;
+io( $dumped     )->unlink;
+io( $translate  )->unlink;
 io( catfile( qw(t ipc_srlock.lck) ) )->unlink;
 io( catfile( qw(t ipc_srlock.shm) ) )->unlink;
-io( catfile( qw(t file-dataclass-schema.dat) ) )->unlink;
+io( $cache_file )->unlink;
 
 # Local Variables:
 # mode: perl

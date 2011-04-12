@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Schema.pm 253 2011-04-02 01:10:20Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 253 $ =~ /\d+/gmx );
 
 use Class::Null;
 use File::DataClass::Constants;
@@ -22,14 +22,20 @@ with    qw(File::DataClass::Constraints File::DataClass::Util);
 has 'cache'                    => is => 'ro', isa => 'F_DC_Cache',
    lazy_build                  => TRUE;
 has 'cache_attributes'         => is => 'ro', isa => 'HashRef',
-   default                     => sub { { unlink_on_exit => TRUE } };
+   default                     => sub { {
+      driver                   => q(FastMmap),
+      unlink_on_exit           => TRUE, } };
+has 'cache_class'              => is => 'ro',
+   isa                         => 'F_DC_DummyClass | ClassName',
+   default                     => q(File::DataClass::Cache);
 has 'debug'                    => is => 'ro', isa => 'Bool',
    default                     => FALSE;
 has 'lock'                     => is => 'ro', isa => 'F_DC_Lock',
    lazy_build                  => TRUE;
 has 'lock_attributes'          => is => 'ro', isa => 'HashRef',
    default                     => sub { {} };
-has 'lock_class'               => is => 'ro', isa => 'ClassName',
+has 'lock_class'               => is => 'ro',
+   isa                         => 'F_DC_DummyClass | ClassName',
    default                     => q(IPC::SRLock);
 has 'log'                      => is => 'ro', isa => 'Object',
    default                     => sub { Class::Null->new };
@@ -58,7 +64,7 @@ has 'tempdir'                  => is => 'ro', isa => 'F_DC_Directory',
 around BUILDARGS => sub {
    my ($orig, $class, @args) = @_; my $app;
 
-   blessed $args[0] and $app = shift @args;
+   blessed $args[ 0 ] and $app = shift @args;
 
    my $attrs = $class->$orig( @args );
 
@@ -86,7 +92,7 @@ sub dump {
 sub load {
    my ($self, @paths) = @_;
 
-   $paths[0] or $paths[0] = $self->path;
+   $paths[ 0 ] or $paths[ 0 ] = $self->path;
 
    @paths = map { blessed $_ ? $_ : $self->io( $_ ) } @paths;
 
@@ -128,25 +134,27 @@ sub translate {
 # Private methods
 
 sub _build_cache {
-   my $self = shift; my $attrs = { schema => $self };
+   my $self  = shift; (my $ns = lc __PACKAGE__) =~ s{ :: }{-}gmx; my $cache;
 
-   (my $ns = lc __PACKAGE__) =~ s{ :: }{-}gmx; my $cache;
+   my $attrs = { cache_attributes => $self->cache_attributes, schema => $self };
 
-   $attrs->{cache_attributes} = $self->cache_attributes;
    $ns = $attrs->{cache_attributes}->{namespace} ||= $ns;
 
    $cache = $self->Cache and exists $cache->{ $ns } and return $cache->{ $ns };
 
-   $attrs->{cache_attributes}->{driver  } ||= q(FastMmap);
+   $self->cache_class eq q(none) and return Class::Null->new;
+
    $attrs->{cache_attributes}->{root_dir} ||= NUL.$self->tempdir;
 
-   return $self->Cache->{ $ns } = File::DataClass::Cache->new( $attrs );
+   return $self->Cache->{ $ns } = $self->cache_class->new( $attrs );
 }
 
 sub _build_lock {
    my $self = shift;
 
    $self->Lock and return $self->Lock;
+
+   $self->lock_class eq q(none) and return Class::Null->new;
 
    my $attrs = $self->lock_attributes;
 
@@ -200,7 +208,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.3.$Revision: 253 $
 
 =head1 Synopsis
 

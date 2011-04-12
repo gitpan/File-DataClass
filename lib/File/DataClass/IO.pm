@@ -1,16 +1,16 @@
-# @(#)$Id: IO.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: IO.pm 258 2011-04-10 20:29:31Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 258 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::Exception;
 use English      qw( -no_match_vars );
-use Fcntl        qw( :flock );
+use Fcntl        qw( :flock :seek );
 use List::Util   qw( first );
 use File::Basename ();
 use File::Path     ();
@@ -32,6 +32,7 @@ enum 'F_DC_IO_Type'    => qw(dir file);
 has 'autoclose'        => is => 'rw', isa => 'Bool',      default    => TRUE  ;
 has 'io_handle'        => is => 'rw', isa => 'Maybe[Object]'                  ;
 has 'is_open'          => is => 'rw', isa => 'Bool',      default    => FALSE ;
+has 'is_utf8'          => is => 'rw', isa => 'Bool',      default    => FALSE ;
 has 'mode'             => is => 'rw', isa => 'F_DC_IO_Mode', default => q(r)  ;
 has 'name'             => is => 'rw', isa => 'Str',       default    => NUL   ;
 has 'sort'             => is => 'rw', isa => 'Bool',      default    => TRUE  ;
@@ -57,7 +58,6 @@ has '_perms'           => is => 'rw', isa => 'Num',       default    => PERMS ;
 has '_separator'       => is => 'rw', isa => 'Str',       default    => $RS   ;
 has '_umask'           => is => 'rw', isa => 'ArrayRef[Num]',
    default             => sub { return [] }                                   ;
-has '_utf8'            => is => 'rw', isa => 'Bool',      default    => FALSE ;
 
 around BUILDARGS => sub {
    my ($orig, $class, $car, @cdr) = @_; my $attrs = {};
@@ -101,7 +101,7 @@ sub all_files {
 }
 
 sub _all_file_contents {
-   my $self = shift; $self->assert_open( q(r) );
+   my $self = shift; $self->is_open or $self->assert_open;
 
    local $RS = undef; my $all = $self->io_handle->getline;
 
@@ -111,15 +111,21 @@ sub _all_file_contents {
 }
 
 sub append {
-   my ($self, @rest) = @_; $self->assert_open( q(a) );
+   my ($self, @rest) = @_;
 
-   return $self->print( @rest );
+   if ($self->is_open and not $self->is_reading) { $self->seek( 0, SEEK_END ) }
+   else { $self->assert_open( q(a) ) }
+
+   return $self->_print( @rest );
 }
 
 sub appendln {
-   my ($self, @rest) = @_; $self->assert_open( q(a) );
+   my ($self, @rest) = @_;
 
-   return $self->println( @rest );
+   if ($self->is_open and not $self->is_reading) { $self->seek( 0, SEEK_END ) }
+   else { $self->assert_open( q(a) ) }
+
+   return $self->_println( @rest );
 }
 
 sub assert {
@@ -151,11 +157,9 @@ sub assert_filepath {
 }
 
 sub assert_open {
-   my ($self, @rest) = @_;
+   my ($self, $mode, $perms) = @_; $self->type or $self->file;
 
-   $self->is_open and return $self; $self->type or $self->file;
-
-   return $self->open( @rest );
+   return $self->open( $mode || q(r), $perms );
 }
 
 sub atomic {
@@ -285,9 +289,9 @@ sub _close_file {
                           args  => [ $path, $self->name ] );
    }
 
-   $self->is_open or return $self; $self->unlock;
+   $self->is_open or return $self;
 
-   return $self->_close;
+   $self->unlock; return $self->_close;
 }
 
 sub _constructor {
@@ -353,6 +357,7 @@ sub encoding {
       $self->throw( 'No encoding value passed to '.__PACKAGE__.'::encoding' );
    $self->is_open and CORE::binmode( $self->io_handle, ":$encoding" );
    $self->_encoding( $encoding );
+   $self->is_utf8( $encoding eq q(utf8) ? TRUE : FALSE );
    return $self;
 }
 
@@ -427,9 +432,7 @@ sub _get_atomic_path {
 }
 
 sub getline {
-   my ($self, $separator) = @_; my ($line, $sep);
-
-   $self->assert_open( q(r) );
+   my ($self, $separator) = @_; my $line; $self->assert_open;
 
    {  local $RS = $separator || $self->_separator;
       $line = $self->io_handle->getline;
@@ -443,9 +446,7 @@ sub getline {
 }
 
 sub getlines {
-   my ($self, $separator) = @_; my (@lines, $sep);
-
-   $self->assert_open( q(r) );
+   my ($self, $separator) = @_; my @lines; $self->assert_open;
 
    {  local $RS = $separator || $self->_separator;
       @lines = $self->io_handle->getlines;
@@ -552,46 +553,50 @@ sub next {
 }
 
 sub open {
-   my ($self, @rest) = @_;
+   my ($self, $mode, $perms) = @_; $mode ||= $self->mode;
 
-   $self->is_open and return $self;
-   $self->is_dir  and return $self->_open_dir ( $self->_open_args( @rest ) );
-   $self->is_file and return $self->_open_file( $self->_open_args( @rest ) );
+   $self->is_open and $mode eq $self->mode and return $self;
+   $self->is_open and $self->close;
+   $self->is_dir
+      and return $self->_open_dir ( $self->_open_args( $mode, $perms ) );
+   $self->is_file
+      and return $self->_open_file( $self->_open_args( $mode, $perms ) );
 
    return $self;
 }
 
 sub _open_args {
-   my ($self, $mode, $perms) = @_; $mode ||= $self->mode;
+   my ($self, $mode, $perms) = @_;
 
    $self->name or $self->throw( 'Path not specified' );
 
    my $pathname = $self->_atomic && !$self->is_reading( $mode )
                 ? $self->_get_atomic_path : $self->name;
 
-   $perms = $self->exists ? $self->stat->{mode} & oct q(07777)
-                          : $perms || $self->_perms;
+   $perms = $self->_untainted_perms || $perms || $self->_perms;
 
    return ($pathname, $self->mode( $mode ), $self->_perms( $perms ));
 }
 
 sub _open_dir {
-   my ($self, @args) = @_;
+   my ($self, $path) = @_;
 
-   $self->_assert and $self->assert_dirpath( $args[0] );
-   $self->io_handle( IO::Dir->new( $args[0] ) )
+   $self->_assert and $self->assert_dirpath( $path );
+   $self->io_handle( IO::Dir->new( $path ) )
       or $self->throw( error => 'Directory [_1] cannot open',
-                       args  => [ $args[0] ] );
+                       args  => [ $path ] );
    $self->is_open( TRUE );
    return $self;
 }
 
 sub _open_file {
-   my ($self, @args) = @_;
+   my ($self, $path, $mode, $perms) = @_;
 
    $self->_assert and $self->assert_filepath;
-   $self->io_handle( IO::File->new( @args ) )
-      or $self->throw( error => 'File [_1] cannot open', args => [ $args[0] ]);
+   $self->_umask_push( $perms );
+   $self->io_handle( IO::File->new( $path, $mode, $perms ) )
+      or $self->throw( error => 'File [_1] cannot open', args => [ $path ] );
+   $self->_umask_pop;
    $self->is_open( TRUE );
    $self->set_binmode;
    $self->set_lock;
@@ -609,6 +614,12 @@ sub perms {
 sub print {
    my ($self, @rest) = @_; $self->assert_open( q(w) );
 
+   return $self->_print( @rest );
+}
+
+sub _print {
+   my ($self, @rest) = @_;
+
    for (@rest) {
       print {$self->io_handle} $_
          or $self->throw( error => 'IO error [_1]', args  => [ $ERRNO ] );
@@ -618,13 +629,19 @@ sub print {
 }
 
 sub println {
+   my ($self, @rest) = @_; $self->assert_open( q(w) );
+
+   return $self->_println( @rest );
+}
+
+sub _println {
    my ($self, @rest) = @_;
 
-   return $self->print( map { m{ [\n] \z }mx ? ($_) : ($_, "\n") } @rest );
+   return $self->_print( map { m{ [\n] \z }mx ? ($_) : ($_, "\n") } @rest );
 }
 
 sub read {
-   my ($self, @rest) = @_; $self->assert_open( q(r) );
+   my ($self, @rest) = @_; $self->assert_open;
 
    my $length = @rest || $self->is_dir
               ? $self->io_handle->read( @rest )
@@ -644,14 +661,12 @@ sub read_dir {
    if (wantarray) {
       my @names = grep { $_ !~ $dir_pat } $self->io_handle->read;
 
-      $self->_close_dir;
-      return @names;
+      $self->_close_dir; return @names;
    }
 
    while (not $name or $name =~ $dir_pat) {
       unless (defined ($name = $self->io_handle->read)) {
-         $self->_close_dir;
-         return;
+         $self->_close_dir; return;
       }
    }
 
@@ -677,7 +692,7 @@ sub rmtree {
 sub seek {
    my ($self, @rest) = @_;
 
-   $self->assert_open( $OSNAME eq EVIL ? q(r) : q(r+) );
+   $self->is_open or $self->assert_open( $OSNAME eq EVIL ? q(r) : q(r+) );
 
    my @sunk = $self->io_handle->seek( @rest ); $self->error_check;
 
@@ -745,9 +760,7 @@ sub stat {
 sub tempfile {
    my ($self, $tmplt) = @_; my ($tempdir, $tmpfh);
 
-   unless ($tempdir = $self->name and -d $tempdir) {
-      $tempdir = File::Spec->tmpdir;
-   }
+   ($tempdir = $self->name and -d $tempdir) or $tempdir = File::Spec->tmpdir;
 
    $tmplt ||= q(%6.6dXXXX);
    $tmpfh   = File::Temp->new
@@ -755,14 +768,15 @@ sub tempfile {
    $self->_init( q(file), $tmpfh->filename );
    $self->io_handle( $tmpfh );
    $self->is_open( TRUE );
+   $self->mode( q(w) );
    return $self;
 }
 
 sub throw {
    my ($self, @rest) = @_;
 
-   eval { $self->unlock; };
-   $self->_exception_class->throw( @rest );
+   eval { $self->unlock; }; $self->_exception_class->throw( @rest );
+
    return; # Never reached
 }
 
@@ -809,12 +823,17 @@ sub unlock {
    return $self;
 }
 
+sub _untainted_perms {
+   my $self = shift; $self->exists or return; my $perms = 0;
+
+   # Taint mode workaround
+   $self->stat->{mode} =~ m{ \A (.*) \z }mx and $perms = $1;
+
+   return $perms & oct q(07777);
+}
+
 sub utf8 {
-   my $self = shift;
-
-   $self->encoding( q(utf8) ); $self->_utf8( TRUE );
-
-   return $self;
+   my $self = shift; $self->encoding( q(utf8) ); return $self;
 }
 
 sub write {
@@ -846,7 +865,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.3.$Revision: 258 $
 
 =head1 Synopsis
 
@@ -1471,7 +1490,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2010 Peter Flanigan. All rights reserved
+Copyright (c) 2011 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

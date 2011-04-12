@@ -1,10 +1,10 @@
-# @(#)$Id: Constraints.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Constraints.pm 254 2011-04-03 01:11:13Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 254 $ =~ /\d+/gmx );
 
 use File::DataClass::IO;
 use Moose::Role;
@@ -12,13 +12,20 @@ use Moose::Util::TypeConstraints;
 use Scalar::Util qw(blessed);
 
 subtype 'F_DC_Cache' => as 'Object' =>
-   where   { $_->isa( q(File::DataClass::Cache) ) } =>
+   where   { $_->isa( q(File::DataClass::Cache) )
+                || $_->isa( q(Class::Null) ) } =>
    message {
       'Object '.(blessed $_ || $_).' is not of class File::DataClass::Cache' };
+
+subtype 'F_DC_DummyClass' => as 'Str' =>
+   where   { $_ eq q(none) } =>
+   message { "Class $_ is not 'none'" };
 
 subtype 'F_DC_Exception' => as 'ClassName' =>
    where   { $_->can( q(throw) ) } =>
    message { "Class $_ is not loaded or has no throw method" };
+
+subtype 'F_DC_HashRefOfBools' => as 'HashRef';
 
 subtype 'F_DC_Lock' => as 'Object' =>
    where   { $_->isa( q(Class::Null) )
@@ -51,6 +58,9 @@ coerce 'F_DC_Path'      => from 'Str'      => via { io( $_ ) };
 coerce 'F_DC_Directory' => from 'Str'      => via { io( $_ ) };
 coerce 'F_DC_File'      => from 'Str'      => via { io( $_ ) };
 
+coerce 'F_DC_HashRefOfBools' => from 'ArrayRef' =>
+   via { my %hash = map { $_ => 1 } @{ $_ }; return \%hash; };
+
 no Moose::Util::TypeConstraints;
 no Moose::Role;
 
@@ -66,7 +76,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.3.$Revision: 254 $
 
 =head1 Synopsis
 

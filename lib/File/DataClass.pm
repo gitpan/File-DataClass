@@ -1,17 +1,18 @@
-# @(#)$Id: DataClass.pm 239 2011-02-22 13:08:14Z pjf $
+# @(#)$Id: DataClass.pm 259 2011-04-12 19:41:08Z pjf $
 
 package File::DataClass;
 
 use strict;
 use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 239 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 259 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
 use File::DataClass::Exception;
 
-class_has 'Cache' => is => 'rw', isa => 'HashRef', default => sub { {} };
+class_has 'Cache' => is => 'rw', isa => 'HashRef[F_DC_Cache]',
+   default        => sub { {} };
 
 class_has 'Lock'  => is => 'rw', isa => 'Maybe[F_DC_Lock]';
 
@@ -35,7 +36,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.3.$Revision: 239 $
+This document describes File::DataClass version 0.3.$Revision: 259 $
 
 =head1 Synopsis
 

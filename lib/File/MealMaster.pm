@@ -1,10 +1,10 @@
-# @(#)$Id: MealMaster.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: MealMaster.pm 253 2011-04-02 01:10:20Z pjf $
 
 package File::MealMaster;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 253 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::MealMaster::Result;
@@ -13,10 +13,10 @@ use Moose;
 extends qw(File::DataClass::Schema);
 
 has '+cache_attributes' => default => sub {
-   (my $ns = lc __PACKAGE__) =~ s{ :: }{-}gmx;
-
-   return { cache_class => q(none), namespace => $ns, }
+   (my $ns = lc __PACKAGE__) =~ s{ :: }{-}gmx; return { namespace => $ns, }
 };
+
+has '+cache_class' => default => q(none);
 
 has '+result_source_attributes' => default => sub {
    { recipes          => {
@@ -56,7 +56,7 @@ File::UnixAuth - Result source definitions for the Unix auth files
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.3.$Revision: 253 $
 
 =head1 Synopsis
 

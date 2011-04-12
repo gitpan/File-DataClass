@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Storage.pm 248 2011-04-01 02:35:24Z pjf $
 
 package File::DataClass::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 248 $ =~ /\d+/gmx );
 
 use Class::Null;
 use English qw(-no_match_vars);
@@ -152,7 +152,7 @@ sub _meta_pack {
 
 sub _meta_unpack {
    # Can be modified in a subclass
-   my ($self, $attrs) = @_; return $attrs->{mtime};
+   my ($self, $attrs) = @_; return $attrs ? $attrs->{mtime} : undef;
 }
 
 sub _read_file {
@@ -244,7 +244,7 @@ File::DataClass::Storage - Storage base class
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.3.$Revision: 248 $
 
 =head1 Synopsis
 

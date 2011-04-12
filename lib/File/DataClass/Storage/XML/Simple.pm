@@ -1,10 +1,10 @@
-# @(#)$Id: Simple.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Simple.pm 251 2011-04-01 03:55:43Z pjf $
 
 package File::DataClass::Storage::XML::Simple;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 251 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::Simple;
@@ -27,8 +27,7 @@ augment '_write_file' => sub {
    my $xs = XML::Simple->new( NoAttr   => TRUE, SuppressEmpty => TRUE,
                               RootName => $self->root_name );
 
-   $wtr->println( @{ $self->_dtd } ) if ($self->_dtd->[0]);
-
+   $self->_dtd->[ 0 ] and $wtr->println( @{ $self->_dtd } );
    $wtr->append( $xs->xml_out( $data ) );
    return $data;
 };
@@ -49,7 +48,7 @@ File::DataClass::Storage::XML::Simple - Read/write XML data storage model
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.3.$Revision: 251 $
 
 =head1 Synopsis
 
