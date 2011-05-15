@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 258 2011-04-10 20:29:31Z pjf $
+# @(#)$Id: IO.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 258 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::Exception;
@@ -25,6 +25,10 @@ use Scalar::Util qw( blessed );
 use Sub::Exporter -setup => {
    exports => [ qw(io) ], groups => { default => [ qw(io) ], },
 };
+
+subtype 'F_DC_IO_Exception' => as 'ClassName' =>
+   where   { $_->can( q(throw) ) } =>
+   message { "Class $_ is not loaded or has no throw method" };
 
 enum 'F_DC_IO_Mode'    => qw(a a+ r r+ w w+);
 enum 'F_DC_IO_Type'    => qw(dir file);
@@ -47,7 +51,7 @@ has '_chomp'           => is => 'rw', isa => 'Bool',      default    => FALSE ;
 has '_deep'            => is => 'rw', isa => 'Bool',      default    => FALSE ;
 has '_dir_pattern'     => is => 'ro', isa => 'RegexpRef', lazy_build => TRUE  ;
 has '_encoding'        => is => 'rw', isa => 'Str',       default    => NUL   ;
-has '_exception_class' => is => 'rw', isa => 'ClassName',
+has '_exception_class' => is => 'rw', isa => 'F_DC_IO_Exception',
    default             => q(File::DataClass::Exception),
    writer              => 'exception_class';
 has '_filter'          => is => 'rw', isa => 'Maybe[CodeRef]'                 ;
@@ -404,15 +408,14 @@ sub _find {
    defined $level or $level = $self->_deep ? 0 : 1;
 
    while ($io = $self->next) {
-      if (not defined $filter or map { $filter->() } ($io)) {
-         if (($files and $io->is_file) or ($dirs and $io->is_dir)) {
-            push @all, $io;
-         }
-      }
+      my $is_dir = $io->is_dir;
 
-      if ($io->is_dir and $level != 1) {
-         push @all, $io->_find( $files, $dirs, $level ? $level - 1 : 0 );
-      }
+      (($files and not $is_dir) or ($dirs and $is_dir))
+         and ((not defined $filter) or (map { $filter->() } ($io))[ 0 ])
+         and push @all, $io;
+
+      $is_dir and $level != 1
+         and push @all, $io->_find( $files, $dirs, $level ? $level - 1 : 0 );
    }
 
    return $self->sort ? sort { $a->name cmp $b->name } @all : @all;
@@ -757,6 +760,17 @@ sub stat {
    return \%stat_hash;
 }
 
+sub substitute {
+   my ($self, $that, $this) = @_; $that or return $self;
+
+   my $wtr = io( $self->name )->atomic; $this ||= NUL;
+
+   for ($self->getlines) { s{ $that }{$this}gmx; $wtr->print( $_ ) }
+
+   $self->close; $wtr->close;
+   return $self;
+}
+
 sub tempfile {
    my ($self, $tmplt) = @_; my ($tempdir, $tmpfh);
 
@@ -865,7 +879,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.3.$Revision: 258 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 
@@ -1396,6 +1410,13 @@ Proxy for L<File::Spec/splitpath>
 =head2 stat
 
 Returns a hash of the values returned by a L</stat> call on the pathname
+
+=head2 substitute
+
+   $io = io( q(path_to_file) )->substitute( $that, $this );
+
+Substitutes C<$that> regular expression for C<$this> string on each
+line of the given file
 
 =head2 tempfile
 

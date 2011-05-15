@@ -1,15 +1,15 @@
-# @(#)$Id: Combinator.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Combinator.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::Combinator;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Moose;
 
-with qw(File::DataClass::Util);
+extends qw(File::DataClass);
 
 has 'lang'    => is => 'rw', isa => 'Str',    required => TRUE;
 has 'storage' => is => 'ro', isa => 'Object', required => TRUE,
@@ -110,7 +110,7 @@ File::DataClass::Combinator - Split/merge language dependent data
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

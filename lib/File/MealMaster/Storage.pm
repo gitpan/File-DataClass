@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Storage.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::MealMaster::Storage;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use Data::Section -setup;
 use File::DataClass::Constants;
@@ -212,7 +212,7 @@ File::MealMaster::Storage - MealMaster food recipe file storage
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

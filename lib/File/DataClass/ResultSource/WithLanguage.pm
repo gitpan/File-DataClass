@@ -1,10 +1,10 @@
-# @(#)$Id: WithLanguage.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: WithLanguage.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::ResultSource::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::Combinator;
 use File::DataClass::Constants;
@@ -50,7 +50,7 @@ File::DataClass::ResultSource::WithLanguage - Result source localisation
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

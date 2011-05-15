@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 253 2011-04-02 01:10:20Z pjf $
+# @(#)$Id: Schema.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 253 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use Class::Null;
 use File::DataClass::Constants;
@@ -17,7 +17,6 @@ use File::DataClass::Storage;
 use IPC::SRLock;
 
 extends qw(File::DataClass);
-with    qw(File::DataClass::Constraints File::DataClass::Util);
 
 has 'cache'                    => is => 'ro', isa => 'F_DC_Cache',
    lazy_build                  => TRUE;
@@ -62,19 +61,20 @@ has 'tempdir'                  => is => 'ro', isa => 'F_DC_Directory',
    coerce                      => TRUE;
 
 around BUILDARGS => sub {
-   my ($orig, $class, @args) = @_; my $app;
+   my ($orig, $class, @args) = @_;
 
-   blessed $args[ 0 ] and $app = shift @args;
+   my $app; blessed $args[ 0 ] and $app = shift @args;
 
-   my $attrs = $class->$orig( @args );
+   my $attrs = $class->$orig( @args ); $app or return $attrs;
 
-   if ($app) {
-      my @attrs = ( qw(debug exception_class lock log tempdir) );
+   my @attrs = ( qw(debug lock log tempdir) );
 
-      $attrs->{ $_ } ||= $app->$_() for (grep { $app->can( $_ ) } @attrs);
+   $attrs->{ $_ } ||= $app->$_() for (grep { $app->can( $_ ) } @attrs);
 
-      $app->can( q(config) ) and $attrs->{tempdir} ||= $app->config->{tempdir};
-   }
+   $app->can( q(config) ) and $attrs->{tempdir} ||= $app->config->{tempdir};
+
+   $app->can( q(exception_class) )
+      and $class->Exception_Class( $app->exception_class );
 
    return $attrs;
 };
@@ -208,7 +208,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.3.$Revision: 253 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

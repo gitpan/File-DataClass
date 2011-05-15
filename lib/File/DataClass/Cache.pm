@@ -1,16 +1,16 @@
-# @(#)$Id: Cache.pm 253 2011-04-02 01:10:20Z pjf $
+# @(#)$Id: Cache.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::Cache;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 253 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use CHI;
 use File::DataClass::Constants;
 use Moose;
 
-with qw(File::DataClass::Constraints File::DataClass::Util);
+extends qw(File::DataClass);
 
 has 'cache'            => is => 'ro', isa => 'Object',
    lazy_build          => TRUE;
@@ -124,7 +124,7 @@ File::DataClass::Cache - Adds extra methods to the CHI API
 
 =head1 Version
 
-0.3.$Revision: 253 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 
@@ -134,7 +134,7 @@ File::DataClass::Cache - Adds extra methods to the CHI API
    use Moose;
 
    extends qw(File::DataClass);
-   with    qw(File::DataClass::Constraints);
+   with    qw(File::DataClass::Util);
 
    has 'cache'            => is => 'ro', isa => 'F_DC_Cache',
       lazy_build          => TRUE;

@@ -1,10 +1,10 @@
-# @(#)$Id: MealMaster.pm 253 2011-04-02 01:10:20Z pjf $
+# @(#)$Id: MealMaster.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::MealMaster;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 253 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::MealMaster::Result;
@@ -56,7 +56,7 @@ File::UnixAuth - Result source definitions for the Unix auth files
 
 =head1 Version
 
-0.3.$Revision: 253 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

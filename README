@@ -2,7 +2,7 @@ Name
     File::DataClass - Structured data file IO with OO paradigm
 
 Version
-    This document describes File::DataClass version 0.3.$Revision: 259 $
+    This document describes File::DataClass version 0.4.$Revision: 268 $
 
 Synopsis
        use File::DataClass::Schema;
@@ -34,13 +34,13 @@ Configuration and Environment
        This is a Cache::Cache object which is used to cache the results of
        reading a file. Maybe of type "F_DC_Cache"
 
+    Exception_Class
+       A classname that is expected to have a class method "throw". Defaults
+       to File::DataClass::Exception and is of type "F_DC_Exception"
+
     Lock
        A lock object that has the methods "set" and "reset". Maybe of type
        "F_DC_Lock"
-
-    exception_class
-       A classname that is expected to have a class method "throw". Defaults
-       to File::DataClass::Exception and is of type "F_DC_Exception"
 
 Subroutines/Methods
     None

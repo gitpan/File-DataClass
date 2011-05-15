@@ -1,10 +1,10 @@
-# @(#)$Id: Constraints.pm 254 2011-04-03 01:11:13Z pjf $
+# @(#)$Id: Constraints.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 254 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::IO;
 use Moose::Role;
@@ -13,7 +13,7 @@ use Scalar::Util qw(blessed);
 
 subtype 'F_DC_Cache' => as 'Object' =>
    where   { $_->isa( q(File::DataClass::Cache) )
-                || $_->isa( q(Class::Null) ) } =>
+          || $_->isa( q(Class::Null) ) } =>
    message {
       'Object '.(blessed $_ || $_).' is not of class File::DataClass::Cache' };
 
@@ -76,7 +76,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.3.$Revision: 254 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

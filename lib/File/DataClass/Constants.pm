@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Constants.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 my @constants;
 
@@ -78,7 +78,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.3.$Rev: 238 $
+0.4.$Rev: 268 $
 
 =head1 Synopsis
 

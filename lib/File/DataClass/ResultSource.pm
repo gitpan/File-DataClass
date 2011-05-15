@@ -1,17 +1,15 @@
-# @(#)$Id: ResultSource.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: ResultSource.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::ResultSource;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Moose;
 
 use File::DataClass::ResultSet;
-
-with qw(File::DataClass::Util);
 
 has 'attributes'           => is => 'rw', isa => 'ArrayRef[Str]',
    default                 => sub { return [] };
@@ -57,7 +55,7 @@ File::DataClass::ResultSource - A source of result sets for a given schema
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

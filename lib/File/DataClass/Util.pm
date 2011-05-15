@@ -1,10 +1,10 @@
-# @(#)$Id: Util.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Util.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::Util;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use Class::MOP;
 use File::DataClass::Constants;
@@ -14,6 +14,8 @@ use List::Util qw(first);
 use Moose::Role;
 use Try::Tiny;
 
+requires qw(Exception_Class);
+
 sub basename {
    my ($self, $path, @suffixes) = @_;
 
@@ -21,11 +23,11 @@ sub basename {
 }
 
 sub catdir {
-   my ($self, @rest) = @_; return File::Spec->catdir( @rest );
+   my $self = shift; return File::Spec->catdir( @_ );
 }
 
 sub catfile {
-   my ($self, @rest) = @_; return File::Spec->catfile( @rest );
+   my $self = shift; return File::Spec->catfile( @_ );
 }
 
 sub dirname {
@@ -52,7 +54,7 @@ sub ensure_class_loaded {
 sub io {
    my ($self, @rest) = @_; my $io = File::DataClass::IO->new( @rest );
 
-   $io->exception_class( File::DataClass->exception_class );
+   $io->exception_class( $self->Exception_Class );
 
    return $io;
 }
@@ -64,9 +66,7 @@ sub is_member {
 }
 
 sub throw {
-   my ($self, @rest) = @_;
-
-   return File::DataClass->exception_class->throw( @rest );
+   my $self = shift; return $self->Exception_Class->throw( @_ );
 }
 
 no Moose::Role;
@@ -83,7 +83,7 @@ File::DataClass::Util - Moose Role defining utility methods
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

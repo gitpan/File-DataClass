@@ -1,11 +1,11 @@
-# @(#)$Id: MailAlias.pm 256 2011-04-04 10:43:19Z pjf $
+# @(#)$Id: MailAlias.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::MailAlias;
 
 use strict;
 use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 256 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::IO ();
@@ -113,7 +113,7 @@ sub update_as_root {
 # Private methods
 
 sub _build_mail_domain {
-   return File::DataClass::IO->new( [ NUL, qw(etc mailname) ] )->getline;
+   return File::DataClass::IO->new( [ NUL, qw(etc mailname) ] )->chomp->getline;
 }
 
 sub _run_update_cmd {
@@ -157,7 +157,7 @@ File::MailAlias - Domain model for the system mail aliases file
 
 =head1 Version
 
-0.3.$Revision: 256 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

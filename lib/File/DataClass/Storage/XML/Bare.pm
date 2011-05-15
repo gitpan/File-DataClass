@@ -1,10 +1,10 @@
-# @(#)$Id: Bare.pm 238 2011-01-26 18:13:06Z pjf $
+# @(#)$Id: Bare.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass::Storage::XML::Bare;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 238 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::Bare;
@@ -28,8 +28,7 @@ augment '_write_file' => sub {
    my ($self, $wtr, $data) = @_;
 
    $self->_dtd->[0] and $wtr->println( @{ $self->_dtd } );
-
-   $wtr->print( $self->_write_filter( 0, $self->root_name, $data ) );
+   $wtr->append( $self->_write_filter( 0, $self->root_name, $data ) );
    return $data;
 };
 
@@ -145,7 +144,7 @@ File::DataClass::Storage::XML::Bare - Read/write XML data storage model
 
 =head1 Version
 
-0.3.$Revision: 238 $
+0.4.$Revision: 268 $
 
 =head1 Synopsis
 

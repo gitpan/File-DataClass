@@ -1,23 +1,26 @@
-# @(#)$Id: DataClass.pm 259 2011-04-12 19:41:08Z pjf $
+# @(#)$Id: DataClass.pm 268 2011-05-15 17:41:41Z pjf $
 
 package File::DataClass;
 
 use strict;
-use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 259 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
 use File::DataClass::Exception;
 
+with qw(File::DataClass::Constraints);
+
 class_has 'Cache' => is => 'rw', isa => 'HashRef[F_DC_Cache]',
    default        => sub { {} };
 
+class_has 'Exception_Class' => is => 'rw', isa => 'F_DC_Exception',
+   default                  => 'File::DataClass::Exception';
+
 class_has 'Lock'  => is => 'rw', isa => 'Maybe[F_DC_Lock]';
 
-class_has 'exception_class' => is => 'rw', isa => 'F_DC_Exception',
-   default                  => q(File::DataClass::Exception);
+with qw(File::DataClass::Util);
 
 __PACKAGE__->meta->make_immutable;
 
@@ -36,7 +39,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.3.$Revision: 259 $
+This document describes File::DataClass version 0.4.$Revision: 268 $
 
 =head1 Synopsis
 
@@ -73,15 +76,15 @@ methods in L<File::DataClass::Schema>
 This is a L<Cache::Cache> object which is used to cache the results of
 reading a file. Maybe of type C<F_DC_Cache>
 
+=item B<Exception_Class>
+
+A classname that is expected to have a class method C<throw>. Defaults to
+L<File::DataClass::Exception> and is of type C<F_DC_Exception>
+
 =item B<Lock>
 
 A lock object that has the methods C<set> and C<reset>. Maybe of type
 C<F_DC_Lock>
-
-=item B<exception_class>
-
-A classname that is expected to have a class method C<throw>. Defaults to
-L<File::DataClass::Exception> and is of type C<F_DC_Exception>
 
 =back
 
@@ -144,4 +147,3 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # mode: perl
 # tab-width: 3
 # End:
-
