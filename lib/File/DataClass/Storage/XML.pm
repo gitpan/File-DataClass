@@ -1,10 +1,10 @@
-# @(#)$Id: XML.pm 268 2011-05-15 17:41:41Z pjf $
+# @(#)$Id: XML.pm 271 2011-05-30 01:37:52Z pjf $
 
 package File::DataClass::Storage::XML;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 271 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::DTD;
@@ -13,11 +13,12 @@ use Moose;
 extends qw(File::DataClass::Storage);
 
 has '+extn'     => default => q(.xml);
-has 'root_name' => is => 'ro', isa => 'Str',      default  => q(config);
+has 'root_name' => is => 'ro', isa => 'Str',      default  => 'config';
 has '_arrays'   => is => 'rw', isa => 'F_DC_HashRefOfBools',
    coerce       => TRUE,  init_arg => 'force_array',
    default      => sub { return {} };
-has '_dtd'      => is => 'rw', isa => 'ArrayRef', default  => sub { return [] };
+has '_dtd'      => is => 'rw', isa => 'ArrayRef', init_arg => 'dtd',
+   default      => sub { return [] };
 
 around '_meta_pack' => sub {
    my ($orig, $self, $args) = @_; my $packed = $self->$orig( $args );
@@ -111,7 +112,7 @@ File::DataClass::Storage::XML - Read/write XML data storage model
 
 =head1 Version
 
-0.4.$Revision: 268 $
+0.5.$Revision: 271 $
 
 =head1 Synopsis
 

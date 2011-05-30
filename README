@@ -2,7 +2,7 @@ Name
     File::DataClass - Structured data file IO with OO paradigm
 
 Version
-    This document describes File::DataClass version 0.4.$Revision: 268 $
+    This document describes File::DataClass version 0.5.$Revision: 271 $
 
 Synopsis
        use File::DataClass::Schema;
@@ -71,7 +71,7 @@ Author
     Peter Flanigan, "<Support at RoxSoft.co.uk>"
 
 License and Copyright
-    Copyright (c) 2010 Peter Flanigan. All rights reserved
+    Copyright (c) 2011 Peter Flanigan. All rights reserved
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself. See perlartistic

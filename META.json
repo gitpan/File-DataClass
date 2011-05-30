@@ -53,7 +53,7 @@
             "MRO::Compat" : "0.09",
             "MealMaster" : "0.28",
             "Moose" : "0.92",
-            "MooseX::ClassAttribute" : "0.1",
+            "MooseX::ClassAttribute" : "0.21",
             "Scalar::Util" : "1.19",
             "Sub::Exporter" : "0.982",
             "Template" : "2.18",
@@ -74,115 +74,115 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Combinator" : {
          "file" : "lib/File/DataClass/Combinator.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Constants" : {
          "file" : "lib/File/DataClass/Constants.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Constraints" : {
          "file" : "lib/File/DataClass/Constraints.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Exception" : {
          "file" : "lib/File/DataClass/Exception.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Result" : {
          "file" : "lib/File/DataClass/Result.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::ResultSource" : {
          "file" : "lib/File/DataClass/ResultSource.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::ResultSource::WithLanguage" : {
          "file" : "lib/File/DataClass/ResultSource/WithLanguage.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Schema" : {
          "file" : "lib/File/DataClass/Schema.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Storage" : {
          "file" : "lib/File/DataClass/Storage.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Storage::JSON" : {
          "file" : "lib/File/DataClass/Storage/JSON.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Storage::XML" : {
          "file" : "lib/File/DataClass/Storage/XML.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Storage::XML::Bare" : {
          "file" : "lib/File/DataClass/Storage/XML/Bare.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Storage::XML::Simple" : {
          "file" : "lib/File/DataClass/Storage/XML/Simple.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::DataClass::Util" : {
          "file" : "lib/File/DataClass/Util.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::MailAlias" : {
          "file" : "lib/File/MailAlias.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::MailAlias::Storage" : {
          "file" : "lib/File/MailAlias/Storage.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::MealMaster" : {
          "file" : "lib/File/MealMaster.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::MealMaster::Result" : {
          "file" : "lib/File/MealMaster/Result.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::MealMaster::Storage" : {
          "file" : "lib/File/MealMaster/Storage.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::UnixAuth" : {
          "file" : "lib/File/UnixAuth.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::UnixAuth::Result" : {
          "file" : "lib/File/UnixAuth/Result.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       },
       "File::UnixAuth::Storage" : {
          "file" : "lib/File/UnixAuth/Storage.pm",
-         "version" : "v0.4.268"
+         "version" : "v0.5.271"
       }
    },
    "release_status" : "stable",
@@ -195,5 +195,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.4.268"
+   "version" : "0.5.271"
 }

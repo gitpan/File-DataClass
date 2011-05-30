@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 268 2011-05-15 17:41:41Z pjf $
+# @(#)$Id: IO.pm 271 2011-05-30 01:37:52Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 271 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::Exception;
@@ -85,7 +85,7 @@ sub abs2rel {
 }
 
 sub absolute {
-   my $self = shift; $self->name( $self->rel2abs ); return $self;
+   my ($self, $base) = @_; $self->name( $self->rel2abs( $base ) ); return $self;
 }
 
 sub all {
@@ -141,8 +141,11 @@ sub assert_dirpath {
 
    $dir_name or return; -d $dir_name and return $dir_name;
 
-   $self->_umask_push;
-   CORE::mkdir( $dir_name ) or File::Path::mkpath( $dir_name );
+   $self->_umask_push( oct q(07777) ); my $perms = $self->_mkdir_perms;
+
+   CORE::mkdir( $dir_name, $perms )
+      or File::Path::make_path( $dir_name, { mode => $perms } );
+
    $self->_umask_pop;
 
    -d $dir_name or $self->throw( error => 'Path [_1] cannot create',
@@ -528,18 +531,30 @@ sub lock {
 }
 
 sub mkdir {
-   my ($self, $perms) = @_; $self->_umask_push( $perms );
+   my ($self, $perms) = @_; $perms ||= $self->_mkdir_perms;
 
-   my $result = CORE::mkdir( $self->name ); $self->_umask_pop;
+   $self->_umask_push( oct q(07777) );
 
+   my $result = CORE::mkdir( $self->name, $perms );
+
+   $self->_umask_pop;
    return $result;
 }
 
+sub _mkdir_perms {
+   my ($self, $perms) = @_; $perms ||= $self->_perms;
+
+   return (($perms & oct q(0444)) >> 2) | $perms;
+}
+
 sub mkpath {
-   my ($self, $perms) = @_; $self->_umask_push( $perms );
+   my ($self, $perms) = @_; $perms ||= $self->_mkdir_perms;
 
-   my $result = File::Path::mkpath( $self->name ); $self->_umask_pop;
+   $self->_umask_push( oct q(07777) );
 
+   my $result = File::Path::make_path( $self->name, { mode => $perms } );
+
+   $self->_umask_pop;
    return $result;
 }
 
@@ -804,7 +819,7 @@ sub touch {
 }
 
 sub _umask_pop {
-   my $self = shift; my $perms = $self->_umask->[-1];
+   my $self = shift; my $perms = $self->_umask->[ -1 ];
 
    ($perms and $perms != NO_UMASK_STACK) or return umask;
    umask pop @{ $self->_umask };
@@ -812,13 +827,11 @@ sub _umask_pop {
 }
 
 sub _umask_push {
-   my ($self, $perms) = @_; my $first = $self->_umask->[0];
+   my ($self, $perms) = @_; $perms or return umask;
+
+   my $first = $self->_umask->[ 0 ];
 
    $first and $first == NO_UMASK_STACK and return umask;
-
-   unless ($perms) {
-      $perms = $self->_perms; $perms = (($perms & oct q(0444)) >> 2) | $perms;
-   }
 
    $perms ^= oct q(0777); push @{ $self->_umask }, umask $perms;
    return $perms;
@@ -879,7 +892,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.4.$Revision: 268 $
+0.5.$Revision: 271 $
 
 =head1 Synopsis
 
@@ -931,13 +944,15 @@ An object which is a L<File::DataClass::IO>
 
 =head2 abs2rel
 
-   $io = io( q(relative_path_to_file) )->abs2rel( q(optional_base_path) );
+   $path = io( q(relative_path_to_file) )->abs2rel( q(optional_base_path) );
 
-Makes the pathname relative
+Makes the pathname relative. Returns a path
 
 =head2 absolute
 
-Calls L</rel2abs> without an optional base path
+   $io = io( q(relative_path_to_file) )->absolute( q(optional_base_path) );
+
+Calls L</rel2abs> without an optional base path. Returns io object
 
 =head2 all
 
@@ -1361,9 +1376,9 @@ context returns the first/next entry in the directory
 
 =head2 rel2abs
 
-   $io = io( q(relative_path_to_file) )->rel2abs( q(optional_base_path) );
+   $path = io( q(relative_path_to_file) )->rel2abs( q(optional_base_path) );
 
-Makes the pathname absolute
+Makes the pathname absolute. Returns a path
 
 =head2 relative
 

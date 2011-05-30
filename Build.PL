@@ -1,9 +1,9 @@
-# @(#)$Id: Build.PL 245 2011-03-24 20:24:52Z pjf $
+# @(#)$Id: Build.PL 269 2011-05-21 23:11:18Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 245 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 269 $ =~ /\d+/gmx );
 
 Bob->new( {
    stop_tests => 1,
@@ -33,7 +33,7 @@ Bob->new( {
       'JSON'                   => 2.16,
       'MealMaster'             => 0.28,
       'Moose'                  => 0.92,
-      'MooseX::ClassAttribute' => 0.10,
+      'MooseX::ClassAttribute' => 0.21,
       'MRO::Compat'            => 0.09,
       'Scalar::Util'           => 1.19,
       'Sub::Exporter'          => 0.982,

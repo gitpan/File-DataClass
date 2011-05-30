@@ -1,8 +1,8 @@
-# @(#)$Id: 10io.t 268 2011-05-15 17:41:41Z pjf $
+# @(#)$Id: 10io.t 271 2011-05-30 01:37:52Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 268 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 271 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -17,7 +17,7 @@ BEGIN {
    $current and $current->notes->{stop_tests}
             and plan skip_all => $current->notes->{stop_tests};
 
-   plan tests => 85;
+   plan tests => 86;
 }
 
 use_ok( q(File::DataClass::IO) );
@@ -81,6 +81,11 @@ $io->relative;
 
 is( "$io", File::Spec->abs2rel( $PROGRAM_NAME ), 'Relative' );
 ok( io( q(t) )->absolute->next->is_absolute, 'Absolute directory paths' );
+
+my $tmp = File::Spec->tmpdir;
+
+is( io( $PROGRAM_NAME )->absolute( $tmp ),
+    File::Spec->rel2abs( $PROGRAM_NAME, $tmp ), 'Absolute with base' );
 
 # Stat
 
