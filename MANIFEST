@@ -31,8 +31,6 @@ lib/File/UnixAuth/Result.pm
 lib/File/UnixAuth/Storage.pm
 LICENSE
 MANIFEST			This list of files
-META.json
-META.yml
 README
 t/01always_pass.t
 t/02pod.t
@@ -63,4 +61,6 @@ t/mydir/file2
 t/mydir/file3
 t/recipes.mmf
 t/shadow
+META.yml
+META.json
 SIGNATURE    Added here by Module::Build

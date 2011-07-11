@@ -1,8 +1,8 @@
-# @(#)$Id: 10io.t 271 2011-05-30 01:37:52Z pjf $
+# @(#)$Id: 10io.t 285 2011-07-11 12:40:49Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 271 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -17,7 +17,7 @@ BEGIN {
    $current and $current->notes->{stop_tests}
             and plan skip_all => $current->notes->{stop_tests};
 
-   plan tests => 86;
+   plan tests => 96;
 }
 
 use_ok( q(File::DataClass::IO) );
@@ -93,20 +93,20 @@ my ($device, $inode, $mode, $nlink, $uid, $gid, $device_id,
     $size, $atime, $mtime, $ctime, $blksize, $blocks) = stat( $PROGRAM_NAME );
 my $stat = $io->stat;
 
-is( $stat->{device},    $device,      'Stat device'      );
-is( $stat->{inode},     $inode,       'Stat inode'       );
-is( $stat->{mode},      $mode,        'Stat mode'        );
-is( $stat->{nlink},     $nlink,       'Stat nlink'       );
-is( $stat->{uid},       $uid,         'Stat uid'         );
-is( $stat->{gid},       $gid,         'Stat gid'         );
-is( $stat->{device_id}, $device_id,   'Stat device_id'   );
-is( $stat->{size},      $size,        'Stat size'        );
+is( $stat->{device},    $device,       'Stat device'      );
+is( $stat->{inode},     $inode,        'Stat inode'       );
+is( $stat->{mode},      $mode,         'Stat mode'        );
+is( $stat->{nlink},     $nlink,        'Stat nlink'       );
+is( $stat->{uid},       $uid,          'Stat uid'         );
+is( $stat->{gid},       $gid,          'Stat gid'         );
+is( $stat->{device_id}, $device_id,    'Stat device_id'   );
+is( $stat->{size},      $size,         'Stat size'        );
 ok( ($stat->{atime} ==  $atime)
- || ($stat->{atime} == ($atime + 1)), 'Stat access time' );
-is( $stat->{mtime},     $mtime,       'Stat modify time' );
-is( $stat->{ctime},     $ctime,       'Stat create time' );
-is( $stat->{blksize},   $blksize,     'Stat block size'  );
-is( $stat->{blocks},    $blocks,      'Stat blocks'      );
+ || ($stat->{atime} == ($atime + 1)),  'Stat access time' );
+is( $stat->{mtime},     $mtime,        'Stat modify time' );
+is( $stat->{ctime},     $ctime,        'Stat create time' );
+is( $stat->{blksize},   $blksize,      'Stat block size'  );
+is( $stat->{blocks},    $blocks,       'Stat blocks'      );
 
 # All
 
@@ -222,7 +222,7 @@ my $temp  = io( q(t) )->tempfile;
 
 $temp->println( @lines ); $temp->seek( 0, 0 );
 
-my $text  = $temp->slurp;
+my $text  = $temp->slurp || q();
 
 ok( length $text == $size, 'Tempfile/seek' );
 
@@ -258,6 +258,52 @@ $io = io( catfile( qw(t output substitute) ) );
 $io->println( qw(line1 line2 line3) );
 $io->substitute( q(line2), q(changed) );
 is( ($io->chomp->getlines)[ 1 ], q(changed), 'Substitute values' );
+
+# Copy
+
+my $to = io( catfile( qw(t output copy) ) ); $io->close;
+
+$io->copy( $to );
+is( $io->all, $to->all, 'Copy file' );
+
+# Chmod
+
+$io->chmod( 0777 );
+$stat = $io->stat;
+is( (sprintf "%o", $stat->{mode} & 07777), q(777), 'chmod1' );
+$io->chmod( 0400 );
+$stat = $io->stat;
+is( (sprintf "%o", $stat->{mode} & 07777), q(400), 'chmod2' );
+
+# Permissions
+
+$io = io( catfile( qw(t output print.pl) ), q(w), oct q(0400) )->println( 'x' );
+is( (sprintf "%o", $io->stat->{mode} & 07777), q(400), 'Create 400' );
+$io->unlink;
+
+$io = io( catfile( qw(t output print.pl) ), q(w), oct q(0440) )->println( 'x' );
+is( (sprintf "%o", $io->stat->{mode} & 07777), q(440), 'Create 440' );
+$io->unlink;
+
+$io = io( catfile( qw(t output print.pl) ), q(w), oct q(0600) )->println( 'x' );
+is( (sprintf "%o", $io->stat->{mode} & 07777), q(600), 'Create 600' );
+$io->unlink;
+
+$io = io( catfile( qw(t output print.pl) ), q(w), oct q(0640) )->println( 'x' );
+is( (sprintf "%o", $io->stat->{mode} & 07777), q(640), 'Create 640' );
+$io->unlink;
+
+$io = io( catfile( qw(t output print.pl) ), q(w), oct q(0644) )->println( 'x' );
+is( (sprintf "%o", $io->stat->{mode} & 07777), q(644), 'Create 644' );
+$io->unlink;
+
+$io = io( catfile( qw(t output print.pl) ), q(w), oct q(0664) )->println( 'x' );
+is( (sprintf "%o", $io->stat->{mode} & 07777), q(664), 'Create 664' );
+$io->unlink;
+
+$io = io( catfile( qw(t output print.pl) ), q(w), oct q(0666) )->println( 'x' );
+is( (sprintf "%o", $io->stat->{mode} & 07777), q(666), 'Create 666' );
+$io->unlink;
 
 # Cleanup
 

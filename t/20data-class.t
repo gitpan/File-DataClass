@@ -1,8 +1,8 @@
-# @(#)$Id: 20data-class.t 271 2011-05-30 01:37:52Z pjf $
+# @(#)$Id: 20data-class.t 285 2011-07-11 12:40:49Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 271 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -197,7 +197,7 @@ ok( !$diff, 'Can translate from XML to JSON' );
 }
 
 $schema = File::DataClass::Schema->new
-   ( Dummy->new, path => [ qw(t default.xml) ], tempdir => q(t) );
+   ( ioc_obj => Dummy->new, path => [ qw(t default.xml) ], tempdir => q(t) );
 
 is( ref $schema, q(File::DataClass::Schema),
     q(File::DataClass::Schema - with inversion of control) );

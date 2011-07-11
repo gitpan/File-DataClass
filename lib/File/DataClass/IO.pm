@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 271 2011-05-30 01:37:52Z pjf $
+# @(#)$Id: IO.pm 285 2011-07-11 12:40:49Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 271 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::Exception;
@@ -13,6 +13,7 @@ use English      qw( -no_match_vars );
 use Fcntl        qw( :flock :seek );
 use List::Util   qw( first );
 use File::Basename ();
+use File::Copy     ();
 use File::Path     ();
 use File::Spec     ();
 use File::Temp     ();
@@ -148,8 +149,8 @@ sub assert_dirpath {
 
    $self->_umask_pop;
 
-   -d $dir_name or $self->throw( error => 'Path [_1] cannot create',
-                                 args  => [ $dir_name ] );
+   -d $dir_name or $self->throw( error => 'Path [_1] cannot create: [_2]',
+                                 args  => [ $dir_name, $ERRNO ] );
    return $dir_name;
 }
 
@@ -164,7 +165,7 @@ sub assert_filepath {
 }
 
 sub assert_open {
-   my ($self, $mode, $perms) = @_; $self->type or $self->file;
+   my ($self, $mode, $perms) = @_;
 
    return $self->open( $mode || q(r), $perms );
 }
@@ -255,8 +256,22 @@ sub catfile {
    return $self->_constructor( \@args )->file;
 }
 
+sub chmod {
+   my ($self, $perms) = @_; $perms ||= $self->_perms;
+
+   CORE::chmod $perms, $self->name;
+   return $self;
+}
+
 sub chomp {
    my $self = shift; $self->_chomp( TRUE ); return $self;
+}
+
+sub chown {
+   my ($self, $uid, $gid) = @_;
+
+   CORE::chown $uid, $gid, $self->name;
+   return $self;
 }
 
 sub clear {
@@ -303,6 +318,19 @@ sub _close_file {
 
 sub _constructor {
    my ($self, @rest) = @_; return (blessed $self)->new( @rest );
+}
+
+sub copy {
+   my ($self, $to) = @_; $to or $self->throw( 'Copy requires two args' );
+
+   (blessed $to and $to->isa( __PACKAGE__ ))
+      or $to = $self->_constructor( $to );
+
+   File::Copy::copy( $self->name, $to->pathname )
+      or $self->throw( error => 'Cannot copy [_1] to [_2]',
+                       args  => [ $self->name, $to->pathname ] );
+
+   return $to;
 }
 
 sub deep {
@@ -411,7 +439,7 @@ sub _find {
    defined $level or $level = $self->_deep ? 0 : 1;
 
    while ($io = $self->next) {
-      my $is_dir = $io->is_dir;
+      my $is_dir = $io->is_dir; defined $is_dir or next;
 
       (($files and not $is_dir) or ($dirs and $is_dir))
          and ((not defined $filter) or (map { $filter->() } ($io))[ 0 ])
@@ -489,11 +517,9 @@ sub is_absolute {
 }
 
 sub is_dir {
-   my $self = shift;
+   my $self = shift; $self->type or $self->_set_type;
 
-   $self->type and return $self->type eq q(dir) ? TRUE : FALSE;
-
-   return $self->name && -d $self->name ? TRUE : FALSE;
+   return $self->type && $self->type eq q(dir) ? TRUE : FALSE;
 }
 
 sub is_executable {
@@ -501,11 +527,9 @@ sub is_executable {
 }
 
 sub is_file {
-   my $self = shift;
+   my $self = shift; $self->type or $self->_set_type;
 
-   $self->type and return $self->type eq q(file) ? TRUE : FALSE;
-
-   return $self->name && -f $self->name ? TRUE : FALSE;
+   return $self->type && $self->type eq q(file) ? TRUE : FALSE;
 }
 
 sub is_readable {
@@ -535,10 +559,13 @@ sub mkdir {
 
    $self->_umask_push( oct q(07777) );
 
-   my $result = CORE::mkdir( $self->name, $perms );
+   CORE::mkdir( $self->name, $perms );
 
    $self->_umask_pop;
-   return $result;
+
+   -d $self->name or $self->throw( error => 'Path [_1] cannot create: [_2]',
+                                   args  => [ $self->name, $ERRNO ] );
+   return $self;
 }
 
 sub _mkdir_perms {
@@ -552,10 +579,13 @@ sub mkpath {
 
    $self->_umask_push( oct q(07777) );
 
-   my $result = File::Path::make_path( $self->name, { mode => $perms } );
+   File::Path::make_path( $self->name, { mode => $perms } );
 
    $self->_umask_pop;
-   return $result;
+
+   -d $self->name or $self->throw( error => 'Path [_1] cannot create: [_2]',
+                                   args  => [ $self->name, $ERRNO ] );
+   return $self;
 }
 
 sub next {
@@ -573,7 +603,15 @@ sub next {
 sub open {
    my ($self, $mode, $perms) = @_; $mode ||= $self->mode;
 
-   $self->is_open and $mode eq $self->mode and return $self;
+   $self->is_open
+      and (substr $mode, 0, 1) eq (substr $self->mode, 0, 1)
+      and return $self;
+   $self->is_open
+      and q(r) eq (substr $mode, 0, 1)
+      and q(+) eq (substr $self->mode, 1, 1) || NUL
+      and $self->seek( 0, 0 )
+      and return $self;
+   $self->type or $self->_set_type; $self->type or $self->file;
    $self->is_open and $self->close;
    $self->is_dir
       and return $self->_open_dir ( $self->_open_args( $mode, $perms ) );
@@ -612,7 +650,7 @@ sub _open_file {
 
    $self->_assert and $self->assert_filepath;
    $self->_umask_push( $perms );
-   $self->io_handle( IO::File->new( $path, $mode, $perms ) )
+   $self->io_handle( IO::File->new( $path, $mode ) )
       or $self->throw( error => 'File [_1] cannot open', args => [ $path ] );
    $self->_umask_pop;
    $self->is_open( TRUE );
@@ -630,9 +668,7 @@ sub perms {
 }
 
 sub print {
-   my ($self, @rest) = @_; $self->assert_open( q(w) );
-
-   return $self->_print( @rest );
+   my ($self, @rest) = @_; return $self->assert_open( q(w) )->_print( @rest );
 }
 
 sub _print {
@@ -647,9 +683,7 @@ sub _print {
 }
 
 sub println {
-   my ($self, @rest) = @_; $self->assert_open( q(w) );
-
-   return $self->_println( @rest );
+   my ($self, @rest) = @_; return $self->assert_open( q(w) )->_println( @rest );
 }
 
 sub _println {
@@ -714,7 +748,7 @@ sub seek {
 
    my @sunk = $self->io_handle->seek( @rest ); $self->error_check;
 
-   return wantarray ? @sunk : $sunk[0];
+   return wantarray ? @sunk : $sunk[ 0 ];
 }
 
 sub separator {
@@ -745,6 +779,12 @@ sub set_lock {
    flock $self->io_handle, $self->mode eq q(r) ? LOCK_SH : LOCK_EX;
 
    return $self;
+}
+
+sub _set_type {
+   my $self = shift;
+
+   return -f $self->name ? $self->file : -d _ ? $self->dir : undef;
 }
 
 sub slurp {
@@ -797,7 +837,7 @@ sub tempfile {
    $self->_init( q(file), $tmpfh->filename );
    $self->io_handle( $tmpfh );
    $self->is_open( TRUE );
-   $self->mode( q(w) );
+   $self->mode( q(w+) );
    return $self;
 }
 
@@ -892,7 +932,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.5.$Revision: 271 $
+0.6.$Revision: 285 $
 
 =head1 Synopsis
 
@@ -1090,11 +1130,24 @@ with the one that is supplied
 Create a new C<IO> file object by concatenating this objects pathname
 with the one that is supplied
 
+=head2 chmod
+
+   $io = $io->chmod( q(0644) );
+
+Changes the permission on the file to the selected value. Permission values
+can be eithe octal or string
+
 =head2 chomp
 
    $io = io( q(path_to_file) )->chomp;
 
 Causes input lines to be chomped when L</getline> or L</getlines> are called
+
+=head2 chown
+
+   $io = $io->chown( $uid, $gid );
+
+Changes user and group ownership
 
 =head2 clear
 
@@ -1116,6 +1169,13 @@ Closes the open directory handle.
 
 If the temporary atomic file exists, renames it to the original
 filename. Unlocks the file if it was locked. Closes the file handle
+
+=head2 copy
+
+   $dest_obj = $io->copy( $destination_path_or_object );
+
+Copies the file to the destination. The destination can be either a path or
+and IO object. Returns the destination object
 
 =head2 deep
 

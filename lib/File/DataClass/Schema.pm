@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 271 2011-05-30 01:37:52Z pjf $
+# @(#)$Id: Schema.pm 285 2011-07-11 12:40:49Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 271 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
 
 use Class::Null;
 use File::DataClass::Constants;
@@ -61,20 +61,19 @@ has 'tempdir'                  => is => 'ro', isa => 'F_DC_Directory',
    coerce                      => TRUE;
 
 around BUILDARGS => sub {
-   my ($orig, $class, @args) = @_;
+   my ($orig, $class, @args) = @_; my $attrs = $class->$orig( @args );
 
-   my $app; blessed $args[ 0 ] and $app = shift @args;
+   exists $attrs->{ioc_obj} or return $attrs;
 
-   my $attrs = $class->$orig( @args ); $app or return $attrs;
-
+   my $ioc   = delete $attrs->{ioc_obj};
    my @attrs = ( qw(debug lock log tempdir) );
 
-   $attrs->{ $_ } ||= $app->$_() for (grep { $app->can( $_ ) } @attrs);
+   $attrs->{ $_ } ||= $ioc->$_() for (grep { $ioc->can( $_ ) } @attrs);
 
-   $app->can( q(config) ) and $attrs->{tempdir} ||= $app->config->{tempdir};
+   $ioc->can( q(config) ) and $attrs->{tempdir} ||= $ioc->config->{tempdir};
 
-   $app->can( q(exception_class) )
-      and $class->Exception_Class( $app->exception_class );
+   $ioc->can( q(exception_class) )
+      and $class->Exception_Class( $ioc->exception_class );
 
    return $attrs;
 };
@@ -208,7 +207,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.5.$Revision: 271 $
+0.6.$Revision: 285 $
 
 =head1 Synopsis
 
@@ -254,6 +253,13 @@ Passed to the L<Cache::Cache> constructor
 =item B<debug>
 
 Writes debug information to the log object if set to true
+
+=item B<ioc_obj>
+
+An optional object that provides these methods; C<debug>,
+C<exception_class>, C<lock>, C<log>, and C<tempdir>. Their values are
+or'ed with values in the attributes hash before being passed to the
+constructor
 
 =item B<lock>
 
@@ -320,11 +326,6 @@ Temporary directory used to store the cache and lock objects disk
 representation
 
 =back
-
-If the constructor is passed an object as it's first arg, and that
-provides these methods; C<debug>, C<exception_class>, C<lock>, C<log>,
-and C<tempdir>, then their values are or'ed with values in the attributes
-hash before being passed to the constructor
 
 =head1 Subroutines/Methods
 
