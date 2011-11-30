@@ -1,15 +1,15 @@
-# @(#)$Id: Constants.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: Constants.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 my @constants;
 
 BEGIN {
-   @constants = ( qw(ARRAY CODE EVIL FALSE HASH LOCALIZE NO_UMASK_STACK
+   @constants = ( qw(ARRAY CODE EVIL FALSE HASH LANG LOCALIZE NO_UMASK_STACK
                      NUL PERMS SPC STAT_FIELDS TRUE) );
 }
 
@@ -35,6 +35,10 @@ sub FALSE () {
 
 sub HASH () {
    return q(HASH);
+}
+
+sub LANG () {
+   return q(en);
 }
 
 sub LOCALIZE () {
@@ -78,7 +82,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.6.$Rev: 285 $
+0.7.$Rev: 321 $
 
 =head1 Synopsis
 
@@ -111,6 +115,10 @@ Digit 0
 =head2 HASH
 
 String HASH
+
+=head2 LANG
+
+Default language code, en
 
 =head2 LOCALIZE
 

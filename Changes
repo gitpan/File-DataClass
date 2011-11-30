@@ -1,5 +1,25 @@
 Revision history for File::DataClass
 
+0.7.321	 2011-11-30
+	 - Works with CX::U 0.4.1084
+	 - Fixed new attribute assignment bug in HashMerge
+	 - Changed comment field types in Gettext::Storage::PO to scalars
+	 - Fixed bug in File::MailAlias BUILDARGS not using ioc_obj
+	 - Added Schema::WithLanguage
+	 - Storage::WithLanguage can dump
+         - Storage::WithLanguage passes tests
+         - Renamed Combinator to Storage::WithLanguage
+         - Combinator rewritten to use F::Gettext
+         - Updated inc::Bob
+         - Fixed bug in ResultSource now has copy of schema storage
+         - Fixed string quoting in po files
+         - Gettext mo files now create a hash table entry for msgid_plural
+         - Added Gettext for mo files (read-only)
+         - Fixed the way ResultSource::WithLanguage patches in storage object
+         - Added Gettext for po files
+         - Eliminated Exception_Class class attribute
+         - Exception_class now an obj attribute defaulting to class attribute
+
 0.6.286  2011-07-11
          - Changed F::DC API. Made ioc_obj an attribute not a parameter
          - More breakage in IO::tempfile. Set mode to w+ and fix open_args

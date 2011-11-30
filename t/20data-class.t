@@ -1,8 +1,8 @@
-# @(#)$Id: 20data-class.t 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: 20data-class.t 321 2011-11-30 00:01:49Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -57,7 +57,8 @@ ok( ! -f $cache_file, 'Cache file not created too early' );
 my $e = test( $schema, qw(load nonexistant_file) );
 
 ok( -f $cache_file, 'Cache file found' );
-is( $e, 'File nonexistant_file cannot open', 'Cannot open nonexistant_file' );
+ok( $e =~ m{ \QFile nonexistant_file cannot open\E }msx,
+    'Cannot open nonexistant_file' );
 is( ref $e, 'File::DataClass::Exception', 'Default exception class' );
 
 my $data = test( $schema, qw(load t/default.xml t/default_en.xml) );
@@ -80,22 +81,24 @@ ok( !$diff, 'Load and dump roundtrips' );
 
 $e = test( $schema, q(resultset) );
 
-is( $e, 'Result source not specified', 'Result source not specified' );
+ok( $e =~ m{ \QResult source not specified\E }msx,
+    'Result source not specified' );
 
 $e = test( $schema, q(resultset), q(globals) );
 
-is( $e, 'Result source globals unknown', 'Result source unknown' );
+ok( $e =~ m{ \QResult source globals unknown\E }msx, 'Result source unknown' );
 
 $schema = File::DataClass::Schema->new
    ( path    => [ qw(t default.xml) ],
-     result_source_attributes => { globals => {}, },
+     result_source_attributes => {
+        globals => { attributes => [ qw(text) ], }, },
      tempdir => q(t) );
 
 my $rs = test( $schema, q(resultset), q(globals) );
 
 $args = {}; $e = test( $rs, q(create), $args );
 
-is( $e, 'No element name specified', 'No element name specified' );
+ok( $e =~ m{ \QNo element name specified\E }msx, 'No element name specified' );
 
 $args->{name} = q(dummy);
 
@@ -105,7 +108,7 @@ ok( !defined $res, 'Creates dummy element but does not insert' );
 
 my $source = $schema->source( q(globals) );
 
-$source->attributes( [ qw(text) ] ); $args->{text} = q(value1);
+$args->{text} = q(value1);
 
 $res = test( $rs, q(create), $args );
 
@@ -135,10 +138,10 @@ ok( $e =~ m{ does \s+ not \s+ exist }mx, 'Detects non existing element' );
 
 $schema = File::DataClass::Schema->new
    ( path    => [ qw(t default.xml) ],
-     result_source_attributes => { fields => {}, },
+     result_source_attributes => {
+        fields => { attributes => [ qw(width) ], }, },
      tempdir => q(t) );
 
-$schema->source( q(fields) )->attributes( [ qw(width) ] );
 $rs   = $schema->resultset( q(fields) );
 $args = { name => q(feedback.body) };
 $res  = test( $rs, q(list), $args );
@@ -147,10 +150,10 @@ ok( $res->result->width == 72 && scalar @{ $res->list } == 3, 'Can list' );
 
 $schema = File::DataClass::Schema->new
    ( path    => [ qw(t default.xml) ],
-     result_source_attributes => { levels => {}, },
+     result_source_attributes => {
+        levels => { attributes => [ qw(acl state) ] }, },
      tempdir => q(t) );
 
-$schema->source( q(levels) )->attributes( [ qw(acl state) ] );
 $rs   = $schema->resultset( q(levels) );
 $args = { list => q(acl), name => q(admin) };
 $args->{items} = [ qw(group1 group2) ];

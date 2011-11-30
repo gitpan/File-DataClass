@@ -6,11 +6,12 @@ build_requires:
   Exception::Class: 1.23
   Test::More: 0.74
   Text::Diff: 1.37
+  utf8: 1.07
 configure_requires:
   Module::Build: 0.32
   version: 0.74
 dynamic_config: 1
-generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.110930'
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.112621'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -24,88 +25,103 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.6.286
+    version: v0.7.321
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
-    version: v0.6.285
-  File::DataClass::Combinator:
-    file: lib/File/DataClass/Combinator.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Constants:
     file: lib/File/DataClass/Constants.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Constraints:
     file: lib/File/DataClass/Constraints.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Exception:
     file: lib/File/DataClass/Exception.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::HashMerge:
     file: lib/File/DataClass/HashMerge.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::IO:
     file: lib/File/DataClass/IO.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::List:
     file: lib/File/DataClass/List.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Result:
     file: lib/File/DataClass/Result.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::ResultSet:
     file: lib/File/DataClass/ResultSet.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::ResultSource:
     file: lib/File/DataClass/ResultSource.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::ResultSource::WithLanguage:
     file: lib/File/DataClass/ResultSource/WithLanguage.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Schema:
     file: lib/File/DataClass/Schema.pm
-    version: v0.6.285
+    version: v0.7.321
+  File::DataClass::Schema::WithLanguage:
+    file: lib/File/DataClass/Schema/WithLanguage.pm
+    version: v0.7.321
   File::DataClass::Storage:
     file: lib/File/DataClass/Storage.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Storage::JSON:
     file: lib/File/DataClass/Storage/JSON.pm
-    version: v0.6.285
+    version: v0.7.321
+  File::DataClass::Storage::WithLanguage:
+    file: lib/File/DataClass/Storage/WithLanguage.pm
+    version: v0.7.321
   File::DataClass::Storage::XML:
     file: lib/File/DataClass/Storage/XML.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Storage::XML::Bare:
     file: lib/File/DataClass/Storage/XML/Bare.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Storage::XML::Simple:
     file: lib/File/DataClass/Storage/XML/Simple.pm
-    version: v0.6.285
+    version: v0.7.321
   File::DataClass::Util:
     file: lib/File/DataClass/Util.pm
-    version: v0.6.285
+    version: v0.7.321
+  File::Gettext:
+    file: lib/File/Gettext.pm
+    version: v0.7.321
+  File::Gettext::Constants:
+    file: lib/File/Gettext/Constants.pm
+    version: v0.7.321
+  File::Gettext::Storage::MO:
+    file: lib/File/Gettext/Storage/MO.pm
+    version: v0.7.321
+  File::Gettext::Storage::PO:
+    file: lib/File/Gettext/Storage/PO.pm
+    version: v0.7.321
   File::MailAlias:
     file: lib/File/MailAlias.pm
-    version: v0.6.285
+    version: v0.7.321
   File::MailAlias::Storage:
     file: lib/File/MailAlias/Storage.pm
-    version: v0.6.285
+    version: v0.7.321
   File::MealMaster:
     file: lib/File/MealMaster.pm
-    version: v0.6.285
+    version: v0.7.321
   File::MealMaster::Result:
     file: lib/File/MealMaster/Result.pm
-    version: v0.6.285
+    version: v0.7.321
   File::MealMaster::Storage:
     file: lib/File/MealMaster/Storage.pm
-    version: v0.6.285
+    version: v0.7.321
   File::UnixAuth:
     file: lib/File/UnixAuth.pm
-    version: v0.6.285
+    version: v0.7.321
   File::UnixAuth::Result:
     file: lib/File/UnixAuth/Result.pm
-    version: v0.6.285
+    version: v0.7.321
   File::UnixAuth::Storage:
     file: lib/File/UnixAuth/Storage.pm
-    version: v0.6.285
+    version: v0.7.321
 requires:
   CHI: 0.33
   Cache::FastMmap: 1.36
@@ -114,6 +130,7 @@ requires:
   Class::Null: 1.09
   Data::Section: 0.09341
   Date::Format: 2.22
+  Encode: 2.42
   Exception::Class: 1.23
   File::Path: 2.07
   File::Temp: 0.2
@@ -145,4 +162,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: 0.6.286
+version: 0.7.321

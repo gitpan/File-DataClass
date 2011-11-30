@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: IO.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::Exception;
@@ -174,9 +174,11 @@ sub atomic {
    my $self = shift; $self->_atomic( TRUE ); return $self;
 }
 
-*atomic_suffix = \&atomic_infix;
-
 sub atomic_infix {
+   my ($self, $value) = @_; $self->_atomic_infix( $value ); return $self;
+}
+
+sub atomic_suffix {
    my ($self, $value) = @_; $self->_atomic_infix( $value ); return $self;
 }
 
@@ -640,7 +642,7 @@ sub _open_dir {
    $self->_assert and $self->assert_dirpath( $path );
    $self->io_handle( IO::Dir->new( $path ) )
       or $self->throw( error => 'Directory [_1] cannot open',
-                       args  => [ $path ] );
+                       args  => [ $path ], level => 6 );
    $self->is_open( TRUE );
    return $self;
 }
@@ -651,7 +653,8 @@ sub _open_file {
    $self->_assert and $self->assert_filepath;
    $self->_umask_push( $perms );
    $self->io_handle( IO::File->new( $path, $mode ) )
-      or $self->throw( error => 'File [_1] cannot open', args => [ $path ] );
+      or $self->throw( error => 'File [_1] cannot open',
+                       args  => [ $path ], level => 6 );
    $self->_umask_pop;
    $self->is_open( TRUE );
    $self->set_binmode;
@@ -816,14 +819,13 @@ sub stat {
 }
 
 sub substitute {
-   my ($self, $that, $this) = @_; $that or return $self;
+   my ($self, $search, $replace) = @_; $search or return $self;
 
-   my $wtr = io( $self->name )->atomic; $this ||= NUL;
+   my $wtr = io( $self->name )->atomic; $replace ||= NUL;
 
-   for ($self->getlines) { s{ $that }{$this}gmx; $wtr->print( $_ ) }
+   for ($self->getlines) { s{ $search }{$replace}gmx; $wtr->print( $_ ) }
 
-   $self->close; $wtr->close;
-   return $self;
+   $self->close; $wtr->close; return $self;
 }
 
 sub tempfile {
@@ -932,7 +934,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
@@ -1488,9 +1490,9 @@ Returns a hash of the values returned by a L</stat> call on the pathname
 
 =head2 substitute
 
-   $io = io( q(path_to_file) )->substitute( $that, $this );
+   $io = io( q(path_to_file) )->substitute( $search, $replace );
 
-Substitutes C<$that> regular expression for C<$this> string on each
+Substitutes C<$search> regular expression for C<$replace> string on each
 line of the given file
 
 =head2 tempfile

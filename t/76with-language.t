@@ -1,8 +1,8 @@
-# @(#)$Id: 30with-language.t 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: 76with-language.t 321 2011-11-30 00:01:49Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -19,42 +19,46 @@ BEGIN {
    $current and $current->notes->{stop_tests}
             and plan skip_all => $current->notes->{stop_tests};
 
-   plan tests => 11;
+   plan tests => 13;
 }
 
 sub test {
    my ($obj, $method, @args) = @_; local $EVAL_ERROR;
 
-   my $wantarray = wantarray; my ($e, $res);
+   my $wantarray = wantarray; my $res;
 
    eval {
       if ($wantarray) { @{ $res } = $obj->$method( @args ) }
       else { $res = $obj->$method( @args ) }
    };
 
-   return $e if ($e = $EVAL_ERROR);
+   my $e = $EVAL_ERROR; $e and return $e;
 
    return $wantarray ? @{ $res } : $res;
 }
 
-use_ok( q(File::DataClass::Schema) );
-use_ok( q(File::DataClass::ResultSource::WithLanguage) );
+use_ok( q(File::DataClass::Schema::WithLanguage) );
+use_ok( q(File::Gettext) );
 
-my $schema = File::DataClass::Schema->new
-   ( path           => q(t/default.xml),
+use File::Gettext::Constants;
+
+my $default = catfile( qw(t default.xml) );
+my $schema  = File::DataClass::Schema::WithLanguage->new
+   ( path      => $default,
+     lang      => q(en),
+     localedir => catdir( qw(t locale) ),
      result_source_attributes => {
         pages => {
            attributes => [ qw(columns heading) ],
            lang       => q(en),
            lang_dep   => { qw(heading 1) }, }, },
-     result_source_class => q(File::DataClass::ResultSource::WithLanguage),
-     tempdir        => q(t) );
+     tempdir => q(t) );
 
 isa_ok( $schema, q(File::DataClass::Schema) );
 
-my $source = $schema->source( q(pages) );
+is( $schema->lang, q(en), 'Has language attribute' );
 
-is( $source->lang, q(en), 'Has language attribute' );
+my $source = $schema->source( q(pages) );
 
 my $rs = $source->resultset; my $args = {};
 
@@ -91,12 +95,40 @@ $e = test( $rs, q(delete), $args );
 
 ok( $e =~ m{ does \s+ not \s+ exist }mx, 'Detects non existing element' );
 
-$source->lang( q(de) );
+$schema->lang( q(de) );
+$args->{name  }  = q(dummy);
+$args->{columns} = 3;
+$args->{heading} = q(This is a heading);
 
-is( $source->storage->lang, q(de), 'Triggers storage language change' );
+$res = test( $rs, q(create), $args );
+
+is( $res, q(dummy), 'Creates dummy element and inserts 2' );
+
+my $data   = $schema->load;
+my $dumped = catfile( qw(t dumped.xml)   );
+my $pofile = catfile( qw(t locale de LC_MESSAGES dumped.po) );
+
+$schema->dump( { data => $data, path => $dumped } );
+
+my $gettext = File::Gettext->new( path => $pofile, tempdir => q(t) );
+
+$data = $gettext->load;
+
+my $key  = 'pages.heading'.CONTEXT_SEP().'dummy';
+my $text = $data->{ 'po' }->{ $key }->{ 'msgstr' }->[ 0 ];
+
+ok( $text eq 'This is a heading', 'Dumps' );
+
+$res = test( $rs, q(delete), $args );
+
+is( $res, q(dummy), 'Deletes dummy element 2' );
 
 # Cleanup
 
+io( $dumped )->unlink;
+io( $pofile )->unlink;
+io( catfile( qw(t locale de LC_MESSAGES default.po)  ) )->unlink;
+io( catfile( qw(t locale en LC_MESSAGES default.po)  ) )->unlink;
 io( catfile( qw(t ipc_srlock.lck) ) )->unlink;
 io( catfile( qw(t ipc_srlock.shm) ) )->unlink;
 io( catfile( qw(t file-dataclass-schema.dat) ) )->unlink;

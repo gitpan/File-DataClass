@@ -1,10 +1,10 @@
-# @(#)$Id: MealMaster.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: MealMaster.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::MealMaster;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::MealMaster::Result;
@@ -52,11 +52,11 @@ __END__
 
 =head1 Name
 
-File::UnixAuth - Result source definitions for the Unix auth files
+File::MealMaster - OO access to the MealMaster recipe files
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
@@ -102,7 +102,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2009 Peter Flanigan. All rights reserved
+Copyright (c) 2011 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

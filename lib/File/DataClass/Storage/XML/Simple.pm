@@ -1,10 +1,10 @@
-# @(#)$Id: Simple.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: Simple.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::Storage::XML::Simple;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::Simple;
@@ -48,7 +48,7 @@ File::DataClass::Storage::XML::Simple - Read/write XML data storage model
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 

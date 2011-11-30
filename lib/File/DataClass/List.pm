@@ -1,19 +1,19 @@
-# @(#)$Id: List.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: List.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::List;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use Moose;
 
 with qw(File::DataClass::Constraints);
 
-has 'found'  => is => 'rw', isa => 'Bool',     default => 0;
-has 'labels' => is => 'rw', isa => 'HashRef',  default => sub { return {} };
-has 'list'   => is => 'rw', isa => 'ArrayRef', default => sub { return [] };
-has 'result' => is => 'rw', isa => 'Maybe[F_DC_Result]';
+has 'found'  => is => 'ro', isa => 'Bool',     default => 0;
+has 'labels' => is => 'ro', isa => 'HashRef',  default => sub { return {} };
+has 'list'   => is => 'ro', isa => 'ArrayRef', default => sub { return [] };
+has 'result' => is => 'ro', isa => 'Maybe[F_DC_Result]';
 
 __PACKAGE__->meta->make_immutable;
 
@@ -31,7 +31,7 @@ File::DataClass::List - List response class
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 

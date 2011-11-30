@@ -2,7 +2,7 @@ Name
     File::DataClass - Structured data file IO with OO paradigm
 
 Version
-    This document describes File::DataClass version 0.6.$Revision: 286 $
+    This document describes File::DataClass version 0.7.$Revision: 321 $
 
 Synopsis
        use File::DataClass::Schema;
@@ -27,16 +27,12 @@ Description
     File::DataClass::Schema
 
 Configuration and Environment
-    Defines these class attributes. They are set on first use by methods in
-    File::DataClass::Schema
+    Defines these class attributes. They are set on first use when an
+    instance of File::DataClass::Schema is created
 
     Cache
        This is a Cache::Cache object which is used to cache the results of
        reading a file. Maybe of type "F_DC_Cache"
-
-    Exception_Class
-       A classname that is expected to have a class method "throw". Defaults
-       to File::DataClass::Exception and is of type "F_DC_Exception"
 
     Lock
        A lock object that has the methods "set" and "reset". Maybe of type
@@ -50,7 +46,6 @@ Diagnostics
 
 Dependencies
     namespace::autoclean
-    File::DataClass::Exception
     MooseX::ClassAttribute
 
 Incompatibilities

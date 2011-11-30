@@ -1,26 +1,20 @@
-# @(#)$Id: DataClass.pm 286 2011-07-11 13:31:24Z pjf $
+# @(#)$Id: DataClass.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 286 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
-use File::DataClass::Exception;
 
 with qw(File::DataClass::Constraints);
 
 class_has 'Cache' => is => 'rw', isa => 'HashRef[F_DC_Cache]',
    default        => sub { {} };
 
-class_has 'Exception_Class' => is => 'rw', isa => 'F_DC_Exception',
-   default                  => 'File::DataClass::Exception';
-
 class_has 'Lock'  => is => 'rw', isa => 'Maybe[F_DC_Lock]';
-
-with qw(File::DataClass::Util);
 
 __PACKAGE__->meta->make_immutable;
 
@@ -39,7 +33,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.6.$Revision: 286 $
+This document describes File::DataClass version 0.7.$Revision: 321 $
 
 =head1 Synopsis
 
@@ -66,8 +60,8 @@ L<File::DataClass::Schema>
 
 =head1 Configuration and Environment
 
-Defines these class attributes. They are set on first use by
-methods in L<File::DataClass::Schema>
+Defines these class attributes. They are set on first use when an instance
+of L<File::DataClass::Schema> is created
 
 =over 3
 
@@ -75,11 +69,6 @@ methods in L<File::DataClass::Schema>
 
 This is a L<Cache::Cache> object which is used to cache the results of
 reading a file. Maybe of type C<F_DC_Cache>
-
-=item B<Exception_Class>
-
-A classname that is expected to have a class method C<throw>. Defaults to
-L<File::DataClass::Exception> and is of type C<F_DC_Exception>
 
 =item B<Lock>
 
@@ -101,8 +90,6 @@ None
 =over 3
 
 =item L<namespace::autoclean>
-
-=item L<File::DataClass::Exception>
 
 =item L<MooseX::ClassAttribute>
 

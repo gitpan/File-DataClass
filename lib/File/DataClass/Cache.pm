@@ -1,10 +1,10 @@
-# @(#)$Id: Cache.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: Cache.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::Cache;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use CHI;
 use File::DataClass::Constants;
@@ -18,12 +18,15 @@ has 'cache_attributes' => is => 'ro', isa => 'HashRef',
    default             => sub { return {} };
 has 'cache_class'      => is => 'ro', isa => 'ClassName',
    default             => q(CHI);
-has 'schema'           => is => 'ro', isa => 'Object',
-   required            => 1, weak_ref => TRUE,
-   handles             => { _debug => q(debug), _log => q(log), };
+has 'schema'           => is => 'ro', isa => 'Object', required => 1,
+   handles             => { _debug          => q(debug),
+                            exception_class => q(exception_class),
+                            _log            => q(log), };
 
 has '_mtimes_key'      => is => 'ro', isa => 'Str',
    default             => q(_mtimes);
+
+with qw(File::DataClass::Util);
 
 sub get {
    my ($self, $key) = @_; $key .= NUL;
@@ -42,34 +45,32 @@ sub get_by_paths {
    return ($self->get( $key ), $newest);
 }
 
-sub remove {
-   my ($self, $key) = @_; $key or return; $key .= NUL;
+sub get_mtime {
+   my ($self, $k) = @_; $k or return;
 
    my $mtimes = $self->cache->get( $self->_mtimes_key ) || {};
 
-   delete $mtimes->{ $key };
-   $self->cache->set( $self->_mtimes_key, $mtimes );
-   $self->cache->remove( $key );
+   return $mtimes->{ $k };
+}
+
+sub remove {
+   my ($self, $key) = @_; $key or return; $key .= NUL;
+
+   $self->cache->remove( $key ); $self->set_mtime( $key, undef );
    return;
 }
 
 sub set {
-   my ($self, $key, $data, $meta) = @_;
+   my ($self, $key, $data, $meta) = @_; my $mt_key = $self->_mtimes_key;
 
    $key .= NUL; $meta ||= {}; $meta->{mtime} ||= undef;
-
-   my $mt_key = $self->_mtimes_key;
 
    $key eq $mt_key and $self->throw( error => 'Cache key "[_1]" not allowed',
                                      args  => [ $mt_key ] );
 
    if ($key and defined $data) {
       $self->cache->set( $key, { data => $data, meta => $meta } );
-
-      my $mtimes = $self->cache->get( $mt_key ) || {};
-
-      $mtimes->{ $key } = $meta->{mtime};
-      $self->cache->set( $mt_key, $mtimes );
+      $self->set_mtime( $key, $meta->{mtime} );
    }
 
    return ($data, $meta);
@@ -80,9 +81,18 @@ sub set_by_paths {
 
    my ($key, $newest) = $self->_get_key_and_newest( $paths );
 
-   $meta->{mtime} = $newest;
+   $meta->{mtime} = $newest; return $self->set( $key, $data, $meta );
+}
 
-   return $self->set( $key, $data, $meta );
+sub set_mtime {
+   my ($self, $k, $v) = @_;
+
+   my $mtimes = $self->cache->get( $self->_mtimes_key ) || {};
+
+   if (defined $v) { $mtimes->{ $k } = $v }
+   else { delete $mtimes->{ $k } }
+
+   return $self->cache->set( $self->_mtimes_key, $mtimes );
 }
 
 # Private methods
@@ -98,14 +108,12 @@ sub _build_cache {
 }
 
 sub _get_key_and_newest {
-   my ($self, $paths) = @_; my $key; my $newest = 0; my $valid = TRUE;
+   my ($self, $paths) = @_; my $newest = 0; my $valid = TRUE;  my $key;
 
-   my $mtimes = $self->cache->get( $self->_mtimes_key ) || {};
+   for my $path (grep { length } map { NUL.$_ } @{ $paths }) {
+      $key .= $key ? q(~).$path : $path; my $mtime = $self->get_mtime( $path );
 
-   for my $path (map { NUL.$_ } grep { $_->pathname } @{ $paths }) {
-      $key .= $key ? q(~).$path : $path; my $mtime;
-
-      if ($mtime = $mtimes->{ $path }) { $mtime > $newest and $newest = $mtime }
+      if ($mtime) { $mtime > $newest and $newest = $mtime }
       else { $valid = FALSE }
    }
 
@@ -124,7 +132,7 @@ File::DataClass::Cache - Adds extra methods to the CHI API
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
@@ -200,6 +208,13 @@ The paths passed in the array ref are concatenated to form a compound key.
 The L<CHI> cache entry is fetched and the data and meta data returned along
 with the modification time of the newest file in the list of paths
 
+=head2 get_mtime
+
+   $mod_time = $schema->cache->get_mtime( $key );
+
+Returns the mod time of a file if it's in the cache. Returns undef if it is not.
+Returns zero if the filesystem was checked and the file did not exist
+
 =head2 remove
 
    $schema->cache->remove( $key );
@@ -218,6 +233,20 @@ Sets the L<CHI> cache entry for the given key
 
 Set the L<CHI> cache entry for the compound key formed from the array ref
 C<$paths>
+
+=head2 set_mtime
+
+   $schema->cache->set_mtime( $key, $value );
+
+Sets the mod time in the cache for the given key. Setting the mod time to
+zero means the filesystem was checked and the file did not exist
+
+=head2 _get_key_and_newest
+
+   ($key, $newest) = $schema->cache->_get_key_and_newest( $paths );
+
+Creates a key from the array ref of path names and also returns the most
+recent mod time. Will return undef for newest if the cache entry is invalid
 
 =head1 Diagnostics
 

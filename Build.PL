@@ -1,13 +1,11 @@
-# @(#)$Id: Build.PL 286 2011-07-11 13:31:24Z pjf $
+# @(#)$Id: Build.PL 321 2011-11-30 00:01:49Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 286 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 Bob->new( {
-   stop_tests => 1,
-   license    => q(perl),
    module     => q(File::DataClass),
    home_page  => q(http://www.roxsoft.co.uk),
    requires   => {
@@ -23,6 +21,7 @@ Bob->new( {
       'Class::Null'            => 1.09,
       'Data::Section'          => 0.093410,
       'Date::Format'           => 2.22,
+      'Encode'                 => 2.42,
       'Exception::Class'       => 1.23,
       'Hash::Merge'            => 0.08,
       'File::Path'             => 2.07,
@@ -48,7 +47,8 @@ Bob->new( {
       'XML::Simple'            => 2.14, },
    configure_requires => { 'Module::Build'    => 0.32,
                            'version'          => 0.74, },
-   build_requires     => { 'Exception::Class' => 1.23,
+   build_requires     => { 'utf8'             => 1.07,
+                           'Exception::Class' => 1.23,
                            'Test::More'       => 0.74,
                            'Text::Diff'       => 1.37, },
 } )->create_build_script; # Goal!

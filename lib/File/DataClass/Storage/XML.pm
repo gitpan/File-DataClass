@@ -1,10 +1,10 @@
-# @(#)$Id: XML.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: XML.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::Storage::XML;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::DTD;
@@ -37,6 +37,21 @@ around '_meta_unpack' => sub {
 };
 
 # Private methods
+
+sub _create_or_update {
+   my ($self, $path, $element_obj, $overwrite, $condition) = @_;
+
+   my $element = $element_obj->_resultset->source->name;
+
+   $self->validate_params( $path, $element );
+
+   if (        $self->_is_array ( $element )
+       and not $self->_is_in_dtd( $element )) {
+      push @{ $self->_dtd }, '<!ELEMENT '.$element.' (ARRAY)*>';
+   }
+
+   return $self->next::method( $path, $element_obj, $overwrite, $condition );
+}
 
 sub _dtd_parse {
    my ($self, $data) = @_;
@@ -80,22 +95,6 @@ sub _is_in_dtd {
    return exists $elements{ $candidate };
 }
 
-sub _update {
-   my ($self, $path, $element_obj, $overwrite, $condition) = @_;
-
-   my $element = $element_obj->_resultset->source->name;
-
-   $self->validate_params( $path, $element );
-   $overwrite or $path->touch;
-
-   if (        $self->_is_array ( $element )
-       and not $self->_is_in_dtd( $element )) {
-      push @{ $self->_dtd }, '<!ELEMENT '.$element.' (ARRAY)*>';
-   }
-
-   return $self->next::method( $path, $element_obj, $overwrite, $condition );
-}
-
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
@@ -112,7 +111,7 @@ File::DataClass::Storage::XML - Read/write XML data storage model
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 

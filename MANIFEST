@@ -3,7 +3,6 @@ Changes
 inc/Bob.pm
 lib/File/DataClass.pm
 lib/File/DataClass/Cache.pm
-lib/File/DataClass/Combinator.pm
 lib/File/DataClass/Constants.pm
 lib/File/DataClass/Constraints.pm
 lib/File/DataClass/Exception.pm
@@ -15,12 +14,18 @@ lib/File/DataClass/ResultSet.pm
 lib/File/DataClass/ResultSource.pm
 lib/File/DataClass/ResultSource/WithLanguage.pm
 lib/File/DataClass/Schema.pm
+lib/File/DataClass/Schema/WithLanguage.pm
 lib/File/DataClass/Storage.pm
 lib/File/DataClass/Storage/JSON.pm
+lib/File/DataClass/Storage/WithLanguage.pm
 lib/File/DataClass/Storage/XML.pm
 lib/File/DataClass/Storage/XML/Bare.pm
 lib/File/DataClass/Storage/XML/Simple.pm
 lib/File/DataClass/Util.pm
+lib/File/Gettext.pm
+lib/File/Gettext/Constants.pm
+lib/File/Gettext/Storage/MO.pm
+lib/File/Gettext/Storage/PO.pm
 lib/File/MailAlias.pm
 lib/File/MailAlias/Storage.pm
 lib/File/MealMaster.pm
@@ -31,6 +36,8 @@ lib/File/UnixAuth/Result.pm
 lib/File/UnixAuth/Storage.pm
 LICENSE
 MANIFEST			This list of files
+META.json
+META.yml
 README
 t/01always_pass.t
 t/02pod.t
@@ -41,18 +48,24 @@ t/06yaml.t
 t/10io.t
 t/20data-class.t
 t/25parse-dtd.t
-t/30with-language.t
 t/40xml-bare.t
 t/50json.t
 t/60mailalias.t
 t/65mealmaster.t
 t/70unixauth.t
+t/75gettext.t
+t/76with-language.t
 t/aliases
 t/critic.rc
 t/default.json
 t/default.xml
 t/default_en.xml
 t/dtd_test.xml
+t/existing.mo
+t/existing.po
+t/locale/de/LC_MESSAGES/file1
+t/locale/en/LC_MESSAGES/file1
+t/messages.po
 t/mydir/dir1/dira/dirx/file1
 t/mydir/dir1/file1
 t/mydir/dir2/file1
@@ -61,6 +74,4 @@ t/mydir/file2
 t/mydir/file3
 t/recipes.mmf
 t/shadow
-META.yml
-META.json
 SIGNATURE    Added here by Module::Build

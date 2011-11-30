@@ -1,10 +1,10 @@
-# @(#)$Id: ResultSet.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: ResultSet.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::ResultSet;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Moose;
@@ -20,7 +20,8 @@ has 'result_class' => is => 'ro', isa => 'ClassName',
    default         => q(File::DataClass::Result);
 has 'source'       => is => 'ro', isa => 'Object',
    required        => TRUE, weak_ref => TRUE,
-   handles         => [ qw(attributes defaults label_attr path storage) ];
+   handles         => [ qw(attributes defaults
+                           exception_class label_attr path storage) ];
 has '_iterator'    => is => 'rw', isa => 'Int',
    default         => 0, init_arg => undef;
 has '_operators'   => is => 'ro', isa => 'HashRef',
@@ -28,15 +29,33 @@ has '_operators'   => is => 'ro', isa => 'HashRef',
 has '_results'     => is => 'rw', isa => 'ArrayRef',
    default         => sub { [] }, init_arg => undef;
 
+with qw(File::DataClass::Util);
+
 sub all {
    my $self = shift; return @{ $self->_results };
 }
 
 sub create {
-   my ($self, $args) = @_;
+   my ($self, $args) = @_; my $name = $self->_validate_params( $args );
 
-   my $name = $self->_validate_params( $args );
-   my $res  = $self->_txn_do( sub { $self->_create_result( $args )->insert } );
+   my $res = $self->_txn_do( sub { $self->_create_result( $args )->insert } );
+
+   return $res ? $name : undef;
+}
+
+sub create_or_update {
+   my ($self, $args) = @_; my $name = $self->_validate_params( $args );
+
+   my $res = $self->_txn_do( sub {
+      my $result = $self->_find( $name )
+         or return $self->_create_result( $args )->insert;
+
+      for (grep { exists $args->{ $_ } } @{ $self->attributes }) {
+         $result->$_( $args->{ $_ } );
+      }
+
+      return $result->update;
+   } );
 
    return $res ? $name : undef;
 }
@@ -44,21 +63,21 @@ sub create {
 sub delete {
    my ($self, $args) = @_; my $name = $self->_validate_params( $args );
 
-   $self->_txn_do( sub {
+   my $res = $self->_txn_do( sub {
       my ($result, $error);
 
       unless ($result = $self->_find( $name )) {
+         $args->{optional} and return FALSE;
          $error = 'File [_1] element [_2] does not exist';
          $self->throw( error => $error, args => [ $self->path, $name ] );
       }
 
-      unless ($result->delete) {
-         $error = 'File [_1] element [_2] not deleted';
-         $self->throw( error => $error, args => [ $self->path, $name ] );
-      }
+      $result->delete and return TRUE;
+      $error = 'File [_1] element [_2] not deleted';
+      $self->throw( error => $error, args => [ $self->path, $name ] );
    } );
 
-   return $name;
+   return $res ? $name : undef;
 }
 
 sub find {
@@ -103,11 +122,10 @@ sub next {
 }
 
 sub push {
-   my ($self, $args) = @_; my ($added, $attrs);
+   my ($self, $args) = @_; my $name = $self->_validate_params( $args );
 
-   my $name  = $self->_validate_params( $args );
    my $list  = $args->{list} or $self->throw( 'No list name specified' );
-   my $items = $args->{items} || [];
+   my $items = $args->{items} || []; my ($added, $attrs);
 
    $items->[0] or $self->throw( 'List contains no items' );
 
@@ -116,7 +134,7 @@ sub push {
       $self->find_and_update( $attrs );
    } );
 
-   return $res ? $added : undef;
+   return $res ? $added : $res;
 }
 
 sub reset {
@@ -136,11 +154,10 @@ sub search {
 }
 
 sub splice {
-   my ($self, $args) = @_; my ($attrs, $removed);
+   my ($self, $args) = @_; my $name = $self->_validate_params( $args );
 
-   my $name  = $self->_validate_params( $args );
    my $list  = $args->{list} or $self->throw( 'No list name specified' );
-   my $items = $args->{items} || [];
+   my $items = $args->{items} || []; my ($attrs, $removed);
 
    $items->[0] or $self->throw( 'List contains no items' );
 
@@ -149,7 +166,7 @@ sub splice {
       $self->find_and_update( $attrs );
    } );
 
-   return $res ? $removed : undef;
+   return $res ? $removed : $res;
 }
 
 sub update {
@@ -157,7 +174,7 @@ sub update {
 
    my $res = $self->_txn_do( sub { $self->find_and_update( $args ) } );
 
-   return $res ? $name : undef;
+   return $res ? $name : $res;
 }
 
 # Private methods
@@ -182,8 +199,10 @@ sub _create_result {
 
    my $attrs = { %{ $self->defaults }, _resultset => $self };
 
-   $attrs->{ $_ } = $args->{ $_ }
-      for (grep { defined $args->{ $_ } } keys %{ $args });
+   for (grep { exists $args->{ $_ } and defined $args->{ $_ } }
+            @{ $self->attributes }, qw(name)) {
+      $attrs->{ $_ } = $args->{ $_ };
+   }
 
    return $self->result_class->new( $attrs );
 }
@@ -233,7 +252,7 @@ sub _eval_op {
 sub _find {
    my ($self, $name) = @_; my $results = $self->select;
 
-   return unless ($name and exists $results->{ $name });
+   ($name and exists $results->{ $name }) or return;
 
    my $attrs = { %{ $results->{ $name } }, name => $name };
 
@@ -241,27 +260,25 @@ sub _find {
 }
 
 sub _list {
-   my ($self, $name) = @_; my ($attr, $attrs);
+   my ($self, $name) = @_; my ($attr, $attrs, $labels); my $found = FALSE;
 
-   my $new = $self->list_class->new; my $results = $self->select;
+   my $results = $self->select; my $list = [ sort keys %{ $results } ];
 
-   $new->list( [ sort keys %{ $results } ] );
-
-   if ($attr = $self->label_attr) {
-      my %labels = map { $_ => $results->{ $_ }->{ $attr } } @{ $new->list };
-
-      $new->labels( \%labels );
-   }
+   $attr = $self->label_attr
+      and $labels = { map { $_ => $results->{ $_ }->{ $attr } } @{ $list } };
 
    if ($name and exists $results->{ $name }) {
-      $attrs = { %{ $results->{ $name } }, name => $name };
-      $new->found( TRUE );
+      $attrs = { %{ $results->{ $name } }, name => $name }; $found = TRUE;
    }
    else { $attrs = { name => $name } }
 
-   $new->result( $self->_create_result( $attrs ) );
+   my $result = $self->_create_result( $attrs );
 
-   return $new;
+   $attrs = { found => $found, list => $list, result => $result, };
+
+   $labels and $attrs->{labels} = $labels;
+
+   return $self->list_class->new( $attrs );
 }
 
 sub _push {
@@ -339,7 +356,8 @@ sub _txn_do {
 sub _validate_params {
    my ($self, $args) = @_; $args ||= {};
 
-   my $name = $args->{name} or $self->throw( 'No element name specified' );
+   my $name = $args->{name}
+      or $self->throw( error => 'No element name specified', level => 4 );
 
    return $name;
 }
@@ -360,7 +378,7 @@ File::DataClass::ResultSet - Core element methods
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
@@ -434,6 +452,13 @@ keys; I<name> of the element to create and I<fields> is a hash
 containing the attributes of the new element. Missing attributes are
 defaulted from the I<defaults> attribute of the
 L<File::DataClass::Schema> object. Returns the new element's name
+
+=head2 create_or_update
+
+   $element_name = $rs->create_or_update( $args );
+
+Creates a new element if it does not already exist, updates the existsing
+one if it does. Calls L</find_and_update>
 
 =head2 delete
 
@@ -576,7 +601,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2010 Peter Flanigan. All rights reserved
+Copyright (c) 2011 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

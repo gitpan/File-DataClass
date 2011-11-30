@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: Schema.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use Class::Null;
 use File::DataClass::Constants;
@@ -12,17 +12,25 @@ use File::Spec;
 use Moose;
 
 use File::DataClass::Cache;
+use File::DataClass::Exception;
 use File::DataClass::ResultSource;
 use File::DataClass::Storage;
 use IPC::SRLock;
 
 extends qw(File::DataClass);
 
+has 'exception_class' => is => 'ro', isa => 'F_DC_Exception',
+   default            => q(File::DataClass::Exception);
+
+with qw(File::DataClass::Util);
+
 has 'cache'                    => is => 'ro', isa => 'F_DC_Cache',
    lazy_build                  => TRUE;
 has 'cache_attributes'         => is => 'ro', isa => 'HashRef',
    default                     => sub { {
       driver                   => q(FastMmap),
+      page_size                => 131072,
+      num_pages                => 89,
       unlink_on_exit           => TRUE, } };
 has 'cache_class'              => is => 'ro',
    isa                         => 'F_DC_DummyClass | ClassName',
@@ -48,40 +56,35 @@ has 'result_source_class'      => is => 'ro', isa => 'ClassName',
    default                     => q(File::DataClass::ResultSource);
 has 'source_registrations'     => is => 'ro', isa => 'HashRef[Object]',
    lazy_build                  => TRUE;
+has 'storage'                  => is => 'rw', isa => 'Object',
+   lazy_build                  => TRUE;
 has 'storage_attributes'       => is => 'ro', isa => 'HashRef',
    default                     => sub { {} };
 has 'storage_base'             => is => 'ro', isa => 'ClassName',
    default                     => q(File::DataClass::Storage);
-has 'storage_class'            => is => 'ro', isa => 'Str',
+has 'storage_class'            => is => 'rw', isa => 'Str',
    default                     => q(XML::Simple);
-has 'storage'                  => is => 'rw', isa => 'Object',
-   lazy_build                  => TRUE;
 has 'tempdir'                  => is => 'ro', isa => 'F_DC_Directory',
-   default                     => sub { __PACKAGE__->io( File::Spec->tmpdir ) },
+   default                     => File::Spec->tmpdir,
    coerce                      => TRUE;
 
 around BUILDARGS => sub {
-   my ($orig, $class, @args) = @_; my $attrs = $class->$orig( @args );
+   my ($next, $class, @args) = @_; my $attrs = $class->$next( @args );
 
    exists $attrs->{ioc_obj} or return $attrs;
 
    my $ioc   = delete $attrs->{ioc_obj};
-   my @attrs = ( qw(debug lock log tempdir) );
+   my @attrs = ( qw(debug exception_class lock log tempdir) );
 
    $attrs->{ $_ } ||= $ioc->$_() for (grep { $ioc->can( $_ ) } @attrs);
 
    $ioc->can( q(config) ) and $attrs->{tempdir} ||= $ioc->config->{tempdir};
 
-   $ioc->can( q(exception_class) )
-      and $class->Exception_Class( $ioc->exception_class );
-
    return $attrs;
 };
 
 sub dump {
-   my ($self, $args) = @_;
-
-   my $path = $args->{path} || $self->path;
+   my ($self, $args) = @_; my $path = $args->{path} || $self->path;
 
    blessed $path or $path = $self->io( $path );
 
@@ -89,9 +92,7 @@ sub dump {
 }
 
 sub load {
-   my ($self, @paths) = @_;
-
-   $paths[ 0 ] or $paths[ 0 ] = $self->path;
+   my ($self, @paths) = @_; $paths[ 0 ] or $paths[ 0 ] = $self->path;
 
    @paths = map { blessed $_ ? $_ : $self->io( $_ ) } @paths;
 
@@ -127,6 +128,7 @@ sub translate {
 
    $attrs = { path => $args->{to}, storage_class => $args->{to_class} };
    $class->new( $attrs )->dump( { data => $data } );
+
    return;
 }
 
@@ -149,17 +151,13 @@ sub _build_cache {
 }
 
 sub _build_lock {
-   my $self = shift;
-
-   $self->Lock and return $self->Lock;
+   my $self = shift; my $lock = $self->Lock; $lock and return $lock;
 
    $self->lock_class eq q(none) and return Class::Null->new;
 
    my $attrs = $self->lock_attributes;
 
-   $attrs->{debug  } ||= $self->debug;
-   $attrs->{log    } ||= $self->log;
-   $attrs->{tempdir} ||= $self->tempdir;
+   $attrs->{ $_ } ||= $self->$_() for (qw(debug log tempdir));
 
    return $self->Lock( $self->lock_class->new( $attrs ) );
 }
@@ -207,7 +205,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
@@ -253,6 +251,11 @@ Passed to the L<Cache::Cache> constructor
 =item B<debug>
 
 Writes debug information to the log object if set to true
+
+=item B<exception_class>
+
+A classname that is expected to have a class method C<throw>. Defaults to
+L<File::DataClass::Exception> and is of type C<F_DC_Exception>
 
 =item B<ioc_obj>
 
@@ -389,6 +392,8 @@ debug method to be called with useful information
 =item L<File::DataClass::Cache>
 
 =item L<File::DataClass::Constants>
+
+=item L<File::DataClass::Exception>
 
 =item L<File::DataClass::ResultSource>
 

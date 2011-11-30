@@ -1,25 +1,26 @@
-# @(#)$Id: HashMerge.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: HashMerge.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::HashMerge;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Carp;
 
 sub merge {
-   my ($self, $src, $dest_ref, $condition) = @_; my $updated = FALSE;
+   my ($self, $dest_ref, $src, $filter) = @_; my $updated = FALSE;
 
    $dest_ref or croak 'No destination reference specified';
 
-   $src ||= {}; ${ $dest_ref } ||= {}; $condition ||= sub { return TRUE };
+   ${ $dest_ref } ||= {}; $src ||= {}; $filter ||= sub { keys %{ $_[ 0 ] } };
 
-   for my $attr (__get_src_attributes( $condition, $src )) {
+   for my $attr ($filter->( $src )) {
       if (defined $src->{ $attr }) {
+
          my $res = $self->_merge_attr
-            ( $src->{ $attr }, \${ $dest_ref }->{ $attr } );
+            ( \${ $dest_ref }->{ $attr }, $src->{ $attr } );
 
          $updated ||= $res;
       }
@@ -36,33 +37,41 @@ sub merge {
 # Private methods
 
 sub _merge_attr {
-   my ($self, $from, $to_ref) = @_; my $updated = FALSE; my $to = ${ $to_ref };
+   my ($self, $to_ref, $from) = @_; my $to = ${ $to_ref }; my $updated = FALSE;
 
-   if ($to and ref $to eq ARRAY) {
-      $updated = $self->_merge_attr_arrays( $from, $to );
+   if ($to and ref $to eq HASH) {
+      $updated = $self->_merge_attr_hashes( $to, $from );
    }
-   elsif ($to and ref $to eq HASH) {
-      $updated = $self->_merge_attr_hashes( $from, $to );
+   elsif ($to and ref $to eq ARRAY) {
+      $updated = $self->_merge_attr_arrays( $to, $from );
    }
-   elsif ((not $to and defined $from) or ($to and $to ne $from)) {
+   elsif ($to and $to ne $from) {
       $updated = TRUE; ${ $to_ref } = $from;
+   }
+   elsif (not $to and defined $from) {
+      if (ref $from eq HASH) {
+         scalar keys %{ $from } > 0 and $updated = TRUE
+            and ${ $to_ref } = $from;
+      }
+      elsif (ref $from eq ARRAY) {
+         scalar @{ $from } > 0 and $updated = TRUE; ${ $to_ref } = $from;
+      }
+      else { $updated = TRUE; ${ $to_ref } = $from }
    }
 
    return $updated;
 }
 
 sub _merge_attr_arrays {
-   my ($self, $from, $to) = @_; my $updated = FALSE;
+   my ($self, $to, $from) = @_; my $updated = FALSE;
 
    for (0 .. $#{ $to }) {
       if ($from->[ $_ ]) {
-         my $res = $self->_merge_attr( $from->[ $_ ], \$to->[ $_ ] );
+         my $res = $self->_merge_attr( \$to->[ $_ ], $from->[ $_ ] );
 
          $updated ||= $res;
       }
-      elsif ($to->[ $_ ]) {
-         splice @{ $to }, $_; $updated = TRUE; last;
-      }
+      elsif ($to->[ $_ ]) { splice @{ $to }, $_; $updated = TRUE; last }
    }
 
    if (@{ $from } > @{ $to }) {
@@ -73,17 +82,15 @@ sub _merge_attr_arrays {
 }
 
 sub _merge_attr_hashes {
-   my ($self, $from, $to) = @_; my $updated = FALSE;
+   my ($self, $to, $from) = @_; my $updated = FALSE;
 
    for (keys %{ $to }) {
       if ($from->{ $_ }) {
-         my $res = $self->_merge_attr( $from->{ $_ }, \$to->{ $_ } );
+         my $res = $self->_merge_attr( \$to->{ $_ }, $from->{ $_ } );
 
          $updated ||= $res;
       }
-      elsif ($to->{ $_ }) {
-         delete $to->{ $_ }; $updated = TRUE;
-      }
+      elsif ($to->{ $_ }) { delete $to->{ $_ }; $updated = TRUE }
    }
 
    if (keys %{ $from } > keys %{ $to }) {
@@ -95,16 +102,6 @@ sub _merge_attr_hashes {
    }
 
    return $updated;
-}
-
-# Private subroutines
-
-sub __get_src_attributes {
-   my ($condition, $src) = @_;
-
-   return grep { not m{ \A _ }mx
-                 and $_ ne q(name)
-                 and $condition->( $_ ) } keys %{ $src };
 }
 
 1;
@@ -119,14 +116,14 @@ File::DataClass::HashMerge - Merge hashes with update flag
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
    use File::DataClass::HashMerge;
 
    $class   = q(File::DataClass::HashMerge);
-   $updated = $class->merge( $src, $dest_ref, $condition );
+   $updated = $class->merge( $dest_ref, $src, $condition );
 
 =head1 Description
 
@@ -137,10 +134,10 @@ Merge the attributes from the source hash ref into destination ref
 =head2 merge
 
    $class = q(File::DataClass::HashMerge);
-   $bool  = $class->merge( $src, $dest_ref, $condition );
+   $bool  = $class->merge( $dest_ref, $src, $filter );
 
 Only merge the attributes from C<$src> to C<$dest_ref> if the
-C<$condition> coderef evaluates to true. Return true if the destination
+C<$filter> coderef evaluates returns the,. Return true if the destination
 ref was updated
 
 =head1 Diagnostics
@@ -171,7 +168,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2010 Peter Flanigan. All rights reserved
+Copyright (c) 2011 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

@@ -1,19 +1,18 @@
-# @(#)$Id: MailAlias.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: MailAlias.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::MailAlias;
 
 use strict;
-use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
+use Moose;
+use IPC::Cmd qw( can_run run );
+use English  qw( -no_match_vars );
 use File::DataClass::Constants;
 use File::DataClass::IO ();
-use English  qw( -no_match_vars );
-use IPC::Cmd qw( can_run run );
 use File::Copy;
 use File::Spec;
-use Moose;
 
 extends qw(File::DataClass::Schema);
 
@@ -44,20 +43,25 @@ has '+result_source_attributes' =>
 has '+storage_class' =>
    default           => q(+File::MailAlias::Storage);
 
+has 'source_name' => is => 'ro', isa => 'Str', default => q(aliases);
+
 around BUILDARGS => sub {
    my ($orig, $class, $car, @cdr) = @_; my $attrs = {};
 
-   $car or return $class->$orig();
+   (not $car or blessed $car) and return $class->$orig( $car, @cdr );
 
-   if    (blessed $car)      { return $class->$orig( $car, @cdr ) }
-   elsif (ref $car eq HASH)  { $attrs         = $car }
+   if    (ref $car eq HASH)  { $attrs         = $car }
    elsif (ref $car eq ARRAY) { $attrs->{path} = $class->catfile( @{ $car } ) }
    else                      { $attrs->{path} = $car.NUL }
 
    $cdr[ 0 ] and $attrs->{system_aliases} =   $cdr[ 0 ];
    $cdr[ 1 ] and $attrs->{newaliases    } = [ $cdr[ 1 ] ];
 
-   return $attrs;
+   return $class->$orig( $attrs );
+};
+
+around 'resultset' => sub {
+   my ($orig, $self) = @_; return $self->$orig( $self->source_name );
 };
 
 {  my $map = {}; my $mtime = 0;
@@ -97,10 +101,6 @@ sub find {
 
 sub list {
    my ($self, $name) = @_; return $self->resultset->list( { name => $name } );
-}
-
-sub resultset {
-   my $self = shift; return $self->next::method( q(aliases) );
 }
 
 sub update {
@@ -175,7 +175,7 @@ File::MailAlias - Domain model for the system mail aliases file
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
@@ -287,10 +287,6 @@ List of recipients for the selected owner
 
 Returns an object containing a list of alias names and the fields pertaining
 to the requested alias if it exists
-
-=head2 resultset
-
-   $rs = $alias_obj->resultset
 
 =head2 update
 

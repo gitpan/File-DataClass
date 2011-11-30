@@ -1,31 +1,31 @@
-# @(#)$Id: ResultSource.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: ResultSource.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::ResultSource;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Moose;
 
 use File::DataClass::ResultSet;
 
-has 'attributes'           => is => 'rw', isa => 'ArrayRef[Str]',
-   default                 => sub { return [] };
-has 'defaults'             => is => 'rw', isa => 'HashRef',
-   default                 => sub { return {} };
-has 'name'                 => is => 'rw', isa => 'Str',
+has 'attributes'           => is => 'ro', isa => 'ArrayRef[Str]',
+   default                 => sub { [] };
+has 'defaults'             => is => 'ro', isa => 'HashRef',
+   default                 => sub { {} };
+has 'name'                 => is => 'ro', isa => 'Str',
    default                 => NUL;
-has 'label_attr'           => is => 'rw', isa => 'Str',
+has 'label_attr'           => is => 'ro', isa => 'Str',
    default                 => NUL;
 has 'resultset_attributes' => is => 'ro', isa => 'HashRef',
-   default                 => sub { return {} };
+   default                 => sub { {} };
 has 'resultset_class'      => is => 'ro', isa => 'ClassName',
    default                 => q(File::DataClass::ResultSet);
 has 'schema'               => is => 'ro', isa => 'Object',
-   required                => TRUE, weak_ref => TRUE, handles => [ qw(path) ];
-has 'storage'              => is => 'rw', isa => 'Object', lazy_build => TRUE;
+   required                => TRUE, weak_ref => TRUE,
+   handles                 => [ qw(exception_class path storage) ];
 
 sub resultset {
    my $self = shift;
@@ -33,10 +33,6 @@ sub resultset {
    my $attrs = { %{ $self->resultset_attributes }, source => $self };
 
    return $self->resultset_class->new( $attrs );
-}
-
-sub _build_storage {
-   my $self = shift; return $self->schema->storage;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -55,7 +51,7 @@ File::DataClass::ResultSource - A source of result sets for a given schema
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 

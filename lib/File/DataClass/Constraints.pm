@@ -1,10 +1,10 @@
-# @(#)$Id: Constraints.pm 285 2011-07-11 12:40:49Z pjf $
+# @(#)$Id: Constraints.pm 321 2011-11-30 00:01:49Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 285 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
 
 use File::DataClass::IO;
 use Moose::Role;
@@ -30,7 +30,8 @@ subtype 'F_DC_HashRefOfBools' => as 'HashRef';
 subtype 'F_DC_Lock' => as 'Object' =>
    where   { $_->isa( q(Class::Null) )
                 or ($_->can( q(set) ) and $_->can( q(reset) ) ) } =>
-   message { 'Object '.(blessed $_ || $_).' is missing set or reset methods' };
+   message {
+   'Object '.(blessed $_ || $_ || 'undef').' is missing set or reset methods' };
 
 subtype 'F_DC_Path' => as 'Object' =>
    where   { $_->isa( q(File::DataClass::IO) ) } =>
@@ -57,6 +58,9 @@ coerce 'F_DC_File'      => from 'ArrayRef' => via { io( $_ ) };
 coerce 'F_DC_Path'      => from 'Str'      => via { io( $_ ) };
 coerce 'F_DC_Directory' => from 'Str'      => via { io( $_ ) };
 coerce 'F_DC_File'      => from 'Str'      => via { io( $_ ) };
+coerce 'F_DC_Path'      => from 'Undef'    => via { io( $_ ) };
+coerce 'F_DC_Directory' => from 'Undef'    => via { io( $_ ) };
+coerce 'F_DC_File'      => from 'Undef'    => via { io( $_ ) };
 
 coerce 'F_DC_HashRefOfBools' => from 'ArrayRef' =>
    via { my %hash = map { $_ => 1 } @{ $_ }; return \%hash; };
@@ -76,7 +80,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.6.$Revision: 285 $
+0.7.$Revision: 321 $
 
 =head1 Synopsis
 
