@@ -14,29 +14,29 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 4fa4340bbf8020da2bdc594853157239e0e7e0ed Build.PL
-SHA1 6ade8b9be1e0efb0b796f44737ded3c57f749fe0 Changes
+SHA1 8a479e9da4761264fc6baf508f8fed8c67c9ecd2 Build.PL
+SHA1 cc26efecd94fa41006617f7127995ef5d3c115cd Changes
 SHA1 12e8c95d11cd08121fd9b8b5e5169b0cbf68b160 LICENSE
 SHA1 60f08c0b88e39537191a7bae49bd63f3042240f1 MANIFEST
-SHA1 1b66bd1399881d2bba40fbb38acd4e84c840118c META.json
-SHA1 89e72d4f311c7538aba7299caf7b1e798b89b704 META.yml
-SHA1 1a38d401cdb335776446977156e13d30f90ba358 README
-SHA1 c878961bee9b6d58c380b288ae3d01fb5a12476e inc/Bob.pm
-SHA1 b6eedfc1a3e80fc5848169626870db4818419dc3 lib/File/DataClass.pm
+SHA1 bef6ccb13484600938a853edea90611a31f1ac34 META.json
+SHA1 d957b02f96d723627c2414b8cadf8ff5b2e7e1f0 META.yml
+SHA1 2ad99cc986c7a930e4b6ff27a3c9af61945381db README
+SHA1 546c55e7a9f311e9453858171a583c847074ca94 inc/Bob.pm
+SHA1 98e94347cba36e4fc8abac81e536eadc5e30386e lib/File/DataClass.pm
 SHA1 16a10ae8806bc2e87516efb17884e938c5dabf43 lib/File/DataClass/Cache.pm
 SHA1 11e8c3027c7c172701a7549974a23eed98c6090d lib/File/DataClass/Constants.pm
 SHA1 b6e38665582616f943eb1661c36f26a40667ac77 lib/File/DataClass/Constraints.pm
 SHA1 a1a9e1eaf6fa4a43e7a436bbbdf1c4b02af98c74 lib/File/DataClass/Exception.pm
 SHA1 60ce015a8ad3434c15ccf1b38f3de20e19b51b99 lib/File/DataClass/HashMerge.pm
-SHA1 144206abe3f5c7f515f6e46d8078d1e9eb095064 lib/File/DataClass/IO.pm
+SHA1 160597909e4de179b4d2bf84d058dacd777dc4a8 lib/File/DataClass/IO.pm
 SHA1 6ffa67424ff7a4017718689d00de44968180037e lib/File/DataClass/List.pm
 SHA1 00955b3f7b0671aab0e603e792a322277e535ad6 lib/File/DataClass/Result.pm
 SHA1 ca5c2f707d9f9d50208c8ecad0580e26828aa99a lib/File/DataClass/ResultSet.pm
 SHA1 47590be875bd80c601652e4e9f225989f11eb121 lib/File/DataClass/ResultSource.pm
 SHA1 1ae6304fd49297857174ce8acfb9a10e6fa38547 lib/File/DataClass/ResultSource/WithLanguage.pm
-SHA1 8512ee127365bb860ac858e14dcc9af4e8ae03f7 lib/File/DataClass/Schema.pm
-SHA1 481c55548d3c8ff46b7379f7b6efdc9bdde55c11 lib/File/DataClass/Schema/WithLanguage.pm
-SHA1 1015b9e4486f0564175579044e450cce8cec4c04 lib/File/DataClass/Storage.pm
+SHA1 f72a83645eed96a92620a2b23b436a0ee22420f9 lib/File/DataClass/Schema.pm
+SHA1 b030dd3ae188bde2417d1983ed6c2534b5077760 lib/File/DataClass/Schema/WithLanguage.pm
+SHA1 818b2132a33c40ea1a61f0de43bb599891f35402 lib/File/DataClass/Storage.pm
 SHA1 8ffe3ffbf862544636256ca3438347ea0ae7e4aa lib/File/DataClass/Storage/JSON.pm
 SHA1 a52dbd967b414311c514032ba7a2a05211cfb115 lib/File/DataClass/Storage/WithLanguage.pm
 SHA1 4646a1a91ed1ca88503e93a8fb5c9410e547708c lib/File/DataClass/Storage/XML.pm
@@ -44,7 +44,7 @@ SHA1 8025a268c3b81213f8d0b9319f6b04f55c4501f4 lib/File/DataClass/Storage/XML/Bar
 SHA1 8ce1058b0995e435c5cc81374dffb4f6597542bb lib/File/DataClass/Storage/XML/Simple.pm
 SHA1 207681aabc2e440e4391fc81d71da3df5caaef24 lib/File/DataClass/Util.pm
 SHA1 d5fceff99ffb65780003cdd3c4bd53da02350daa lib/File/Gettext.pm
-SHA1 473f353f73a10e2d56694c0545b1b3bdae741039 lib/File/Gettext/Constants.pm
+SHA1 a63e553f32f7e2b6835707c962f2433b4053217c lib/File/Gettext/Constants.pm
 SHA1 1317ecd0b317e8688719f32f0d3f8e9c5f954c70 lib/File/Gettext/Storage/MO.pm
 SHA1 42e9eebf8e180e7417f7ed4e187c3481b1f9721d lib/File/Gettext/Storage/PO.pm
 SHA1 8f88ae23de910c6c5d87559f0cdf32876a022751 lib/File/MailAlias.pm
@@ -93,11 +93,11 @@ SHA1 ac6595e15a7e0484708ab0575883f016ad53025b t/shadow
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJO1XKXAAoJEK492j4Im1BpDUcH/jD1QZNb76xybEZFmtw5q8o5
-A7dLOSPmGnFl1r9mFB8+OfFQPazfgeqqUn61H1c6SWk+j9b9JEdTibuRd5vzp6p4
-8QT77hDng5YJoFetTifjF7myXLndEoJjFMVXc5V9J5kqm29kPFytChBbbgLSHWhL
-+E8LkrxkjPAJxU3yaBQPdpcFb8Qi7TIYjTfuohqP2TDZzAks7SiC2Gkb0Fu/yyDB
-3xwlI0HHpur0DEMbGysqbMxJfi/e2E2vREj0WhecmacR2jKdXoltBiEMukc7OFj3
-VLbYix4MSIlruKa9lDu/REzXHk3Gxl6A9z8rgT2exWpTzPlWc/FBxOiypbub2Xg=
-=yh/F
+iQEcBAEBAgAGBQJO2FXnAAoJEK492j4Im1BpJqMIAJ1mCNijeF8mu0fhcSxC7lar
+gevBXOj3jZR8Kws82BUi1obVQPJl3RT2P7EHJRVLbIQQEhZwqXJUFTmCl2b77S3S
+1ig2jt2VAl6KQ12VS8QwcmDFHx14lHOAk5nBzqrDuevJwk2ELL6HhD9rUELJC/Tn
+5TAJLMmj7kXJAz2ej7pUK3RawTZ/eA4Klyc8H+4GsBdf4FNt2O2o+ohnHh5OkfhO
+Xk+iVyth26BUdzwLSb+LIN0AcylpYgJEH93Q2Ju7XRVoQMX+uOnWPfTRqAC+GGiU
+k0540Y6mTp540IIEaHyIlyYaktk5CnPpIktBwlD3y+pvcoc0ursRf8SZfAO/wsU=
+=jfg4
 -----END PGP SIGNATURE-----

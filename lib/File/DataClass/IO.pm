@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: IO.pm 324 2011-12-01 03:42:25Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 324 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use File::DataClass::Exception;
@@ -65,18 +65,17 @@ has '_umask'           => is => 'rw', isa => 'ArrayRef[Num]',
    default             => sub { return [] }                                   ;
 
 around BUILDARGS => sub {
-   my ($orig, $class, $car, @cdr) = @_; my $attrs = {};
+   my ($next, $class, $name, $mode, $perms) = @_; my $attrs = {};
 
-   $car or return $attrs; my $is_blessed = blessed $car;
+   $name or return $attrs; my $is_blessed = blessed $name;
 
-   $is_blessed and $car->isa( __PACKAGE__ ) and return $car;
-   $is_blessed and $car .= NUL; # Stringify path object
+   $is_blessed and $name->isa( __PACKAGE__ ) and return $name;
+   $is_blessed and $name .= NUL; # Stringify path object
 
-   my $type = ref $car; $type eq HASH and return $car;
+   my $type = ref $name; $type eq HASH and return $name;
 
-   $attrs->{name} = $type eq ARRAY ? File::Spec->catfile( @{ $car } ) : $car;
-   $cdr[ 0 ] and $attrs->{mode  } = $cdr[ 0 ];
-   $cdr[ 1 ] and $attrs->{_perms} = $cdr[ 1 ];
+   $attrs->{name} = $type eq ARRAY ? File::Spec->catfile( @{ $name } ) : $name;
+   $mode and $attrs->{mode} = $mode; $perms and $attrs->{_perms} = $perms;
 
    return $attrs;
 };
@@ -934,7 +933,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.7.$Revision: 321 $
+0.7.$Revision: 324 $
 
 =head1 Synopsis
 

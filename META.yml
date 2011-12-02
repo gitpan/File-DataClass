@@ -6,7 +6,7 @@ build_requires:
   Exception::Class: 1.23
   Test::More: 0.74
   Text::Diff: 1.37
-  utf8: 1.07
+  utf8: 1.06
 configure_requires:
   Module::Build: 0.32
   version: 0.74
@@ -25,7 +25,7 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.7.321
+    version: v0.7.325
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
     version: v0.7.321
@@ -43,7 +43,7 @@ provides:
     version: v0.7.321
   File::DataClass::IO:
     file: lib/File/DataClass/IO.pm
-    version: v0.7.321
+    version: v0.7.324
   File::DataClass::List:
     file: lib/File/DataClass/List.pm
     version: v0.7.321
@@ -61,13 +61,13 @@ provides:
     version: v0.7.321
   File::DataClass::Schema:
     file: lib/File/DataClass/Schema.pm
-    version: v0.7.321
+    version: v0.7.324
   File::DataClass::Schema::WithLanguage:
     file: lib/File/DataClass/Schema/WithLanguage.pm
-    version: v0.7.321
+    version: v0.7.322
   File::DataClass::Storage:
     file: lib/File/DataClass/Storage.pm
-    version: v0.7.321
+    version: v0.7.324
   File::DataClass::Storage::JSON:
     file: lib/File/DataClass/Storage/JSON.pm
     version: v0.7.321
@@ -91,7 +91,7 @@ provides:
     version: v0.7.321
   File::Gettext::Constants:
     file: lib/File/Gettext/Constants.pm
-    version: v0.7.321
+    version: v0.7.323
   File::Gettext::Storage::MO:
     file: lib/File/Gettext/Storage/MO.pm
     version: v0.7.321
@@ -130,13 +130,14 @@ requires:
   Class::Null: 1.09
   Data::Section: 0.09341
   Date::Format: 2.22
-  Encode: 2.42
+  Encode: 2.12
   Exception::Class: 1.23
-  File::Path: 2.07
+  File::Path: 1.08
   File::Temp: 0.2
   Hash::Merge: 0.08
-  IO::Dir: 1.06
-  IO::File: 1.14
+  IO::Dir: 1.05
+  IO::File: 1.13
+  IPC::Cmd: 0.68
   IPC::SRLock: v0.5.0
   JSON: 2.16
   Lingua::EN::NameParse: 1.28
@@ -144,7 +145,7 @@ requires:
   MealMaster: 0.28
   Moose: 0.92
   MooseX::ClassAttribute: 0.21
-  Scalar::Util: 1.19
+  Scalar::Util: 1.18
   Sub::Exporter: 0.982
   Template: 2.18
   Template::Stash: 2.9
@@ -162,4 +163,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: 0.7.321
+version: 0.7.325

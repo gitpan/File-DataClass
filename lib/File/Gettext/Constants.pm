@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: Constants.pm 323 2011-11-30 21:38:21Z pjf $
 
 package File::Gettext::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 323 $ =~ /\d+/gmx );
 
 my @_constants;
 
@@ -46,21 +46,21 @@ __END__
 
 =head1 Name
 
-CatalystX::Usul::Constants - Definitions of constant values
+File::Gettext::Constants - Definitions of constant values
 
 =head1 Version
 
-0.4.$Rev: 321 $
+0.4.$Rev: 323 $
 
 =head1 Synopsis
 
-   use CatalystX::Usul::Constants::L10N;
+   use File::Gettext::Constants;
 
    my $magic = MAGIC_V;
 
 =head1 Description
 
-Exports a list of subroutines each of which returns a constants value
+Exports a list of subroutines each of which returns a constant value
 
 =head1 Subroutines/Methods
 
