@@ -1,26 +1,25 @@
-# @(#)$Id: WithLanguage.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: WithLanguage.pm 327 2011-12-03 18:37:37Z pjf $
 
 package File::DataClass::Storage::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
 
+use Moose;
 use File::DataClass::Constants;
 use File::Gettext;
 use Hash::Merge qw(merge);
-use Moose;
 
 extends qw(File::DataClass);
+with    qw(File::DataClass::Util);
 
 has 'gettext' => is => 'ro', isa => 'Object',  lazy_build => TRUE;
 has 'schema'  => is => 'ro', isa => 'Object',  required   => TRUE,
    handles    => [ qw(cache lang localedir) ], weak_ref   => TRUE;
 has 'storage' => is => 'ro', isa => 'Object',  required   => TRUE,
-   handles    => [ qw(exception_class extn _is_stale _meta_pack
-                      _read_file txn_do validate_params) ];
-
-with qw(File::DataClass::Util);
+   handles    => [ qw(extn _is_stale _meta_pack _read_file txn_do
+                      validate_params) ];
 
 sub delete {
    my ($self, $path, $result) = @_;
@@ -254,7 +253,7 @@ File::DataClass::Storage::WithLanguage - Split/merge language dependent data
 
 =head1 Version
 
-0.7.$Revision: 321 $
+0.7.$Revision: 327 $
 
 =head1 Synopsis
 

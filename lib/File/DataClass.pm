@@ -1,20 +1,33 @@
-# @(#)$Id: DataClass.pm 326 2011-12-02 22:37:40Z pjf $
+# @(#)$Id: DataClass.pm 328 2011-12-03 18:40:42Z pjf $
 
 package File::DataClass;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 326 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 328 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
+use File::DataClass::Exception;
 
 with qw(File::DataClass::Constraints);
 
 class_has 'Cache' => is => 'rw', isa => 'HashRef[F_DC_Cache]',
    default        => sub { {} };
 
+class_has 'Exception_Class' => is => 'rw', isa => 'F_DC_Exception',
+   default                  => q(File::DataClass::Exception);
+
 class_has 'Lock'  => is => 'rw', isa => 'Maybe[F_DC_Lock]';
+
+has 'exception_class' => is => 'ro', isa => 'F_DC_Exception',
+   lazy_build         => 1;
+
+# Private methods
+
+sub _build_exception_class {
+   my $self = shift; return $self->Exception_Class;
+}
 
 __PACKAGE__->meta->make_immutable;
 
@@ -33,7 +46,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.7.$Revision: 326 $
+This document describes File::DataClass version 0.7.$Revision: 328 $
 
 =head1 Synopsis
 
@@ -134,3 +147,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # mode: perl
 # tab-width: 3
 # End:
+

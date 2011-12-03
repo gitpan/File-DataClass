@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 324 2011-12-01 03:42:25Z pjf $
+# @(#)$Id: Schema.pm 327 2011-12-03 18:37:37Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 324 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
@@ -12,17 +12,12 @@ use File::DataClass::Constants;
 use File::Spec;
 
 use File::DataClass::Cache;
-use File::DataClass::Exception;
 use File::DataClass::ResultSource;
 use File::DataClass::Storage;
 use IPC::SRLock;
 
 extends qw(File::DataClass);
-
-has 'exception_class' => is => 'ro', isa => 'F_DC_Exception',
-   default            => q(File::DataClass::Exception);
-
-with qw(File::DataClass::Util);
+with    qw(File::DataClass::Util);
 
 has 'cache'                    => is => 'ro', isa => 'F_DC_Cache',
    lazy_build                  => TRUE;
@@ -74,9 +69,12 @@ around BUILDARGS => sub {
    exists $attrs->{ioc_obj} or return $attrs;
 
    my $ioc   = delete $attrs->{ioc_obj};
-   my @attrs = ( qw(debug exception_class lock log tempdir) );
+   my @attrs = ( qw(debug lock log tempdir) );
 
    $attrs->{ $_ } ||= $ioc->$_() for (grep { $ioc->can( $_ ) } @attrs);
+
+   $ioc->can( q(exception_class) )
+      and $class->Exception_Class( $ioc->exception_class );
 
    $ioc->can( q(config) ) and $attrs->{tempdir} ||= $ioc->config->{tempdir};
 
@@ -137,7 +135,8 @@ sub translate {
 sub _build_cache {
    my $self  = shift; (my $ns = lc __PACKAGE__) =~ s{ :: }{-}gmx; my $cache;
 
-   my $attrs = { cache_attributes => $self->cache_attributes, schema => $self };
+   my $attrs = { cache_attributes => { %{ $self->cache_attributes } },
+                 ioc_obj          => $self };
 
    $ns = $attrs->{cache_attributes}->{namespace} ||= $ns;
 
@@ -166,7 +165,7 @@ sub _build_source_registrations {
    my $self = shift; my $sources = {};
 
    for my $moniker (keys %{ $self->result_source_attributes }) {
-      my $attrs = $self->result_source_attributes->{ $moniker };
+      my $attrs = { %{ $self->result_source_attributes->{ $moniker } } };
       my $class = delete $attrs->{result_source_class}
                || $self->result_source_class;
 
@@ -205,7 +204,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.7.$Revision: 324 $
+0.7.$Revision: 327 $
 
 =head1 Synopsis
 

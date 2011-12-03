@@ -79,11 +79,11 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.7.326"
+         "version" : "v0.7.328"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.7.327"
       },
       "File::DataClass::Constants" : {
          "file" : "lib/File/DataClass/Constants.pm",
@@ -103,7 +103,7 @@
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.7.324"
+         "version" : "v0.7.327"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
@@ -115,11 +115,11 @@
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.7.327"
       },
       "File::DataClass::ResultSource" : {
          "file" : "lib/File/DataClass/ResultSource.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.7.327"
       },
       "File::DataClass::ResultSource::WithLanguage" : {
          "file" : "lib/File/DataClass/ResultSource/WithLanguage.pm",
@@ -127,7 +127,7 @@
       },
       "File::DataClass::Schema" : {
          "file" : "lib/File/DataClass/Schema.pm",
-         "version" : "v0.7.324"
+         "version" : "v0.7.327"
       },
       "File::DataClass::Schema::WithLanguage" : {
          "file" : "lib/File/DataClass/Schema/WithLanguage.pm",
@@ -135,7 +135,7 @@
       },
       "File::DataClass::Storage" : {
          "file" : "lib/File/DataClass/Storage.pm",
-         "version" : "v0.7.324"
+         "version" : "v0.7.327"
       },
       "File::DataClass::Storage::JSON" : {
          "file" : "lib/File/DataClass/Storage/JSON.pm",
@@ -143,7 +143,7 @@
       },
       "File::DataClass::Storage::WithLanguage" : {
          "file" : "lib/File/DataClass/Storage/WithLanguage.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.7.327"
       },
       "File::DataClass::Storage::XML" : {
          "file" : "lib/File/DataClass/Storage/XML.pm",
@@ -220,5 +220,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.7.326"
+   "version" : "0.7.328"
 }

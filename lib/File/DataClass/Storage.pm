@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 324 2011-12-01 03:42:25Z pjf $
+# @(#)$Id: Storage.pm 327 2011-12-03 18:37:37Z pjf $
 
 package File::DataClass::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 324 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
@@ -16,15 +16,13 @@ use Hash::Merge qw(merge);
 use Try::Tiny;
 
 extends qw(File::DataClass);
+with    qw(File::DataClass::Util);
 
 has 'backup' => is => 'ro', isa => 'Str',    default  => NUL;
 has 'extn'   => is => 'ro', isa => 'Str',    default  => NUL;
 has 'schema' => is => 'ro', isa => 'Object', required => 1, weak_ref => TRUE,
-   handles => { _cache          => q(cache),           _debug => q(debug),
-                exception_class => q(exception_class), _lock  => q(lock),
-                _log            => q(log),             _perms => q(perms) };
-
-with qw(File::DataClass::Util);
+   handles   => { _cache => q(cache), _debug => q(debug), _lock  => q(lock),
+                  _log   => q(log),   _perms => q(perms) };
 
 sub delete {
    my ($self, $path, $result) = @_;
@@ -274,7 +272,7 @@ File::DataClass::Storage - Storage base class
 
 =head1 Version
 
-0.7.$Revision: 324 $
+0.7.$Revision: 327 $
 
 =head1 Synopsis
 

@@ -1,10 +1,10 @@
-# @(#)$Id: ResultSet.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: ResultSet.pm 327 2011-12-03 18:37:37Z pjf $
 
 package File::DataClass::ResultSet;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Moose;
@@ -13,6 +13,7 @@ use File::DataClass::List;
 use File::DataClass::Result;
 
 extends qw(File::DataClass);
+with    qw(File::DataClass::Util);
 
 has 'list_class'   => is => 'ro', isa => 'ClassName',
    default         => q(File::DataClass::List);
@@ -20,16 +21,13 @@ has 'result_class' => is => 'ro', isa => 'ClassName',
    default         => q(File::DataClass::Result);
 has 'source'       => is => 'ro', isa => 'Object',
    required        => TRUE, weak_ref => TRUE,
-   handles         => [ qw(attributes defaults
-                           exception_class label_attr path storage) ];
+   handles         => [ qw(attributes defaults label_attr path storage) ];
 has '_iterator'    => is => 'rw', isa => 'Int',
    default         => 0, init_arg => undef;
 has '_operators'   => is => 'ro', isa => 'HashRef',
    lazy_build      => TRUE;
 has '_results'     => is => 'rw', isa => 'ArrayRef',
    default         => sub { [] }, init_arg => undef;
-
-with qw(File::DataClass::Util);
 
 sub all {
    my $self = shift; return @{ $self->_results };
@@ -378,7 +376,7 @@ File::DataClass::ResultSet - Core element methods
 
 =head1 Version
 
-0.7.$Revision: 321 $
+0.7.$Revision: 327 $
 
 =head1 Synopsis
 

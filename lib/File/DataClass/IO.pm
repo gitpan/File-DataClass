@@ -1,12 +1,14 @@
-# @(#)$Id: IO.pm 324 2011-12-01 03:42:25Z pjf $
+# @(#)$Id: IO.pm 327 2011-12-03 18:37:37Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 324 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
 
+use Moose;
+use Moose::Util::TypeConstraints;
 use File::DataClass::Constants;
 use File::DataClass::Exception;
 use English      qw( -no_match_vars );
@@ -19,8 +21,6 @@ use File::Spec     ();
 use File::Temp     ();
 use IO::Dir;
 use IO::File;
-use Moose;
-use Moose::Util::TypeConstraints;
 use Scalar::Util qw( blessed );
 
 use Sub::Exporter -setup => {
@@ -933,7 +933,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.7.$Revision: 324 $
+0.7.$Revision: 327 $
 
 =head1 Synopsis
 
