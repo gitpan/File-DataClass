@@ -1,13 +1,13 @@
-# @(#)$Id: ResultSource.pm 327 2011-12-03 18:37:37Z pjf $
+# @(#)$Id: ResultSource.pm 329 2011-12-04 15:15:54Z pjf $
 
 package File::DataClass::ResultSource;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 329 $ =~ /\d+/gmx );
 
-use File::DataClass::Constants;
 use Moose;
+use File::DataClass::Constants;
 
 use File::DataClass::ResultSet;
 
@@ -51,7 +51,7 @@ File::DataClass::ResultSource - A source of result sets for a given schema
 
 =head1 Version
 
-0.7.$Revision: 327 $
+0.7.$Revision: 329 $
 
 =head1 Synopsis
 

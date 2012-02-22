@@ -25,7 +25,7 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.7.328
+    version: v0.7.330
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
     version: v0.7.327
@@ -52,10 +52,10 @@ provides:
     version: v0.7.321
   File::DataClass::ResultSet:
     file: lib/File/DataClass/ResultSet.pm
-    version: v0.7.327
+    version: v0.7.329
   File::DataClass::ResultSource:
     file: lib/File/DataClass/ResultSource.pm
-    version: v0.7.327
+    version: v0.7.329
   File::DataClass::ResultSource::WithLanguage:
     file: lib/File/DataClass/ResultSource/WithLanguage.pm
     version: v0.7.321
@@ -79,7 +79,7 @@ provides:
     version: v0.7.321
   File::DataClass::Storage::XML::Bare:
     file: lib/File/DataClass/Storage/XML/Bare.pm
-    version: v0.7.321
+    version: v0.7.330
   File::DataClass::Storage::XML::Simple:
     file: lib/File/DataClass/Storage/XML/Simple.pm
     version: v0.7.321
@@ -163,4 +163,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: 0.7.328
+version: 0.7.330

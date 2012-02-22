@@ -1,13 +1,13 @@
-# @(#)$Id: ResultSet.pm 327 2011-12-03 18:37:37Z pjf $
+# @(#)$Id: ResultSet.pm 329 2011-12-04 15:15:54Z pjf $
 
 package File::DataClass::ResultSet;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 329 $ =~ /\d+/gmx );
 
-use File::DataClass::Constants;
 use Moose;
+use File::DataClass::Constants;
 
 use File::DataClass::List;
 use File::DataClass::Result;
@@ -376,7 +376,7 @@ File::DataClass::ResultSet - Core element methods
 
 =head1 Version
 
-0.7.$Revision: 327 $
+0.7.$Revision: 329 $
 
 =head1 Synopsis
 

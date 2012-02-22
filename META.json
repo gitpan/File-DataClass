@@ -79,7 +79,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.7.328"
+         "version" : "v0.7.330"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -115,11 +115,11 @@
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
-         "version" : "v0.7.327"
+         "version" : "v0.7.329"
       },
       "File::DataClass::ResultSource" : {
          "file" : "lib/File/DataClass/ResultSource.pm",
-         "version" : "v0.7.327"
+         "version" : "v0.7.329"
       },
       "File::DataClass::ResultSource::WithLanguage" : {
          "file" : "lib/File/DataClass/ResultSource/WithLanguage.pm",
@@ -151,7 +151,7 @@
       },
       "File::DataClass::Storage::XML::Bare" : {
          "file" : "lib/File/DataClass/Storage/XML/Bare.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.7.330"
       },
       "File::DataClass::Storage::XML::Simple" : {
          "file" : "lib/File/DataClass/Storage/XML/Simple.pm",
@@ -220,5 +220,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.7.328"
+   "version" : "0.7.330"
 }
