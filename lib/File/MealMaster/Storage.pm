@@ -1,22 +1,24 @@
-# @(#)$Id: Storage.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: Storage.pm 335 2012-03-12 17:26:42Z pjf $
 
 package File::MealMaster::Storage;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 335 $ =~ /\d+/gmx );
 
-use Data::Section -setup;
-use File::DataClass::Constants;
 use Moose;
 use Template;
 use Template::Stash;
+use English qw( -no_match_vars );
+use File::DataClass::Constants;
 
 extends qw(File::DataClass::Storage);
 
+my $DATA = do { local $RS = undef; <DATA> };
+
 has '+extn'          => default => q(.mmf);
 has 'template'       => is => 'ro', isa => 'Object', lazy_build => TRUE;
-has 'write_template' => is => 'ro', isa => 'Str',    lazy_build => TRUE;
+has 'write_template' => is => 'ro', isa => 'Str',    default    => $DATA;
 
 augment '_read_file' => sub {
    my ($self, $rdr) = @_; return $rdr->all;
@@ -84,10 +86,6 @@ sub _build_template {
    };
 
    return $new;
-}
-
-sub _build_write_template {
-   my $self = shift; return ${ $self->section_data( q(write_template) ) };
 }
 
 # Private subroutines
@@ -211,7 +209,7 @@ File::MealMaster::Storage - MealMaster food recipe file storage
 
 =head1 Version
 
-0.7.$Revision: 321 $
+0.7.$Revision: 335 $
 
 =head1 Synopsis
 
@@ -268,7 +266,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # End:
 
 __DATA__
-__[ write_template ]__
 MMMMM----- Recipe via Meal-Master (tm) v8.05
  
       Title: [% title %]

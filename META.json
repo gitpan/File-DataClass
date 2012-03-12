@@ -40,7 +40,6 @@
             "CHI" : "0.33",
             "Cache::FastMmap" : "1.36",
             "Carp" : 0,
-            "Class::MOP" : "0.84",
             "Class::Null" : "1.09",
             "Data::Section" : "0.09341",
             "Date::Format" : "2.22",
@@ -55,9 +54,8 @@
             "IPC::SRLock" : "v0.5.0",
             "JSON" : "2.16",
             "Lingua::EN::NameParse" : "1.28",
-            "MRO::Compat" : "0.09",
             "MealMaster" : "0.28",
-            "Moose" : "0.92",
+            "Moose" : "2.0402",
             "MooseX::ClassAttribute" : "0.21",
             "Scalar::Util" : "1.18",
             "Sub::Exporter" : "0.982",
@@ -79,7 +77,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.7.332"
+         "version" : "v0.7.335"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -191,11 +189,11 @@
       },
       "File::MealMaster::Result" : {
          "file" : "lib/File/MealMaster/Result.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.7.335"
       },
       "File::MealMaster::Storage" : {
          "file" : "lib/File/MealMaster/Storage.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.7.335"
       },
       "File::UnixAuth" : {
          "file" : "lib/File/UnixAuth.pm",
@@ -220,5 +218,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.7.332"
+   "version" : "0.7.335"
 }
