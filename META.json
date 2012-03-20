@@ -24,6 +24,7 @@
       "build" : {
          "requires" : {
             "Exception::Class" : "1.23",
+            "Moose" : "2.0402",
             "Test::More" : "0.74",
             "Text::Diff" : "1.37",
             "utf8" : "1.06"
@@ -32,6 +33,7 @@
       "configure" : {
          "requires" : {
             "Module::Build" : "0.32",
+            "Moose" : "2.0402",
             "version" : "0.74"
          }
       },
@@ -77,7 +79,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.7.335"
+         "version" : "v0.7.336"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -218,5 +220,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.7.335"
+   "version" : "0.7.336"
 }

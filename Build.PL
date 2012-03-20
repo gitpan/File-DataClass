@@ -1,12 +1,11 @@
-# @(#)$Id: Build.PL 334 2012-02-26 17:22:29Z pjf $
+# @(#)$Id: Build.PL 336 2012-03-20 18:19:58Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 334 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 336 $ =~ /\d+/gmx );
 
 Bob->new( {
-   stop_tests => 1,
    module     => q(File::DataClass),
    home_page  => q(http://www.roxsoft.co.uk),
    requires   => {
@@ -46,9 +45,11 @@ Bob->new( {
       'XML::DTD'               => 0.09,
       'XML::Simple'            => 2.14, },
    configure_requires => { 'Module::Build'    => 0.32,
+                           'Moose'            => 2.0402,
                            'version'          => 0.74, },
    build_requires     => { 'utf8'             => 1.06,
                            'Exception::Class' => 1.23,
+                           'Moose'            => 2.0402,
                            'Test::More'       => 0.74,
                            'Text::Diff'       => 1.37, },
 } )->create_build_script; # Goal!
