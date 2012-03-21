@@ -1,24 +1,23 @@
-# @(#)$Id: Build.PL 336 2012-03-20 18:19:58Z pjf $
+# @(#)$Id: Build.PL 338 2012-03-21 22:41:29Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 336 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
 
 Bob->new( {
    module     => q(File::DataClass),
    home_page  => q(http://www.roxsoft.co.uk),
    requires   => {
       'perl'                   => 5.008,
-      'namespace::autoclean'   => 0.09,
-      'namespace::clean'       => 0.11,
+      'namespace::autoclean'   => 0.12,
+      'namespace::clean'       => 0.20,
       'overload'               => 1.04,
       'version'                => 0.74,
       'Cache::FastMmap'        => 1.36,
       'Carp'                   => 0,
       'CHI'                    => 0.33,
       'Class::Null'            => 1.09,
-      'Data::Section'          => 0.093410,
       'Date::Format'           => 2.22,
       'Encode'                 => 2.12,
       'Exception::Class'       => 1.23,
@@ -34,7 +33,7 @@ Bob->new( {
       'Lingua::EN::NameParse'  => 1.28,
       'MealMaster'             => 0.28,
       'Moose'                  => 2.0402,
-      'MooseX::ClassAttribute' => 0.21,
+      'MooseX::ClassAttribute' => 0.26,
       'Scalar::Util'           => 1.18,
       'Sub::Exporter'          => 0.982,
       'Template'               => 2.18,

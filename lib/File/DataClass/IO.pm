@@ -1,16 +1,14 @@
-# @(#)$Id: IO.pm 327 2011-12-03 18:37:37Z pjf $
+# @(#)$Id: IO.pm 338 2012-03-21 22:41:29Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
 
 use Moose;
 use Moose::Util::TypeConstraints;
-use File::DataClass::Constants;
-use File::DataClass::Exception;
 use English      qw( -no_match_vars );
 use Fcntl        qw( :flock :seek );
 use List::Util   qw( first );
@@ -22,6 +20,8 @@ use File::Temp     ();
 use IO::Dir;
 use IO::File;
 use Scalar::Util qw( blessed );
+use File::DataClass::Constants;
+use File::DataClass::Exception;
 
 use Sub::Exporter -setup => {
    exports => [ qw(io) ], groups => { default => [ qw(io) ], },
@@ -933,7 +933,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.7.$Revision: 327 $
+0.7.$Revision: 338 $
 
 =head1 Synopsis
 
@@ -1587,7 +1587,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2011 Peter Flanigan. All rights reserved
+Copyright (c) 2012 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

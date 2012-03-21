@@ -1,10 +1,10 @@
-# @(#)$Id: Exception.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: Exception.pm 338 2012-03-21 22:41:29Z pjf $
 
 package File::DataClass::Exception;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
 
 use Exception::Class
    'File::DataClass::Exception::Base' => {
@@ -13,10 +13,10 @@ use Exception::Class
 use base qw(File::DataClass::Exception::Base);
 
 use Carp;
-use File::DataClass::Constants;
+use MRO::Compat;
 use English      qw(-no_match_vars);
 use Scalar::Util qw(blessed);
-use MRO::Compat;
+use File::DataClass::Constants;
 
 our $IGNORE = [ __PACKAGE__ ];
 
@@ -110,7 +110,7 @@ File::DataClass::Exception - Exception base class
 
 =head1 Version
 
-0.7.$Revision: 321 $
+0.7.$Revision: 338 $
 
 =head1 Synopsis
 
@@ -216,7 +216,7 @@ Peter Flanigan C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2010 Peter Flanigan. All rights reserved
+Copyright (c) 2012 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

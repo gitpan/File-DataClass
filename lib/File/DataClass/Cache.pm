@@ -1,14 +1,14 @@
-# @(#)$Id: Cache.pm 327 2011-12-03 18:37:37Z pjf $
+# @(#)$Id: Cache.pm 338 2012-03-21 22:41:29Z pjf $
 
 package File::DataClass::Cache;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 327 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
 
+use Moose;
 use CHI;
 use File::DataClass::Constants;
-use Moose;
 
 extends qw(File::DataClass);
 with    qw(File::DataClass::Util);
@@ -131,6 +131,10 @@ sub _get_key_and_newest {
    return ($key, $valid ? $newest : undef);
 }
 
+__PACKAGE__->meta->make_immutable;
+
+no Moose;
+
 1;
 
 __END__
@@ -143,7 +147,7 @@ File::DataClass::Cache - Adds extra methods to the CHI API
 
 =head1 Version
 
-0.7.$Revision: 327 $
+0.7.$Revision: 338 $
 
 =head1 Synopsis
 
@@ -291,7 +295,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2010 Peter Flanigan. All rights reserved
+Copyright (c) 2012 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

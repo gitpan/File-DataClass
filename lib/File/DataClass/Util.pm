@@ -1,18 +1,18 @@
-# @(#)$Id: Util.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: Util.pm 338 2012-03-21 22:41:29Z pjf $
 
 package File::DataClass::Util;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
 
+use Moose::Role;
 use Class::MOP;
-use File::DataClass::Constants;
-use File::DataClass::IO ();
 use File::Spec;
 use List::Util qw(first);
-use Moose::Role;
 use Try::Tiny;
+use File::DataClass::Constants;
+use File::DataClass::IO ();
 
 requires qw(exception_class);
 
@@ -83,7 +83,7 @@ File::DataClass::Util - Moose Role defining utility methods
 
 =head1 Version
 
-0.7.$Revision: 321 $
+0.7.$Revision: 338 $
 
 =head1 Synopsis
 
@@ -151,7 +151,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2010 Peter Flanigan. All rights reserved
+Copyright (c) 2012 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>
