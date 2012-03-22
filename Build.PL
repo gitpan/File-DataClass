@@ -1,17 +1,17 @@
-# @(#)$Id: Build.PL 338 2012-03-21 22:41:29Z pjf $
+# @(#)$Id: Build.PL 339 2012-03-22 13:46:07Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 339 $ =~ /\d+/gmx );
 
 Bob->new( {
    module     => q(File::DataClass),
    home_page  => q(http://www.roxsoft.co.uk),
    requires   => {
       'perl'                   => 5.008,
-      'namespace::autoclean'   => 0.12,
-      'namespace::clean'       => 0.20,
+      'namespace::autoclean'   => 0.13,
+      'namespace::clean'       => 0.22,
       'overload'               => 1.04,
       'version'                => 0.74,
       'Cache::FastMmap'        => 1.36,

@@ -67,8 +67,8 @@
             "XML::Bare" : "0.3",
             "XML::DTD" : "0.09",
             "XML::Simple" : "2.14",
-            "namespace::autoclean" : "0.12",
-            "namespace::clean" : "0.2",
+            "namespace::autoclean" : "0.13",
+            "namespace::clean" : "0.22",
             "overload" : "1.04",
             "perl" : "5.008",
             "version" : "0.74"
@@ -78,7 +78,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.7.338"
+         "version" : "v0.7.339"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -102,7 +102,7 @@
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.7.338"
+         "version" : "v0.7.339"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
@@ -219,5 +219,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.7.338"
+   "version" : "0.7.339"
 }

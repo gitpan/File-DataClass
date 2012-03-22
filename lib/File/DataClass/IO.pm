@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 338 2012-03-21 22:41:29Z pjf $
+# @(#)$Id: IO.pm 339 2012-03-22 13:46:07Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 339 $ =~ /\d+/gmx );
 
 use Moose;
 use Moose::Util::TypeConstraints;
@@ -280,41 +280,20 @@ sub clear {
 }
 
 sub close {
-   my $self = shift;
+   my $self = shift; my $path; $self->is_open or return $self;
 
-   $self->is_dir  and return $self->_close_dir;
-   $self->is_file and return $self->_close_file;
+   if ($self->_atomic and $path = $self->_get_atomic_path and -f $path) {
+      File::Copy::move( $path, $self->name )
+         or $self->throw( error => 'Cannot rename [_1] to [_2]: [_3]',
+                          args  => [ $path, $self->name, $ERRNO ] );
+   }
 
-   return $self;
-}
-
-sub _close {
-   my $self = shift;
-
+   $self->unlock;
    $self->io_handle and $self->io_handle->close;
    $self->io_handle( undef );
    $self->is_open  ( FALSE );
    $self->mode     ( q(r)  );
-
    return $self;
-}
-
-sub _close_dir {
-   my $self = shift; return $self->is_open ? $self->_close : $self;
-}
-
-sub _close_file {
-   my $self = shift; my $path;
-
-   if ($self->_atomic and $path = $self->_get_atomic_path and -f $path) {
-      rename $path, $self->name
-         or $self->throw( error => 'Cannot rename [_1] to [_2]',
-                          args  => [ $path, $self->name ] );
-   }
-
-   $self->is_open or return $self;
-
-   $self->unlock; return $self->_close;
 }
 
 sub _constructor {
@@ -343,7 +322,7 @@ sub delete {
 
    $self->_atomic and -f $path and unlink $path;
 
-   return $self->_close_file;
+   return $self->close;
 }
 
 sub delete_tmp_files {
@@ -355,15 +334,11 @@ sub delete_tmp_files {
       $entry->filename =~ m{ \A $pat \z }mx and unlink $entry->pathname;
    }
 
-   return $self->_close_dir;
+   return $self->close;
 }
 
 sub DEMOLISH {
-   my $self = shift;
-
-   $self->_atomic and $self->delete; $self->is_open and $self->close;
-
-   return;
+   my $self = shift; $self->_atomic ? $self->delete : $self->close; return;
 }
 
 sub dir {
@@ -715,12 +690,12 @@ sub read_dir {
    if (wantarray) {
       my @names = grep { $_ !~ $dir_pat } $self->io_handle->read;
 
-      $self->_close_dir; return @names;
+      $self->close; return @names;
    }
 
    while (not $name or $name =~ $dir_pat) {
       unless (defined ($name = $self->io_handle->read)) {
-         $self->_close_dir; return;
+         $self->close; return;
       }
    }
 
@@ -886,7 +861,7 @@ sub unlock {
    my $self = shift; $self->_lock or return;
 
    if ($self->_lock_obj) { $self->_lock_obj->reset( k => $self->name ) }
-   else { flock $self->io_handle, LOCK_UN }
+   else { defined $self->io_handle and flock $self->io_handle, LOCK_UN }
 
    return $self;
 }
@@ -933,7 +908,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.7.$Revision: 338 $
+0.7.$Revision: 339 $
 
 =head1 Synopsis
 

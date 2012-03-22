@@ -1,10 +1,10 @@
-# @(#)$Id: DataClass.pm 338 2012-03-21 22:41:29Z pjf $
+# @(#)$Id: DataClass.pm 339 2012-03-22 13:46:07Z pjf $
 
 package File::DataClass;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 339 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -31,8 +31,8 @@ sub _build_exception_class {
 
 __PACKAGE__->meta->make_immutable;
 
-no MooseX::ClassAttribute;
 no Moose;
+no MooseX::ClassAttribute;
 
 1;
 
@@ -46,7 +46,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.7.$Revision: 338 $
+This document describes File::DataClass version 0.7.$Revision: 339 $
 
 =head1 Synopsis
 
@@ -147,4 +147,3 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # mode: perl
 # tab-width: 3
 # End:
-
