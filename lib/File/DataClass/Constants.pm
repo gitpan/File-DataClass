@@ -1,16 +1,16 @@
-# @(#)$Id: Constants.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: Constants.pm 342 2012-03-24 00:31:59Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 342 $ =~ /\d+/gmx );
 
 my @constants;
 
 BEGIN {
-   @constants = ( qw(ARRAY CODE EVIL FALSE HASH LANG LOCALIZE NO_UMASK_STACK
-                     NUL PERMS SPC STAT_FIELDS TRUE) );
+   @constants = ( qw(ARRAY CODE CYGWIN EVIL FALSE HASH LANG LOCALIZE
+                     NO_UMASK_STACK NUL PERMS SPC STAT_FIELDS TRUE) );
 }
 
 use Sub::Exporter -setup => {
@@ -23,6 +23,10 @@ sub ARRAY () {
 
 sub CODE () {
    return q(CODE);
+}
+
+sub CYGWIN () {
+   return q(cygwin);
 }
 
 sub EVIL () {
@@ -82,7 +86,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.7.$Rev: 321 $
+0.7.$Rev: 342 $
 
 =head1 Synopsis
 
@@ -103,6 +107,10 @@ String ARRAY
 =head2 CODE
 
 String CODE
+
+=head2 CYGWIN
+
+The devil's spawn with compatability library loaded
 
 =head2 EVIL
 

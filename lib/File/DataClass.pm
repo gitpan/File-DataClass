@@ -1,10 +1,10 @@
-# @(#)$Id: DataClass.pm 339 2012-03-22 13:46:07Z pjf $
+# @(#)$Id: DataClass.pm 343 2012-03-24 00:35:16Z pjf $
 
 package File::DataClass;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 339 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 343 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -46,7 +46,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.7.$Revision: 339 $
+This document describes File::DataClass version 0.7.$Revision: 343 $
 
 =head1 Synopsis
 
@@ -147,3 +147,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # mode: perl
 # tab-width: 3
 # End:
+
