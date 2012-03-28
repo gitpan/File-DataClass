@@ -1,10 +1,10 @@
-# @(#)$Id: WithLanguage.pm 322 2011-11-30 03:01:39Z pjf $
+# @(#)$Id: WithLanguage.pm 351 2012-03-28 23:57:08Z pjf $
 
 package File::DataClass::Schema::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 322 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -55,7 +55,7 @@ File::DataClass::Schema::WithLanguage - Adds language support to the default sch
 
 =head1 Version
 
-0.7.$Revision: 322 $
+0.8.$Revision: 351 $
 
 =head1 Synopsis
 

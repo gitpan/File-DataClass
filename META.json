@@ -52,7 +52,7 @@
             "IO::Dir" : "1.05",
             "IO::File" : "1.13",
             "IPC::Cmd" : "0.68",
-            "IPC::SRLock" : "v0.5.0",
+            "IPC::SRLock" : "v0.6.179",
             "JSON" : "2.16",
             "Lingua::EN::NameParse" : "1.28",
             "MealMaster" : "0.28",
@@ -70,7 +70,7 @@
             "namespace::autoclean" : "0.13",
             "namespace::clean" : "0.22",
             "overload" : "1.04",
-            "perl" : "5.008",
+            "perl" : "5.01",
             "version" : "0.74"
          }
       }
@@ -78,135 +78,135 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.7.343"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
-         "version" : "v0.7.338"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Constants" : {
          "file" : "lib/File/DataClass/Constants.pm",
-         "version" : "v0.7.342"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Constraints" : {
          "file" : "lib/File/DataClass/Constraints.pm",
-         "version" : "v0.7.338"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Exception" : {
          "file" : "lib/File/DataClass/Exception.pm",
-         "version" : "v0.7.338"
+         "version" : "v0.8.351"
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.7.342"
+         "version" : "v0.8.351"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Result" : {
          "file" : "lib/File/DataClass/Result.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
-         "version" : "v0.7.329"
+         "version" : "v0.8.351"
       },
       "File::DataClass::ResultSource" : {
          "file" : "lib/File/DataClass/ResultSource.pm",
-         "version" : "v0.7.329"
+         "version" : "v0.8.351"
       },
       "File::DataClass::ResultSource::WithLanguage" : {
          "file" : "lib/File/DataClass/ResultSource/WithLanguage.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Schema" : {
          "file" : "lib/File/DataClass/Schema.pm",
-         "version" : "v0.7.327"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Schema::WithLanguage" : {
          "file" : "lib/File/DataClass/Schema/WithLanguage.pm",
-         "version" : "v0.7.322"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Storage" : {
          "file" : "lib/File/DataClass/Storage.pm",
-         "version" : "v0.7.327"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Storage::JSON" : {
          "file" : "lib/File/DataClass/Storage/JSON.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Storage::WithLanguage" : {
          "file" : "lib/File/DataClass/Storage/WithLanguage.pm",
-         "version" : "v0.7.327"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Storage::XML" : {
          "file" : "lib/File/DataClass/Storage/XML.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Storage::XML::Bare" : {
          "file" : "lib/File/DataClass/Storage/XML/Bare.pm",
-         "version" : "v0.7.330"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Storage::XML::Simple" : {
          "file" : "lib/File/DataClass/Storage/XML/Simple.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::DataClass::Util" : {
          "file" : "lib/File/DataClass/Util.pm",
-         "version" : "v0.7.338"
+         "version" : "v0.8.351"
       },
       "File::Gettext" : {
          "file" : "lib/File/Gettext.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::Gettext::Constants" : {
          "file" : "lib/File/Gettext/Constants.pm",
-         "version" : "v0.7.323"
+         "version" : "v0.8.351"
       },
       "File::Gettext::Storage::MO" : {
          "file" : "lib/File/Gettext/Storage/MO.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::Gettext::Storage::PO" : {
          "file" : "lib/File/Gettext/Storage/PO.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::MailAlias" : {
          "file" : "lib/File/MailAlias.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::MailAlias::Storage" : {
          "file" : "lib/File/MailAlias/Storage.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::MealMaster" : {
          "file" : "lib/File/MealMaster.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::MealMaster::Result" : {
          "file" : "lib/File/MealMaster/Result.pm",
-         "version" : "v0.7.335"
+         "version" : "v0.8.351"
       },
       "File::MealMaster::Storage" : {
          "file" : "lib/File/MealMaster/Storage.pm",
-         "version" : "v0.7.335"
+         "version" : "v0.8.351"
       },
       "File::UnixAuth" : {
          "file" : "lib/File/UnixAuth.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::UnixAuth::Result" : {
          "file" : "lib/File/UnixAuth/Result.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       },
       "File::UnixAuth::Storage" : {
          "file" : "lib/File/UnixAuth/Storage.pm",
-         "version" : "v0.7.321"
+         "version" : "v0.8.351"
       }
    },
    "release_status" : "stable",
@@ -219,5 +219,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.7.343"
+   "version" : "0.8.351"
 }

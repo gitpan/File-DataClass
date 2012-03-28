@@ -1,6 +1,7 @@
 Build.PL
 Changes
 inc/Bob.pm
+inc/CPANTesting.pm
 lib/File/DataClass.pm
 lib/File/DataClass/Cache.pm
 lib/File/DataClass/Constants.pm

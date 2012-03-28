@@ -1,10 +1,10 @@
-# @(#)$Id: Util.pm 338 2012-03-21 22:41:29Z pjf $
+# @(#)$Id: Util.pm 351 2012-03-28 23:57:08Z pjf $
 
 package File::DataClass::Util;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use Class::MOP;
@@ -83,7 +83,7 @@ File::DataClass::Util - Moose Role defining utility methods
 
 =head1 Version
 
-0.7.$Revision: 338 $
+0.8.$Revision: 351 $
 
 =head1 Synopsis
 

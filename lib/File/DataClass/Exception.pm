@@ -1,10 +1,10 @@
-# @(#)$Id: Exception.pm 338 2012-03-21 22:41:29Z pjf $
+# @(#)$Id: Exception.pm 351 2012-03-28 23:57:08Z pjf $
 
 package File::DataClass::Exception;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 338 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
 
 use Exception::Class
    'File::DataClass::Exception::Base' => {
@@ -110,7 +110,7 @@ File::DataClass::Exception - Exception base class
 
 =head1 Version
 
-0.7.$Revision: 338 $
+0.8.$Revision: 351 $
 
 =head1 Synopsis
 

@@ -1,10 +1,10 @@
-# @(#)$Id: List.pm 321 2011-11-30 00:01:49Z pjf $
+# @(#)$Id: List.pm 351 2012-03-28 23:57:08Z pjf $
 
 package File::DataClass::List;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 321 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
 
 use Moose;
 
@@ -31,7 +31,7 @@ File::DataClass::List - List response class
 
 =head1 Version
 
-0.7.$Revision: 321 $
+0.8.$Revision: 351 $
 
 =head1 Synopsis
 

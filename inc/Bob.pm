@@ -1,21 +1,19 @@
-# @(#)$Id: Bob.pm 332 2012-02-24 10:49:04Z pjf $
+# @(#)$Id: Bob.pm 351 2012-03-28 23:57:08Z pjf $
 
 package Bob;
 
 use strict;
 use warnings;
+use inc::CPANTesting;
 
 sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 BEGIN {
-   eval { require 5.008; };          $@ and whimper 'Perl minimum 5.8';
-   qx(uname -a) =~ m{ bandsman      }mx and whimper 'Stopped Horne';
-   qx(uname -a) =~ m{ higgsboson    }mx and whimper 'Stopped dcollins';
-   qx(uname -a) =~ m{ profvince.com }mx and whimper 'Stopped vpit';
-   $ENV{PATH}   =~ m{ \A /home/sand }mx and whimper 'Stopped Konig';
+   eval { require 5.010; }; $@ and whimper 'Perl minimum 5.10';
+   my $reason; $reason = CPANTesting::broken and whimper $reason;
 }
 
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 332 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( '1.1' );
 
 use File::Spec::Functions;
 use Module::Build;
