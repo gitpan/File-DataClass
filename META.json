@@ -52,7 +52,7 @@
             "IO::Dir" : "1.05",
             "IO::File" : "1.13",
             "IPC::Cmd" : "0.68",
-            "IPC::SRLock" : "v0.6.179",
+            "IPC::SRLock" : "v0.7.0",
             "JSON" : "2.16",
             "Lingua::EN::NameParse" : "1.28",
             "MealMaster" : "0.28",
@@ -78,7 +78,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.8.351"
+         "version" : "v0.8.355"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -219,5 +219,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.8.351"
+   "version" : "0.8.355"
 }

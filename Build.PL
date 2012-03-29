@@ -1,11 +1,12 @@
-# @(#)$Id: Build.PL 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: Build.PL 355 2012-03-29 22:02:55Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 355 $ =~ /\d+/gmx );
 
 Bob->new( {
+   stop_tests => 1,
    module     => q(File::DataClass),
    home_page  => q(http://www.roxsoft.co.uk),
    requires   => {
@@ -28,7 +29,7 @@ Bob->new( {
       'IO::Dir'                => 1.05,
       'IO::File'               => 1.13,
       'IPC::Cmd'               => 0.68,
-      'IPC::SRLock'            => q(0.6.179),
+      'IPC::SRLock'            => q(0.7.0),
       'JSON'                   => 2.16,
       'Lingua::EN::NameParse'  => 1.28,
       'MealMaster'             => 0.28,
