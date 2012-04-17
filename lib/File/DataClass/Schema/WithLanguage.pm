@@ -1,22 +1,23 @@
-# @(#)$Id: WithLanguage.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: WithLanguage.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::DataClass::Schema::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
-use File::DataClass::Constraints;
+use File::DataClass::Constraints qw(Directory);
 use File::DataClass::ResultSource::WithLanguage;
 use File::DataClass::Storage::WithLanguage;
 use File::Gettext::Constants;
+use MooseX::Types::Moose qw(Str);
 
 extends qw(File::DataClass::Schema);
 
-has 'lang'      => is => 'rw', isa => 'Str', default => LANG;
-has 'localedir' => is => 'ro', isa => 'F_DC_Directory', coerce => TRUE,
+has 'lang'      => is => 'rw', isa => Str,     default => LANG;
+has 'localedir' => is => 'ro', isa => Directory, coerce  => TRUE,
    default      => sub { DIRECTORIES->[ 0 ] };
 
 around BUILDARGS => sub {
@@ -55,7 +56,7 @@ File::DataClass::Schema::WithLanguage - Adds language support to the default sch
 
 =head1 Version
 
-0.8.$Revision: 351 $
+0.9.$Revision: 368 $
 
 =head1 Synopsis
 

@@ -1,78 +1,56 @@
-# @(#)$Id: Constants.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: Constants.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+
+use Moose;
+use MooseX::ClassAttribute;
+use Moose::Util::TypeConstraints;
+use File::DataClass::Exception;
+
+subtype 'File::DataClass::Exception' => as 'ClassName' =>
+   where   { $_->can( q(throw) ) } =>
+   message { "Class $_ is not loaded or has no throw method" };
+
+class_has 'Exception_Class' => is => 'rw', isa => 'File::DataClass::Exception',
+   default                  => q(File::DataClass::Exception);
 
 my @constants;
 
 BEGIN {
-   @constants = ( qw(ARRAY CODE CYGWIN EVIL FALSE HASH LANG LOCALIZE
-                     NO_UMASK_STACK NUL PERMS SPC STAT_FIELDS TRUE) );
+   @constants = ( qw(ARRAY CODE CYGWIN EVIL EXCEPTION_CLASS FALSE HASH LANG
+                     LOCALIZE NO_UMASK_STACK NUL PERMS SPC STAT_FIELDS TRUE) );
 }
 
 use Sub::Exporter -setup => {
    exports => [ @constants ], groups => { default => [ @constants ], },
 };
 
-sub ARRAY () {
-   return q(ARRAY);
-}
+sub ARRAY    () { q(ARRAY)    }
+sub CODE     () { q(CODE)     }
+sub CYGWIN   () { q(cygwin)   }
+sub EVIL     () { q(MSWin32)  }
+sub FALSE    () { 0           }
+sub HASH     () { q(HASH)     }
+sub LANG     () { q(en)       }
+sub LOCALIZE () { q([_)       }
+sub NUL      () { q()         }
+sub PERMS    () { oct q(0660) }
+sub SPC      () { q( )        }
+sub TRUE     () { 1           }
 
-sub CODE () {
-   return q(CODE);
-}
+sub EXCEPTION_CLASS () { __PACKAGE__->Exception_Class }
+sub NO_UMASK_STACK  () { -1 }
+sub STAT_FIELDS     () { qw(device inode mode nlink uid gid device_id
+                            size atime mtime ctime blksize blocks) }
 
-sub CYGWIN () {
-   return q(cygwin);
-}
+__PACKAGE__->meta->make_immutable;
 
-sub EVIL () {
-   return q(MSWin32);
-}
-
-sub FALSE () {
-   return 0;
-}
-
-sub HASH () {
-   return q(HASH);
-}
-
-sub LANG () {
-   return q(en);
-}
-
-sub LOCALIZE () {
-   return q([_);
-}
-
-sub NO_UMASK_STACK () {
-   return -1;
-}
-
-sub NUL () {
-   return q();
-}
-
-sub PERMS () {
-   return oct q(0660);
-}
-
-sub SPC () {
-   return q( );
-}
-
-sub STAT_FIELDS () {
-   return qw(device inode mode nlink uid gid device_id size atime
-             mtime ctime blksize blocks);
-}
-
-sub TRUE () {
-   return 1;
-}
+no MooseX::ClassAttribute;
+no Moose::Util::TypeConstraints;
 
 1;
 
@@ -86,7 +64,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.8.$Rev: 351 $
+0.9.$Rev: 368 $
 
 =head1 Synopsis
 
@@ -115,6 +93,10 @@ The devil's spawn with compatability library loaded
 =head2 EVIL
 
 The devil's spawn
+
+=head2 EXCEPTION_CLASS
+
+The class to use when throwing exceptions
 
 =head2 FALSE
 
@@ -169,6 +151,8 @@ None
 =head1 Dependencies
 
 =over 3
+
+=item L<MooseX::ClassAttribute>
 
 =item L<Sub::Exporter>
 

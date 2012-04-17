@@ -1,5 +1,13 @@
 Revision history for File::DataClass
 
+0.9.368  2012-04-17
+         - Turned CPAN testing on
+         - Stopped using lazy_builder in favour of lazy and builder
+         - Switched to using MX::Types
+         - Exception_Class now a class attribute of F::DC::Constants
+         - Updated inc::Bob to 1.3
+         - API update F::DC::IO::rmtree now calls File::Path::remove_tree
+
 0.8.360  2012-04-03
          - Stopped CPAN testing, no point in allowing it to continue
 

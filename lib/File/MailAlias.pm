@@ -1,10 +1,10 @@
-# @(#)$Id: MailAlias.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: MailAlias.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::MailAlias;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose;
 use IPC::Cmd qw( can_run run );
@@ -17,7 +17,7 @@ use File::Spec;
 extends qw(File::DataClass::Schema);
 
 has 'mail_domain'    => is => 'ro', isa => 'Str',
-   lazy_build        => TRUE;
+   lazy              => TRUE,   builder => '_build_mail_domain';
 has 'newaliases'     => is => 'ro', isa => 'ArrayRef',
    default           => sub { return [ q(newaliases) ] };
 has 'system_aliases' => is => 'ro', isa => 'Str',
@@ -175,7 +175,7 @@ File::MailAlias - Domain model for the system mail aliases file
 
 =head1 Version
 
-0.8.$Revision: 351 $
+0.9.$Revision: 368 $
 
 =head1 Synopsis
 

@@ -1,10 +1,10 @@
-# @(#)$Id: ResultSet.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: ResultSet.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::DataClass::ResultSet;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -12,20 +12,19 @@ use File::DataClass::Constants;
 use File::DataClass::List;
 use File::DataClass::Result;
 
-extends qw(File::DataClass);
-with    qw(File::DataClass::Util);
+with qw(File::DataClass::Util);
 
 has 'list_class'   => is => 'ro', isa => 'ClassName',
    default         => q(File::DataClass::List);
 has 'result_class' => is => 'ro', isa => 'ClassName',
    default         => q(File::DataClass::Result);
 has 'source'       => is => 'ro', isa => 'Object',
-   required        => TRUE, weak_ref => TRUE,
+   required        => TRUE,  weak_ref => TRUE,
    handles         => [ qw(attributes defaults label_attr path storage) ];
 has '_iterator'    => is => 'rw', isa => 'Int',
-   default         => 0, init_arg => undef;
+   default         => 0,     init_arg => undef;
 has '_operators'   => is => 'ro', isa => 'HashRef',
-   lazy_build      => TRUE;
+   lazy            => TRUE,   builder => '_build__operators';
 has '_results'     => is => 'rw', isa => 'ArrayRef',
    default         => sub { [] }, init_arg => undef;
 
@@ -376,7 +375,7 @@ File::DataClass::ResultSet - Core element methods
 
 =head1 Version
 
-0.8.$Revision: 351 $
+0.9.$Revision: 368 $
 
 =head1 Synopsis
 

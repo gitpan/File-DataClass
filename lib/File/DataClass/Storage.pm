@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: Storage.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::DataClass::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
@@ -15,8 +15,7 @@ use File::DataClass::HashMerge;
 use Hash::Merge qw(merge);
 use Try::Tiny;
 
-extends qw(File::DataClass);
-with    qw(File::DataClass::Util);
+with qw(File::DataClass::Util);
 
 has 'backup' => is => 'ro', isa => 'Str',    default  => NUL;
 has 'extn'   => is => 'ro', isa => 'Str',    default  => NUL;
@@ -272,7 +271,7 @@ File::DataClass::Storage - Storage base class
 
 =head1 Version
 
-0.8.$Revision: 351 $
+0.9.$Revision: 368 $
 
 =head1 Synopsis
 

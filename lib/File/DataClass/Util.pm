@@ -1,10 +1,10 @@
-# @(#)$Id: Util.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: Util.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::DataClass::Util;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use Class::MOP;
@@ -13,8 +13,6 @@ use List::Util qw(first);
 use Try::Tiny;
 use File::DataClass::Constants;
 use File::DataClass::IO ();
-
-requires qw(exception_class);
 
 sub basename {
    my ($self, $path, @suffixes) = @_;
@@ -52,11 +50,7 @@ sub ensure_class_loaded {
 }
 
 sub io {
-   my ($self, @rest) = @_; my $io = File::DataClass::IO->new( @rest );
-
-   $io->exception_class( $self->exception_class );
-
-   return $io;
+   my ($self, @rest) = @_; return File::DataClass::IO->new( @rest );
 }
 
 sub is_member {
@@ -66,7 +60,7 @@ sub is_member {
 }
 
 sub throw {
-   shift->exception_class->throw( @_ ); return;
+   my $self = shift; EXCEPTION_CLASS->throw( @_ ); return; # Not reached
 }
 
 no Moose::Role;
@@ -83,7 +77,7 @@ File::DataClass::Util - Moose Role defining utility methods
 
 =head1 Version
 
-0.8.$Revision: 351 $
+0.9.$Revision: 368 $
 
 =head1 Synopsis
 

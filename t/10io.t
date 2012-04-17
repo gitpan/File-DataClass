@@ -1,8 +1,8 @@
-# @(#)$Id: 10io.t 356 2012-03-30 10:47:10Z pjf $
+# @(#)$Id: 10io.t 368 2012-04-17 18:54:37Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 356 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -18,7 +18,7 @@ BEGIN {
             and plan skip_all => $current->notes->{stop_tests};
 }
 
-use_ok( q(File::DataClass::IO) );
+use File::DataClass::IO;
 
 isa_ok( io( $PROGRAM_NAME ), q(File::DataClass::IO) );
 

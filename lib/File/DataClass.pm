@@ -1,33 +1,20 @@
-# @(#)$Id: DataClass.pm 360 2012-04-04 15:16:47Z pjf $
+# @(#)$Id: DataClass.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::DataClass;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 360 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
-use File::DataClass::Exception;
+use MooseX::Types::Moose qw(HashRef Undef);
+use File::DataClass::Constraints qw(Cache Lock);
 
-with qw(File::DataClass::Constraints);
-
-class_has 'Cache' => is => 'rw', isa => 'HashRef[F_DC_Cache]',
+class_has 'F_DC_Cache' => is => 'rw', isa => HashRef[Cache],
    default        => sub { {} };
 
-class_has 'Exception_Class' => is => 'rw', isa => 'F_DC_Exception',
-   default                  => q(File::DataClass::Exception);
-
-class_has 'Lock'  => is => 'rw', isa => 'Maybe[F_DC_Lock]';
-
-has 'exception_class' => is => 'ro', isa => 'F_DC_Exception',
-   lazy_build         => 1;
-
-# Private methods
-
-sub _build_exception_class {
-   my $self = shift; return $self->Exception_Class;
-}
+class_has 'F_DC_Lock'  => is => 'rw', isa => Lock | Undef;
 
 __PACKAGE__->meta->make_immutable;
 
@@ -46,7 +33,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.8.$Revision: 360 $
+This document describes File::DataClass version 0.9.$Revision: 368 $
 
 =head1 Synopsis
 
@@ -81,12 +68,11 @@ of L<File::DataClass::Schema> is created
 =item B<Cache>
 
 This is a L<Cache::Cache> object which is used to cache the results of
-reading a file. Maybe of type C<F_DC_Cache>
+reading a file. Maybe of type C<Cache>
 
 =item B<Lock>
 
-A lock object that has the methods C<set> and C<reset>. Maybe of type
-C<F_DC_Lock>
+A lock object that has the methods C<set> and C<reset>. Maybe of type C<Lock>
 
 =back
 

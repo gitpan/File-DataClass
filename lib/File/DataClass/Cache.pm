@@ -1,20 +1,19 @@
-# @(#)$Id: Cache.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: Cache.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::DataClass::Cache;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose;
-use CHI;
 use File::DataClass::Constants;
+use CHI;
 
-extends qw(File::DataClass);
-with    qw(File::DataClass::Util);
+with qw(File::DataClass::Util);
 
 has 'cache'            => is => 'ro', isa => 'Object',
-   lazy_build          => TRUE;
+   lazy                => TRUE,   builder => '_build_cache';
 has 'cache_attributes' => is => 'ro', isa => 'HashRef',
    default             => sub { return {} };
 has 'cache_class'      => is => 'ro', isa => 'ClassName',
@@ -147,20 +146,20 @@ File::DataClass::Cache - Adds extra methods to the CHI API
 
 =head1 Version
 
-0.8.$Revision: 351 $
+0.9.$Revision: 368 $
 
 =head1 Synopsis
 
    package File::DataClass::Schema;
 
-   use File::DataClass::Cache;
    use Moose;
+   use File::DataClass::Constraints qw(Cache);
+   use File::DataClass::Cache;
 
-   extends qw(File::DataClass);
-   with    qw(File::DataClass::Util);
+   with qw(File::DataClass::Util);
 
-   has 'cache'            => is => 'ro', isa => 'F_DC_Cache',
-      lazy_build          => TRUE;
+   has 'cache'            => is => 'ro', isa => Cache,
+      lazy                => TRUE,   builder => '_build_cache';
 
    has 'cache_attributes' => is => 'ro', isa => 'HashRef',
       default             => sub { return {} };

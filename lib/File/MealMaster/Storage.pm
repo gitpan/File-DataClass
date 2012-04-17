@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 351 2012-03-28 23:57:08Z pjf $
+# @(#)$Id: Storage.pm 368 2012-04-17 18:54:37Z pjf $
 
 package File::MealMaster::Storage;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 351 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
 
 use Moose;
 use Template;
@@ -17,8 +17,9 @@ extends qw(File::DataClass::Storage);
 my $DATA = do { local $RS = undef; <DATA> };
 
 has '+extn'          => default => q(.mmf);
-has 'template'       => is => 'ro', isa => 'Object', lazy_build => TRUE;
-has 'write_template' => is => 'ro', isa => 'Str',    default    => $DATA;
+has 'template'       => is => 'ro', isa => 'Object', lazy    => TRUE,
+   builder           => '_build_template';
+has 'write_template' => is => 'ro', isa => 'Str',    default => $DATA;
 
 augment '_read_file' => sub {
    my ($self, $rdr) = @_; return $rdr->all;
@@ -209,7 +210,7 @@ File::MealMaster::Storage - MealMaster food recipe file storage
 
 =head1 Version
 
-0.8.$Revision: 351 $
+0.9.$Revision: 368 $
 
 =head1 Synopsis
 
