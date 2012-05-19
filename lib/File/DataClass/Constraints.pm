@@ -1,16 +1,15 @@
-# @(#)$Id: Constraints.pm 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: Constraints.pm 380 2012-05-19 21:01:16Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 
 use MooseX::Types -declare => [ qw(Cache DummyClass HashRefOfBools Lock Path
                                    Directory File Result Symbol) ];
-use MooseX::Types::Moose qw(ArrayRef HashRef Object Str Undef);
-
+use MooseX::Types::Moose        qw(ArrayRef CodeRef HashRef Object Str Undef);
 use File::DataClass::IO;
 use Scalar::Util qw(blessed);
 
@@ -49,6 +48,7 @@ subtype Path, as Object,
 
 coerce Path,
    from ArrayRef, via { io( $_ ) },
+   from CodeRef,  via { io( $_ ) },
    from Str,      via { io( $_ ) },
    from Undef,    via { io( $_ ) };
 
@@ -58,6 +58,7 @@ subtype Directory, as Path,
 
 coerce Directory,
    from ArrayRef, via { io( $_ ) },
+   from CodeRef,  via { io( $_ ) },
    from Str,      via { io( $_ ) },
    from Undef,    via { io( $_ ) };
 
@@ -67,6 +68,7 @@ subtype File, as Path,
 
 coerce File,
    from ArrayRef, via { io( $_ ) },
+   from CodeRef,  via { io( $_ ) },
    from Str,      via { io( $_ ) },
    from Undef,    via { io( $_ ) };
 
@@ -84,7 +86,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.9.$Revision: 368 $
+0.10.$Revision: 380 $
 
 =head1 Synopsis
 

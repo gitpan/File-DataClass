@@ -1,8 +1,8 @@
-# @(#)$Id: 10io.t 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: 10io.t 380 2012-05-19 21:01:16Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -22,21 +22,36 @@ use File::DataClass::IO;
 
 isa_ok( io( $PROGRAM_NAME ), q(File::DataClass::IO) );
 
+sub p { join q(;), grep { not m{ \.svn }mx } @_ }
+sub f { my $s = shift; $s =~ s/\//\\/g if ($^O =~ /^mswin32$/i); return $s }
+
 # Error
 
 eval { io( 'quack' )->slurp };
 
-like( $EVAL_ERROR, qr{ File \s+ \S+ \s+ cannot \s+ open }mx,
-      'Cannot open file' );
+like $EVAL_ERROR, qr{ File \s+ \S+ \s+ cannot \s+ open }mx, 'Cannot open file';
 
 eval { io( catdir( qw(t xxxxx) ) )->next };
 
-like( $EVAL_ERROR, qr{ Directory \s+ \S+ \s+ cannot \s+ open }mx,
-      'Cannot open directory' );
+like $EVAL_ERROR, qr{ Directory \s+ \S+ \s+ cannot \s+ open }mx,
+     'Cannot open directory';
 
 eval { io( 'qwerty' )->empty };
 
-like( $EVAL_ERROR, qr{ Path \s+ \S+ \s+ not \s+ found }mx, 'No test empty' );
+like $EVAL_ERROR, qr{ Path \s+ \S+ \s+ not \s+ found }mx, 'No test empty';
+
+ok ! io( 'qwerty' )->exists, 'Non existant file';
+
+# Polymorphic constructor
+
+sub _filename { [ qw(t mydir file1) ] }
+
+ok io( catfile( qw(t mydir file1) ) )->exists, 'Constructs from path';
+ok io( [ qw(t mydir file1) ] )->exists, 'Constructs from arrayref';
+ok io( \&_filename )->exists, 'Constructs from coderef';
+ok io( { name => catfile( qw(t mydir file1) ) } )->exists,
+   'Constructs from hashref';
+ok io( io( [ qw(t mydir file1) ] ) )->exists, 'Constructs from object';
 
 # File Spec
 
@@ -120,9 +135,6 @@ my $exp_dirs2 = 't/mydir/dir1;t/mydir/dir1/dira;t/mydir/dir2';
 my $exp_dirs3 = 't/mydir/dir1;t/mydir/dir1/dira;t/mydir/dir1/dira/dirx;t/mydir/dir2';
 my $exp_filt1 = 't/mydir/dir1/dira;t/mydir/dir1/dira/dirx';
 my $exp_filt2 = 't/mydir/dir1/dira/dirx';
-
-sub p { join q(;), grep { not m{ \.svn }mx } @_ }
-sub f { my $s = shift; $s =~ s/\//\\/g if ($^O =~ /^mswin32$/i); return $s }
 
 my $dir = catdir( qw(t mydir) );
 

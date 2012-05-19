@@ -1,10 +1,10 @@
-# @(#)$Id: Result.pm 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: Result.pm 380 2012-05-19 21:01:16Z pjf $
 
 package File::MealMaster::Result;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 
 use Moose;
 use English qw( -no_match_vars );
@@ -40,7 +40,7 @@ File::MealMaster::Result - MealMaster food recipes custom methods
 
 =head1 Version
 
-0.9.$Revision: 368 $
+0.10.$Revision: 380 $
 
 =head1 Synopsis
 

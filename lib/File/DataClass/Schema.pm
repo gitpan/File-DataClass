@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: Schema.pm 380 2012-05-19 21:01:16Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
@@ -22,60 +22,75 @@ extends qw(File::DataClass);
 with    qw(File::DataClass::Util);
 
 has 'cache'                    => is => 'ro', isa => Cache,
-   lazy_build                  => TRUE;
+   builder                     => '_build_cache', lazy => TRUE;
+
 has 'cache_attributes'         => is => 'ro', isa => HashRef,
    default                     => sub { {
       driver                   => q(FastMmap),
       page_size                => 131072,
       num_pages                => 89,
       unlink_on_exit           => TRUE, } };
+
 has 'cache_class'              => is => 'ro', isa => ClassName | DummyClass,
    default                     => q(File::DataClass::Cache);
+
 has 'debug'                    => is => 'ro', isa => Bool,
    default                     => FALSE;
+
 has 'lock'                     => is => 'ro', isa => Lock,
-   lazy_build                  => TRUE;
+   builder                     => '_build_lock', lazy => TRUE;
+
 has 'lock_attributes'          => is => 'ro', isa => HashRef,
    default                     => sub { {} };
+
 has 'lock_class'               => is => 'ro', isa => ClassName | DummyClass,
    default                     => q(IPC::SRLock);
+
 has 'log'                      => is => 'ro', isa => Object,
    default                     => sub { Class::Null->new };
+
 has 'path'                     => is => 'rw', isa => Path,
    coerce                      => TRUE;
+
 has 'perms'                    => is => 'rw', isa => Num,
    default                     => PERMS;
+
 has 'result_source_attributes' => is => 'ro', isa => HashRef,
    default                     => sub { {} };
+
 has 'result_source_class'      => is => 'ro', isa => ClassName,
    default                     => q(File::DataClass::ResultSource);
+
 has 'source_registrations'     => is => 'ro', isa => HashRef[Object],
-   lazy_build                  => TRUE;
+   builder                     => '_build_source_registrations', lazy => TRUE;
+
 has 'storage'                  => is => 'rw', isa => Object,
-   lazy_build                  => TRUE;
+   builder                     => '_build_storage', lazy => TRUE,
+   handles                     => [ qw(extensions) ];
+
 has 'storage_attributes'       => is => 'ro', isa => HashRef,
    default                     => sub { {} };
+
 has 'storage_base'             => is => 'ro', isa => ClassName,
    default                     => q(File::DataClass::Storage);
+
 has 'storage_class'            => is => 'rw', isa => Str,
    default                     => q(XML::Simple);
+
 has 'tempdir'                  => is => 'ro', isa => Directory,
    default                     => File::Spec->tmpdir,
    coerce                      => TRUE;
 
 around BUILDARGS => sub {
-   my ($next, $class, @args) = @_; my $attrs = $class->$next( @args );
+   my ($next, $class, @args) = @_; my $attr = $class->$next( @args );
 
-   exists $attrs->{ioc_obj} or return $attrs;
+   my $builder = delete $attr->{ioc_obj}; $builder or return $attr;
+   my $config  = $builder->can( q(config) ) ? $builder->config : {};
 
-   my $ioc   = delete $attrs->{ioc_obj};
-   my @attrs = ( qw(debug lock log tempdir) );
+   __merge_attributes( $attr, $builder, [ qw(debug lock log tempdir) ] );
+   __merge_attributes( $attr, $config,  [ qw(tempdir) ] );
 
-   $attrs->{ $_ } ||= $ioc->$_() for (grep { $ioc->can( $_ ) } @attrs);
-
-   $ioc->can( q(config) ) and $attrs->{tempdir} ||= $ioc->config->{tempdir};
-
-   return $attrs;
+   return $attr;
 };
 
 sub dump {
@@ -186,6 +201,21 @@ sub _build_storage {
    return $class->new( { %{ $self->storage_attributes }, schema => $self } );
 }
 
+# Private functions
+
+sub __merge_attributes {
+   my ($dest, $src, $attrs) = @_; my $class = blessed $src;
+
+   for (grep { not exists $dest->{ $_ } or not defined $dest->{ $_ } }
+        @{ $attrs || [] }) {
+      my $v = $class ? ($src->can( $_ ) ? $src->$_() : undef) : $src->{ $_ };
+
+      defined $v and $dest->{ $_ } = $v;
+   }
+
+   return $dest;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
@@ -202,7 +232,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.9.$Revision: 368 $
+0.10.$Revision: 380 $
 
 =head1 Synopsis
 

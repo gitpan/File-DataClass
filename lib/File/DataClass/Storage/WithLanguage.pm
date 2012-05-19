@@ -1,25 +1,26 @@
-# @(#)$Id: WithLanguage.pm 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: WithLanguage.pm 380 2012-05-19 21:01:16Z pjf $
 
 package File::DataClass::Storage::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
 use File::Gettext;
-use Hash::Merge qw(merge);
 
 with qw(File::DataClass::Util);
 
 has 'gettext' => is => 'ro', isa => 'Object',  lazy     => TRUE,
    builder    => '_build_gettext';
+
 has 'schema'  => is => 'ro', isa => 'Object',  required => TRUE,
    handles    => [ qw(cache lang localedir) ], weak_ref => TRUE;
+
 has 'storage' => is => 'ro', isa => 'Object',  required => TRUE,
-   handles    => [ qw(extn _is_stale _meta_pack _read_file txn_do
-                      validate_params) ];
+   handles    => [ qw(extn extensions _meta_pack _merge_hash_data _meta_unpack
+                      _read_file txn_do validate_params) ];
 
 sub delete {
    my ($self, $path, $result) = @_;
@@ -81,10 +82,10 @@ sub load {
    my ($self, @paths) = @_; $paths[ 0 ] or return {};
 
    my ($key, $newest) = $self->_get_key_and_newest( \@paths );
-
    my ($data, $meta)  = $self->cache->get( $key );
+   my $cache_mtime    = $self->_meta_unpack( $meta );
 
-   not $self->_is_stale( $data, $meta, $newest ) and return $data;
+   not $self->is_stale( $data, $cache_mtime, $newest ) and return $data;
 
    ($data, $newest)   = $self->_load( \@paths );
 
@@ -194,12 +195,8 @@ sub _load {
       my ($red, $path_mtime) = $self->_read_file( $path, FALSE );
 
       if ($red) {
-         for (keys %{ $red }) {
-            $data->{ $_ } = exists $data->{ $_ }
-                          ? merge( $data->{ $_ }, $red->{ $_ } ) : $red->{ $_ };
-         }
-
          $path_mtime > $newest and $newest = $path_mtime;
+         $self->_merge_hash_data( $data, $red );
       }
 
       $path_mtime = __load_gettext( $data, $self->_gettext( $path ) );
@@ -253,7 +250,7 @@ File::DataClass::Storage::WithLanguage - Split/merge language dependent data
 
 =head1 Version
 
-0.9.$Revision: 368 $
+0.10.$Revision: 380 $
 
 =head1 Synopsis
 

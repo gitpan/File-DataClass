@@ -1,19 +1,18 @@
-# @(#)$Id: IO.pm 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: IO.pm 380 2012-05-19 21:01:16Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
 use Moose::Util::TypeConstraints;
-use English      qw( -no_match_vars );
-use Fcntl        qw( :flock :seek );
-use List::Util   qw( first );
-use Scalar::Util qw( blessed );
+use English      qw(-no_match_vars);
+use Fcntl        qw(:flock :seek);
+use List::Util   qw(first);
 use File::Basename ();
 use File::Copy     ();
 use File::Path     ();
@@ -29,33 +28,34 @@ use Sub::Exporter -setup => {
 enum 'File::DataClass::IO_Mode' => qw(a a+ r r+ w w+);
 enum 'File::DataClass::IO_Type' => qw(dir file);
 
-has 'autoclose'        => is => 'rw', isa => 'Bool',      default    => TRUE  ;
-has 'io_handle'        => is => 'rw', isa => 'Maybe[Object]'                  ;
-has 'is_open'          => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has 'is_utf8'          => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has 'mode'             => is => 'rw', isa => 'File::DataClass::IO_Mode',
-   default             => q(r);
-has 'name'             => is => 'rw', isa => 'Str',       default    => NUL   ;
-has 'sort'             => is => 'rw', isa => 'Bool',      default    => TRUE  ;
-has 'type'             => is => 'rw', isa => 'Maybe[File::DataClass::IO_Type]';
-has '_assert'          => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has '_atomic'          => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has '_atomic_infix'    => is => 'rw', isa => 'Str',       default    => q(B_*);
-has '_binary'          => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has '_binmode'         => is => 'rw', isa => 'Str',       default    => NUL   ;
-has '_block_size'      => is => 'rw', isa => 'Int',       default    => 1024  ;
-has '_chomp'           => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has '_deep'            => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has '_dir_pattern'     => is => 'ro', isa => 'RegexpRef', lazy_build => TRUE  ;
-has '_encoding'        => is => 'rw', isa => 'Str',       default    => NUL   ;
-has '_filter'          => is => 'rw', isa => 'Maybe[CodeRef]'                 ;
-has '_lock'            => is => 'rw', isa => 'Bool',      default    => FALSE ;
-has '_lock_obj'        => is => 'rw', isa => 'Maybe[Object]',
-   writer              => 'lock_obj';
-has '_perms'           => is => 'rw', isa => 'Num',       default    => PERMS ;
-has '_separator'       => is => 'rw', isa => 'Str',       default    => $RS   ;
-has '_umask'           => is => 'rw', isa => 'ArrayRef[Num]',
-   default             => sub { [] };
+has 'autoclose'     => is => 'rw', isa => 'Bool',         default => TRUE  ;
+has 'io_handle'     => is => 'rw', isa => 'Maybe[Object]'                  ;
+has 'is_open'       => is => 'rw', isa => 'Bool',         default => FALSE ;
+has 'is_utf8'       => is => 'rw', isa => 'Bool',         default => FALSE ;
+has 'mode'          => is => 'rw', isa => 'File::DataClass::IO_Mode',
+   default          => q(r);
+has 'name'          => is => 'rw', isa => 'Str',          default => NUL   ;
+has 'sort'          => is => 'rw', isa => 'Bool',         default => TRUE  ;
+has 'type'          => is => 'rw', isa => 'Maybe[File::DataClass::IO_Type]';
+has '_assert'       => is => 'rw', isa => 'Bool',         default => FALSE ;
+has '_atomic'       => is => 'rw', isa => 'Bool',         default => FALSE ;
+has '_atomic_infix' => is => 'rw', isa => 'Str',          default => q(B_*);
+has '_binary'       => is => 'rw', isa => 'Bool',         default => FALSE ;
+has '_binmode'      => is => 'rw', isa => 'Str',          default => NUL   ;
+has '_block_size'   => is => 'rw', isa => 'Int',          default => 1024  ;
+has '_chomp'        => is => 'rw', isa => 'Bool',         default => FALSE ;
+has '_deep'         => is => 'rw', isa => 'Bool',         default => FALSE ;
+has '_dir_pattern'  => is => 'ro', isa => 'RegexpRef',    lazy    => TRUE,
+   builder          => '_build__dir_pattern';
+has '_encoding'     => is => 'rw', isa => 'Str',          default => NUL   ;
+has '_filter'       => is => 'rw', isa => 'Maybe[CodeRef]'                 ;
+has '_lock'         => is => 'rw', isa => 'Bool',         default => FALSE ;
+has '_lock_obj'     => is => 'rw', isa => 'Maybe[Object]',
+   writer           => 'lock_obj';
+has '_perms'        => is => 'rw', isa => 'Num',          default => PERMS ;
+has '_separator'    => is => 'rw', isa => 'Str',          default => $RS   ;
+has '_umask'        => is => 'rw', isa => 'ArrayRef[Num]',
+   default          => sub { [] };
 
 around BUILDARGS => sub {
    my ($next, $class, $name, $mode, $perms) = @_; my $attrs = {};
@@ -65,7 +65,10 @@ around BUILDARGS => sub {
    $is_blessed and $name->isa( __PACKAGE__ ) and return $name;
    $is_blessed and $name .= NUL; # Stringify path object
 
-   my $type = ref $name; $type eq HASH and return $name;
+   my $type = ref $name;
+
+   $type eq CODE and $name = $name->() and $type = ref $name;
+   $type eq HASH and return $name;
 
    $attrs->{name} = $type eq ARRAY ? File::Spec->catfile( @{ $name } ) : $name;
    $mode and $attrs->{mode} = $mode; $perms and $attrs->{_perms} = $perms;
@@ -275,19 +278,28 @@ sub clear {
 sub close {
    my $self = shift; $self->is_open or return $self;
 
-   unless ($OSNAME eq EVIL or $OSNAME eq CYGWIN) {
-      $self->_atomic and $self->_rename_atomic;
-   }
-
-   $self->unlock; $self->io_handle and $self->io_handle->close;
-
-   if ($OSNAME eq EVIL or $OSNAME eq CYGWIN) {
-      $self->_atomic and $self->_rename_atomic;
-   }
+   $OSNAME eq EVIL || $OSNAME eq CYGWIN ? $self->_close_and_rename
+                                        : $self->_rename_and_close;
 
    $self->io_handle( undef );
    $self->is_open  ( FALSE );
    $self->mode     ( q(r)  );
+   return $self;
+}
+
+sub _close_and_rename {
+   my $self = shift;
+
+   $self->unlock; $self->io_handle and $self->io_handle->close;
+   $self->_atomic and $self->_rename_atomic;
+   return $self;
+}
+
+sub _rename_and_close {
+   my $self = shift;
+
+   $self->_atomic and $self->_rename_atomic;
+   $self->unlock; $self->io_handle and $self->io_handle->close;
    return $self;
 }
 
@@ -488,7 +500,7 @@ sub is_absolute {
 }
 
 sub is_dir {
-   my $self = shift; $self->type or $self->_set_type;
+   my $self = shift; $self->type or $self->_set_type or return FALSE;
 
    return $self->type && $self->type eq q(dir) ? TRUE : FALSE;
 }
@@ -611,7 +623,7 @@ sub _open_dir {
    $self->_assert and $self->assert_dirpath( $path );
    $self->io_handle( IO::Dir->new( $path ) )
       or $self->_throw( error => 'Directory [_1] cannot open',
-                        args  => [ $path ], level => 6 );
+                        args  => [ $path ] );
    $self->is_open( TRUE );
    return $self;
 }
@@ -623,7 +635,7 @@ sub _open_file {
    $self->_umask_push( $perms );
    $self->io_handle( IO::File->new( $path, $mode ) )
       or $self->_throw( error => 'File [_1] cannot open',
-                        args  => [ $path ], level => 6 );
+                        args  => [ $path ] );
    $self->_umask_pop;
    $self->is_open( TRUE );
    $self->set_binmode;
@@ -913,7 +925,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.9.$Revision: 368 $
+0.10.$Revision: 380 $
 
 =head1 Synopsis
 

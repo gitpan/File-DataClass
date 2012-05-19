@@ -17,6 +17,7 @@ lib/File/DataClass/ResultSource/WithLanguage.pm
 lib/File/DataClass/Schema.pm
 lib/File/DataClass/Schema/WithLanguage.pm
 lib/File/DataClass/Storage.pm
+lib/File/DataClass/Storage/Any.pm
 lib/File/DataClass/Storage/JSON.pm
 lib/File/DataClass/Storage/WithLanguage.pm
 lib/File/DataClass/Storage/XML.pm
@@ -56,6 +57,7 @@ t/65mealmaster.t
 t/70unixauth.t
 t/75gettext.t
 t/76with-language.t
+t/77multiclass.t
 t/aliases
 t/critic.rc
 t/default.json

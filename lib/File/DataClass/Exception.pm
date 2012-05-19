@@ -1,10 +1,10 @@
-# @(#)$Id: Exception.pm 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: Exception.pm 380 2012-05-19 21:01:16Z pjf $
 
 package File::DataClass::Exception;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 
 use Exception::Class
    'File::DataClass::Exception::Base' => {
@@ -15,23 +15,30 @@ use base qw(File::DataClass::Exception::Base);
 use Carp;
 use MRO::Compat;
 use English      qw(-no_match_vars);
+use List::Util   qw(first);
 use Scalar::Util qw(blessed);
 
-our $IGNORE = [ __PACKAGE__ ];
+our $IGNORE = [ __PACKAGE__, q(File::DataClass::IO) ];
 
 sub new {
    my ($self, @rest) = @_;
 
-   my $args   = @rest < 2 ? { error => $rest[ 0 ] } : { @rest };
-   my $level  = 3; exists $args->{level} and $level = delete $args->{level};
-   my ($package, $line) = (caller( $level ))[ 0, 2 ];
-   my $leader = "${package}[${line}]: ";
+   my $args = @rest < 2 ? { error => $rest[ 0 ] } : { @rest };
+
+   my ($leader, $line, $package); my $level = 3; $args->{level} ||= 3;
+
+   do {
+      ($package, $line) = (caller( $level ))[ 0, 2 ];
+      $leader = "${package}[${line}]: "; $level++;
+   } while ($level < $args->{level} or __is_member( $package, $IGNORE ));
+
+   delete $args->{level};
 
    if (__is_one_of_us( $args->{error} )) {
       $args->{error}->{leader} = $leader; return $args->{error};
    }
 
-   $args->{error} .= q();
+   $args->{error} .= q(); chomp $args->{error}; $args->{error} .= "\n";
 
    return $self->next::method( args           => [],
                                error          => 'Error unknown',
@@ -93,6 +100,12 @@ sub throw_on_error {
 
 # Private subroutines
 
+sub __is_member {
+   my ($candidate, $list) = @_; $candidate or return;
+
+   return (first { $_ eq $candidate } @{ $list }) ? 1 : 0;
+}
+
 sub __is_one_of_us {
    return $_[ 0 ] && blessed $_[ 0 ] && $_[ 0 ]->isa( __PACKAGE__ );
 }
@@ -109,7 +122,7 @@ File::DataClass::Exception - Exception base class
 
 =head1 Version
 
-0.9.$Revision: 368 $
+0.10.$Revision: 380 $
 
 =head1 Synopsis
 

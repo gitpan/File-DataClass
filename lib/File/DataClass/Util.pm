@@ -1,10 +1,10 @@
-# @(#)$Id: Util.pm 368 2012-04-17 18:54:37Z pjf $
+# @(#)$Id: Util.pm 380 2012-05-19 21:01:16Z pjf $
 
 package File::DataClass::Util;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 368 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use Class::MOP;
@@ -59,6 +59,14 @@ sub is_member {
    return (first { $_ eq $candidate } @rest) ? TRUE : FALSE;
 }
 
+sub is_stale {
+   my ($self, $data, $cache_mtime, $path_mtime) = @_;
+
+   return ! defined $data || ! defined $path_mtime || ! defined $cache_mtime
+         || $path_mtime > $cache_mtime
+          ? TRUE : FALSE;
+}
+
 sub throw {
    my $self = shift; EXCEPTION_CLASS->throw( @_ ); return; # Not reached
 }
@@ -77,7 +85,7 @@ File::DataClass::Util - Moose Role defining utility methods
 
 =head1 Version
 
-0.9.$Revision: 368 $
+0.10.$Revision: 380 $
 
 =head1 Synopsis
 
@@ -102,6 +110,13 @@ File::DataClass::Util - Moose Role defining utility methods
 =head2 io
 
 =head2 is_member
+
+=head2 is_stale
+
+   $bool = $self->is_stale( $data, $cache_mtime, $path_mtime );
+
+Returns true if there is no data or the cache mtime is older than the
+path mtime
 
 =head2 throw
 
