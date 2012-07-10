@@ -1,12 +1,13 @@
-# @(#)$Id: Result.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Result.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::UnixAuth::Result;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
+use File::DataClass::Functions qw(is_member);
 use Moose;
 
 extends qw(File::DataClass::Result);
@@ -14,7 +15,7 @@ extends qw(File::DataClass::Result);
 sub add_user_to_group {
    my ($self, $user) = @_; my $users = $self->members;
 
-   $self->is_member( $user, @{ $users } ) and return FALSE;
+   is_member $user, $users and return FALSE;
 
    $self->members( [ @{ $users }, $user ] );
 
@@ -24,7 +25,7 @@ sub add_user_to_group {
 sub remove_user_from_group {
    my ($self, $user) = @_; my $users = $self->members;
 
-   $self->is_member( $user, @{ $users } ) or return FALSE;
+   is_member $user, $users or return FALSE;
 
    $self->members( [ grep { $_ ne $user } @{ $users } ] );
 
@@ -45,7 +46,7 @@ File::UnixAuth::Result - Unix authentication and authorisation file custom resul
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

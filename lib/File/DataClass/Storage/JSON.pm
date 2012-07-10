@@ -1,29 +1,35 @@
-# @(#)$Id: JSON.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: JSON.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::Storage::JSON;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
-use JSON qw();
 use Moose;
+use JSON qw();
 
 extends qw(File::DataClass::Storage);
 
 has '+extn' => default => q(.json);
 
 augment '_read_file' => sub {
-   my ($self, $rdr) = @_; my $json = JSON->new->canonical;
+   my ($self, $rdr) = @_;
 
-   return $rdr->empty ? {} : $json->decode( $rdr->all );
+   $self->encoding and $rdr->encoding( $self->encoding );
+
+   # The filter causes the data to be untainted (running suid). I shit you not
+   my $json = JSON->new->canonical->filter_json_object( sub { $_[ 0 ] } );
+
+   return $rdr->empty ? {} : $json->utf8( 0 )->decode( $rdr->all );
 };
 
 augment '_write_file' => sub {
    my ($self, $wtr, $data) = @_; my $json = JSON->new->canonical;
 
-   $wtr->print( $json->pretty->encode( $data ) );
-   return $data;
+   $self->encoding and $wtr->encoding( $self->encoding );
+
+   $wtr->print( $json->pretty->utf8( 0 )->encode( $data ) ); return $data;
 };
 
 __PACKAGE__->meta->make_immutable;
@@ -42,7 +48,7 @@ File::DataClass::Storage::JSON - Read/write JSON data storage model
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

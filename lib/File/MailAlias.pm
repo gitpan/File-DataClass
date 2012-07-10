@@ -1,63 +1,69 @@
-# @(#)$Id: MailAlias.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: MailAlias.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::MailAlias;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
 use IPC::Cmd qw( can_run run );
 use English  qw( -no_match_vars );
 use File::DataClass::Constants;
+use File::DataClass::Functions qw(throw);
 use File::DataClass::IO ();
 use File::Copy;
-use File::Spec;
+use File::Spec::Functions qw(catfile);
 
 extends qw(File::DataClass::Schema);
 
 has 'mail_domain'    => is => 'ro', isa => 'Str',
-   lazy              => TRUE,   builder => '_build_mail_domain';
+   builder           => '_build_mail_domain', lazy => TRUE;
+
 has 'newaliases'     => is => 'ro', isa => 'ArrayRef',
-   default           => sub { return [ q(newaliases) ] };
-has 'system_aliases' => is => 'ro', isa => 'Str',
-   default           => sub {
-      return File::Spec->catfile( NUL, qw(etc mail aliases) ) };
+   default           => sub { [ q(newaliases) ] };
 
-has 'commit'     => is => 'rw', isa => 'Bool',
-   default       => FALSE;
+has 'system_aliases' => is => 'ro', isa => 'ArrayRef',
+   default           => sub { [ NUL, qw(etc mail aliases) ] };
+
+
+has 'commit'     => is => 'rw', isa => 'Bool', default => FALSE;
+
 has 'commit_cmd' => is => 'ro', isa => 'ArrayRef',
-   default       => sub { return [ qw(svn ci -m "Updated") ] };
+   default       => sub { [ qw(svn ci -m "Updated") ] };
 
-has 'root_update'       => is => 'rw', isa => 'Bool',
-   default              => FALSE;
+
+has 'root_update'       => is => 'rw', isa => 'Bool', default => FALSE;
+
 has 'root_update_cmd'   => is => 'ro', isa => 'Maybe[Str]';
+
 has 'root_update_attrs' => is => 'ro', isa => 'ArrayRef',
-   default              => sub { return [ qw(-S -n -c update_mail_aliases) ] };
+   default              => sub { [ qw(-qnc update_mail_aliases) ] };
+
 
 has '+result_source_attributes' =>
-   default                      => sub { return {
-      aliases => { attributes => [ qw(comment created owner recipients) ],
-                   defaults   => { comment    => [ '-' ],
-                                   recipients => [] } }, } };
+   default           => sub { {
+      aliases        => {
+         attributes  => [ qw(comment created owner recipients) ],
+         defaults    => { comment => [ '-' ], recipients => [] } }, } };
+
+has 'source_name'    => is => 'ro', isa => 'Str', default => q(aliases);
+
 has '+storage_class' =>
    default           => q(+File::MailAlias::Storage);
 
-has 'source_name' => is => 'ro', isa => 'Str', default => q(aliases);
+around 'BUILDARGS' => sub {
+   my ($next, $self, $car, @cdr) = @_;
 
-around BUILDARGS => sub {
-   my ($orig, $class, $car, @cdr) = @_; my $attrs = {};
+   my $attr = {}; not $car and return $attr;
 
-   (not $car or blessed $car) and return $class->$orig( $car, @cdr );
+   if (ref $car eq HASH) { $attr = $car }
+   else { $attr->{path} = $car }
 
-   if    (ref $car eq HASH)  { $attrs         = $car }
-   elsif (ref $car eq ARRAY) { $attrs->{path} = $class->catfile( @{ $car } ) }
-   else                      { $attrs->{path} = $car.NUL }
+   $cdr[ 0 ] and $attr->{system_aliases} = [ $cdr[ 0 ] ];
+   $cdr[ 1 ] and $attr->{newaliases    } = [ $cdr[ 1 ] ];
 
-   $cdr[ 0 ] and $attrs->{system_aliases} =   $cdr[ 0 ];
-   $cdr[ 1 ] and $attrs->{newaliases    } = [ $cdr[ 1 ] ];
-
-   return $class->$orig( $attrs );
+   return $self->$next( $attr );
 };
 
 around 'resultset' => sub {
@@ -95,6 +101,16 @@ sub delete {
    return ($name, $out);
 }
 
+sub email_address {
+   my ($self, $username) = @_; $username or return NUL; my $alias;
+
+   exists $self->aliases_map->{ $username }
+      and $alias = $self->find( $username )
+      and return $alias->recipients->[ 0 ];
+
+   return $username.q(@).$self->mail_domain;
+}
+
 sub find {
    my ($self, $name) = @_; return $self->resultset->find( { name => $name } );
 }
@@ -113,15 +129,15 @@ sub update {
 }
 
 sub update_as_root {
-   my $self = shift; my $cmd = join SPC, @{ $self->newaliases || [] };
+   my $self = shift; my $cmd = shift @{ $self->newaliases };
 
-   ($self->newaliases and $cmd = can_run( $self->newaliases->[ 0 ] ))
-      or $self->throw( error => 'Path [_1] cannot execute', args => [ $cmd ] );
+   $cmd = can_run( $cmd )
+      or throw error => 'Path [_1] cannot execute', args => [ $cmd ];
 
-   copy( NUL.$self->path, $self->catfile( $self->system_aliases ) )
-      or $self->throw( $ERRNO );
+   copy( NUL.$self->path, catfile( @{ $self->system_aliases } ) )
+      or throw $ERRNO;
 
-   return $self->_run_cmd( $cmd );
+   return $self->_run_cmd( [ $cmd, @{ $self->newaliases } ] );
 }
 
 # Private methods
@@ -145,8 +161,8 @@ sub _run_update_cmd {
       my $cmd  = [ $self->root_update_cmd,
                    @{ $self->root_update_attrs },
                    NUL.$self->path,
-                   $self->system_aliases,
-                   $self->catfile( @{ $self->newaliases } ) ];
+                   catfile( @{ $self->system_aliases } ),
+                   catfile( @{ $self->newaliases } ) ];
 
       $out .= $self->_run_cmd( $cmd );
    }
@@ -158,8 +174,8 @@ sub _run_cmd {
    my ($self, $cmd) = @_; my ($ok, $err, $out) = run( command => $cmd );
 
    $out and ref $out eq ARRAY and $out = join "\n", @{ $out };
-   $ok or $self->throw( error => "Could not run [_1] -- [_2]\n[_3]",
-                        args  => [ $err, $ERRNO, $out ] );
+   $ok or throw error => "Could not run [_1] -- [_2]\n[_3]",
+                args  => [ $err, $ERRNO, $out ];
    return $out;
 }
 
@@ -175,7 +191,7 @@ File::MailAlias - Domain model for the system mail aliases file
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 
@@ -250,6 +266,13 @@ section on the stash
 Deletes the named mail alias. Calls L</update_as_root> via the C<suid>
 wrapper. Adds the text from the wrapper call to the results section on
 the stash
+
+=head2 email_address
+
+   $email_address = $alias_obj->email_address( $username );
+
+Takes a user returns a guess as to what the users email address might
+be
 
 =head2 find
 

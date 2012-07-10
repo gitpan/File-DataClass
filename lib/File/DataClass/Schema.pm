@@ -1,15 +1,17 @@
-# @(#)$Id: Schema.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Schema.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
 use File::DataClass::Constants;
 use File::DataClass::Constraints qw(Cache Directory DummyClass Lock Path);
+use File::DataClass::Functions   qw(ensure_class_loaded merge_attributes throw);
+use File::DataClass::IO;
 use MooseX::Types::Moose         qw(Bool ClassName HashRef Num Object Str);
 use File::Spec;
 
@@ -19,7 +21,6 @@ use File::DataClass::Storage;
 use IPC::SRLock;
 
 extends qw(File::DataClass);
-with    qw(File::DataClass::Util);
 
 has 'cache'                    => is => 'ro', isa => Cache,
    builder                     => '_build_cache', lazy => TRUE;
@@ -65,8 +66,7 @@ has 'source_registrations'     => is => 'ro', isa => HashRef[Object],
    builder                     => '_build_source_registrations', lazy => TRUE;
 
 has 'storage'                  => is => 'rw', isa => Object,
-   builder                     => '_build_storage', lazy => TRUE,
-   handles                     => [ qw(extensions) ];
+   builder                     => '_build_storage', lazy => TRUE;
 
 has 'storage_attributes'       => is => 'ro', isa => HashRef,
    default                     => sub { {} };
@@ -81,14 +81,18 @@ has 'tempdir'                  => is => 'ro', isa => Directory,
    default                     => File::Spec->tmpdir,
    coerce                      => TRUE;
 
-around BUILDARGS => sub {
+around 'BUILDARGS' => sub {
    my ($next, $class, @args) = @_; my $attr = $class->$next( @args );
 
-   my $builder = delete $attr->{ioc_obj}; $builder or return $attr;
+   my $builder = delete $attr->{builder}
+              || delete $attr->{ioc_obj}; # Deprecated
+
+   $builder or return $attr;
+
    my $config  = $builder->can( q(config) ) ? $builder->config : {};
 
-   __merge_attributes( $attr, $builder, [ qw(debug lock log tempdir) ] );
-   __merge_attributes( $attr, $config,  [ qw(tempdir) ] );
+   merge_attributes $attr, $builder, [ qw(debug lock log tempdir) ];
+   merge_attributes $attr, $config,  [ qw(tempdir) ];
 
    return $attr;
 };
@@ -96,15 +100,19 @@ around BUILDARGS => sub {
 sub dump {
    my ($self, $args) = @_; my $path = $args->{path} || $self->path;
 
-   blessed $path or $path = $self->io( $path );
+   blessed $path or $path = io( $path );
 
    return $self->storage->dump( $path, $args->{data} || {} );
+}
+
+sub extensions {
+   return EXTENSIONS;
 }
 
 sub load {
    my ($self, @paths) = @_; $paths[ 0 ] or $paths[ 0 ] = $self->path;
 
-   @paths = map { blessed $_ ? $_ : $self->io( $_ ) } @paths;
+   @paths = map { blessed $_ ? $_ : io( $_ ) } @paths;
 
    return $self->storage->load( @paths ) || {};
 }
@@ -114,13 +122,10 @@ sub resultset {
 }
 
 sub source {
-   my ($self, $moniker) = @_;
-
-   $moniker or $self->throw( 'Result source not specified' );
+   my ($self, $moniker) = @_; $moniker or throw 'Result source not specified';
 
    my $source = $self->source_registrations->{ $moniker }
-      or $self->throw( error => 'Result source [_1] unknown',
-                       args  => [ $moniker ] );
+      or throw error => 'Result source [_1] unknown', args => [ $moniker ];
 
    return $source;
 }
@@ -132,11 +137,13 @@ sub sources {
 sub translate {
    my ($self, $args) = @_;
 
-   my $class = blessed $self || $self;
-   my $attrs = { path => $args->{from}, storage_class => $args->{from_class} };
-   my $data  = $class->new( $attrs )->load;
+   my $class      = blessed $self       || $self;
+   my $from_class = $args->{from_class} || q(Any);
+   my $to_class   = $args->{to_class  } || q(Any);
+   my $attrs      = { path => $args->{from}, storage_class => $from_class };
+   my $data       = $class->new( $attrs )->load;
 
-   $attrs = { path => $args->{to}, storage_class => $args->{to_class} };
+   $attrs = { path => $args->{to}, storage_class => $to_class };
    $class->new( $attrs )->dump( { data => $data } );
 
    return;
@@ -148,7 +155,7 @@ sub _build_cache {
    my $self  = shift; (my $ns = lc __PACKAGE__) =~ s{ :: }{-}gmx; my $cache;
 
    my $attrs = { cache_attributes => { %{ $self->cache_attributes } },
-                 ioc_obj          => $self };
+                 builder          => $self };
 
    $ns = $attrs->{cache_attributes}->{namespace} ||= $ns;
 
@@ -196,24 +203,9 @@ sub _build_storage {
    if (q(+) eq substr $class, 0, 1) { $class = substr $class, 1 }
    else { $class = $self->storage_base.q(::).$class }
 
-   $self->ensure_class_loaded( $class );
+   ensure_class_loaded $class;
 
    return $class->new( { %{ $self->storage_attributes }, schema => $self } );
-}
-
-# Private functions
-
-sub __merge_attributes {
-   my ($dest, $src, $attrs) = @_; my $class = blessed $src;
-
-   for (grep { not exists $dest->{ $_ } or not defined $dest->{ $_ } }
-        @{ $attrs || [] }) {
-      my $v = $class ? ($src->can( $_ ) ? $src->$_() : undef) : $src->{ $_ };
-
-      defined $v and $dest->{ $_ } = $v;
-   }
-
-   return $dest;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -232,7 +224,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 
@@ -284,7 +276,7 @@ Writes debug information to the log object if set to true
 A classname that is expected to have a class method C<throw>. Defaults to
 L<File::DataClass::Exception> and is of type C<File::DataClass::Exception>
 
-=item B<ioc_obj>
+=item B<builder>
 
 An optional object that provides these methods; C<debug>,
 C<exception_class>, C<lock>, C<log>, and C<tempdir>. Their values are
@@ -367,6 +359,13 @@ Dumps the data structure to a file. Path defaults to the one specified in
 the schema definition. Returns the data that was written to the file if
 successful
 
+=head2 extensions
+
+   \%extension_map = $self->extensions;
+
+Returns a hash ref that maps filename extensions (keys) onto storage
+subclasses (values)
+
 =head2 load
 
    $data_hash = $schema->load( @paths );
@@ -422,11 +421,11 @@ debug method to be called with useful information
 
 =item L<File::DataClass::Exception>
 
+=item L<File::DataClass::Functions>
+
 =item L<File::DataClass::ResultSource>
 
 =item L<File::DataClass::Storage>
-
-=item L<File::DataClass::Util>
 
 =item L<IPC::SRLock>
 

@@ -1,14 +1,14 @@
-# @(#)$Id: Exception.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Exception.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::Exception;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Exception::Class
    'File::DataClass::Exception::Base' => {
-      fields => [ qw(args leader out rv) ] };
+      fields => [ qw(args class leader out rv) ] };
 
 use base qw(File::DataClass::Exception::Base);
 
@@ -25,6 +25,8 @@ sub new {
 
    my $args = @rest < 2 ? { error => $rest[ 0 ] } : { @rest };
 
+   __is_one_of_us( $args->{error} ) and return $args->{error};
+
    my ($leader, $line, $package); my $level = 3; $args->{level} ||= 3;
 
    do {
@@ -34,13 +36,10 @@ sub new {
 
    delete $args->{level};
 
-   if (__is_one_of_us( $args->{error} )) {
-      $args->{error}->{leader} = $leader; return $args->{error};
-   }
-
    $args->{error} .= q(); chomp $args->{error}; $args->{error} .= "\n";
 
    return $self->next::method( args           => [],
+                               class          => __PACKAGE__,
                                error          => 'Error unknown',
                                ignore_package => $IGNORE,
                                leader         => $leader,
@@ -122,7 +121,7 @@ File::DataClass::Exception - Exception base class
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

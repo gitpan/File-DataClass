@@ -1,10 +1,10 @@
-# @(#)$Id: Simple.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Simple.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::Storage::XML::Simple;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -14,6 +14,8 @@ extends qw(File::DataClass::Storage::XML);
 
 augment '_read_file' => sub {
    my ($self, $rdr) = @_;
+
+   $self->encoding and $rdr->encoding( $self->encoding );
 
    my $data = $self->_dtd_parse( $rdr->all );
    my $xs   = XML::Simple->new( SuppressEmpty => TRUE );
@@ -27,6 +29,7 @@ augment '_write_file' => sub {
    my $xs = XML::Simple->new( NoAttr   => TRUE, SuppressEmpty => TRUE,
                               RootName => $self->root_name );
 
+   $self->encoding and $wtr->encoding( $self->encoding );
    $self->_dtd->[ 0 ] and $wtr->println( @{ $self->_dtd } );
    $wtr->append( $xs->xml_out( $data ) );
    return $data;
@@ -48,7 +51,7 @@ File::DataClass::Storage::XML::Simple - Read/write XML data storage model
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

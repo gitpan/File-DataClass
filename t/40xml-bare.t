@@ -1,8 +1,8 @@
-# @(#)$Id: 40xml-bare.t 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: 40xml-bare.t 401 2012-07-10 00:31:02Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );

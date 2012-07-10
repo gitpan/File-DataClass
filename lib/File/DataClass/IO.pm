@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: IO.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -170,11 +170,15 @@ sub atomic {
 }
 
 sub atomic_infix {
-   my ($self, $value) = @_; $self->_atomic_infix( $value ); return $self;
+   my ($self, $value) = @_;
+
+   defined $value and $self->_atomic_infix( $value ); return $self;
 }
 
 sub atomic_suffix {
-   my ($self, $value) = @_; $self->_atomic_infix( $value ); return $self;
+   my ($self, $value) = @_;
+
+   defined $value and $self->_atomic_infix( $value ); return $self;
 }
 
 sub basename {
@@ -204,7 +208,9 @@ sub binmode {
 }
 
 sub block_size {
-   my ($self, $size) = @_; $self->_block_size( $size ); return $self;
+   my ($self, $size) = @_;
+
+   defined $size and $self->_block_size( $size ); return $self;
 }
 
 sub buffer {
@@ -267,7 +273,8 @@ sub chomp {
 sub chown {
    my ($self, $uid, $gid) = @_;
 
-   CORE::chown $uid, $gid, $self->name;
+   defined $uid and defined $gid and CORE::chown $uid, $gid, $self->name;
+
    return $self;
 }
 
@@ -371,9 +378,10 @@ sub empty {
 sub encoding {
    my ($self, $encoding) = @_;
 
+   $encoding and lc $encoding eq q(utf-8) and $encoding = q(utf8);
    $encoding or
       $self->_throw( 'No encoding value passed to '.__PACKAGE__.'::encoding' );
-   $self->is_open and CORE::binmode( $self->io_handle, ":$encoding" );
+   $self->is_open and CORE::binmode( $self->io_handle, ":encoding($encoding)" );
    $self->_encoding( $encoding );
    $self->is_utf8( $encoding eq q(utf8) ? TRUE : FALSE );
    return $self;
@@ -411,7 +419,9 @@ sub filepath {
 }
 
 sub filter {
-   my ($self, $code) = @_; $self->_filter( $code ); return $self;
+   my ($self, $code) = @_;
+
+   defined $code and $self->_filter( $code ); return $self;
 }
 
 sub _find {
@@ -648,7 +658,9 @@ sub pathname {
 }
 
 sub perms {
-   my ($self, $perms) = @_; $self->_perms( $perms ); return $self;
+   my ($self, $perms) = @_;
+
+   defined $perms and $self->_perms( $perms ); return $self;
 }
 
 sub print {
@@ -748,7 +760,9 @@ sub seek {
 }
 
 sub separator {
-   my ($self, $value) = @_; $self->_separator( $value ); return $self;
+   my ($self, $value) = @_;
+
+   defined $value and $self->_separator( $value ); return $self;
 }
 
 sub set_binmode {
@@ -925,7 +939,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

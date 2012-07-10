@@ -1,9 +1,9 @@
-# @(#)$Id: Build.PL 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Build.PL 401 2012-07-10 00:31:02Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 Bob->new( {
    module     => q(File::DataClass),

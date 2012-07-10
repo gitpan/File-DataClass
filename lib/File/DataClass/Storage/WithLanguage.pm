@@ -1,26 +1,27 @@
-# @(#)$Id: WithLanguage.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: WithLanguage.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::Storage::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
+use File::Basename qw(basename);
 use File::DataClass::Constants;
+use File::DataClass::Functions qw(is_stale merge_hash_data throw);
 use File::Gettext;
+use Try::Tiny;
 
-with qw(File::DataClass::Util);
-
-has 'gettext' => is => 'ro', isa => 'Object',  lazy     => TRUE,
+has 'gettext' => is => 'ro', isa => 'Object',  lazy => TRUE,
    builder    => '_build_gettext';
 
 has 'schema'  => is => 'ro', isa => 'Object',  required => TRUE,
    handles    => [ qw(cache lang localedir) ], weak_ref => TRUE;
 
 has 'storage' => is => 'ro', isa => 'Object',  required => TRUE,
-   handles    => [ qw(extn extensions _meta_pack _merge_hash_data _meta_unpack
-                      _read_file txn_do validate_params) ];
+   handles    => [ qw(extn meta_pack meta_unpack read_file txn_do
+                      validate_params) ];
 
 sub delete {
    my ($self, $path, $result) = @_;
@@ -73,9 +74,7 @@ sub dump {
 }
 
 sub insert {
-   my ($self, $path, $result) = @_;
-
-   return $self->_create_or_update( $path, $result, FALSE );
+   return $_[ 0 ]->_create_or_update( $_[ 1 ], $_[ 2 ], FALSE );
 }
 
 sub load {
@@ -83,13 +82,25 @@ sub load {
 
    my ($key, $newest) = $self->_get_key_and_newest( \@paths );
    my ($data, $meta)  = $self->cache->get( $key );
-   my $cache_mtime    = $self->_meta_unpack( $meta );
+   my $cache_mtime    = $self->meta_unpack( $meta );
 
-   not $self->is_stale( $data, $cache_mtime, $newest ) and return $data;
+   not is_stale $data, $cache_mtime, $newest and return $data;
 
-   ($data, $newest)   = $self->_load( \@paths );
+   $data = {}; $newest = 0;
 
-   $self->cache->set( $key, $data, $self->_meta_pack( $newest ) );
+   for my $path (@paths) {
+      my ($red, $path_mtime) = $self->read_file( $path, FALSE );
+
+      if ($red) {
+         $path_mtime > $newest and $newest = $path_mtime;
+         merge_hash_data $data, $red;
+      }
+
+      $path_mtime = $self->_load_gettext( $data, $path );
+      $path_mtime and $path_mtime > $newest and $newest = $path_mtime;
+   }
+
+   $self->cache->set( $key, $data, $self->meta_pack( $newest ) );
 
    return $data;
 }
@@ -103,18 +114,20 @@ sub select {
 }
 
 sub update {
-   my ($self, $path, $result) = @_;
-
-   return $self->_create_or_update( $path, $result, TRUE );
+   return $_[ 0 ]->_create_or_update( $_[ 1 ], $_[ 2 ], TRUE );
 }
 
 # Private methods
 
-sub _build_gettext {
-   my $self = shift;
+sub _extn {
+   my $extn = $_[ 0 ]->extn;
 
-   return File::Gettext->new( ioc_obj   => $self->schema,
-                              localedir => $self->localedir );
+   return ref $extn eq CODE ? $extn->( $_[ 1 ] ) : $extn;
+}
+
+sub _build_gettext {
+   return File::Gettext->new( builder   => $_[ 0 ]->schema,
+                              localedir => $_[ 0 ]->localedir );
 }
 
 sub _create_or_update {
@@ -122,8 +135,8 @@ sub _create_or_update {
 
    my $source    = $result->_resultset->source;
    my $condition = sub { not $source->lang_dep->{ $_[ 0 ] } };
-   my $updated   = $self->storage->_create_or_update( $path, $result,
-                                                      $updating, $condition );
+   my $updated   = $self->storage->create_or_update( $path, $result,
+                                                     $updating, $condition );
    my $rs        = $self->_gettext( $path )->resultset;
    my $element   = $source->name;
 
@@ -135,15 +148,20 @@ sub _create_or_update {
                      msgid   => $result->name,
                      msgstr  => [ $msgstr ], };
 
-      $attrs->{name} = $rs->storage->make_key( $attrs );
+      $attrs->{name} = $rs->storage->make_key( $attrs ); my $name;
 
-      my $name   = $updating ? $rs->create_or_update( $attrs )
-                             : $rs->create( $attrs );
+      try {
+         $name = $updating ? $rs->create_or_update( $attrs )
+                           : $rs->create( $attrs );
+      }
+      catch { $_->class ne q(NothingUpdated) and throw $_ };
 
       $updated ||= $name ? TRUE : FALSE;
    }
 
-   $updating and not $updated and $self->throw( 'Nothing updated' );
+   $updating and not $updated
+      and throw class => q(NothingUpdated), error => 'Nothing updated',
+                level => 4;
 
    $updated and $path->touch; return $updated;
 }
@@ -159,7 +177,8 @@ sub _get_key_and_newest {
       if ($mtime) { $mtime > $newest and $newest = $mtime }
       else { $valid = FALSE }
 
-      my $lang_path = $self->_gettext( $path )->path;
+      my $file      = basename( NUL.$path, $self->_extn( $path ) );
+      my $lang_path = $self->gettext->get_path( $self->lang, $file );
 
       if (defined ($mtime = $self->cache->get_mtime( NUL.$lang_path ))) {
          if ($mtime) {
@@ -168,7 +187,7 @@ sub _get_key_and_newest {
          }
       }
       else {
-         if ($lang_path->is_file) {
+         if (-f $lang_path) {
             $key .= $key ? q(~).$lang_path : $lang_path; $valid = FALSE;
          }
          else { $self->cache->set_mtime( NUL.$lang_path, 0 ) }
@@ -181,43 +200,17 @@ sub _get_key_and_newest {
 sub _gettext {
    my ($self, $path) = @_; my $gettext = $self->gettext;
 
-   $path or $self->throw( 'Path not specified' );
+   $path or throw 'Path not specified'; my $extn = $self->_extn( $path );
 
-   $gettext->set_path( $self->lang, $self->basename( $path, $self->extn ) );
+   $gettext->set_path( $self->lang, basename( NUL.$path, $extn ) );
 
    return $gettext;
 }
 
-sub _load {
-   my ($self, $paths) = @_; my $data = {}; my $newest = 0;
+sub _load_gettext {
+   my ($self, $data, $path) = @_;
 
-   for my $path (@{ $paths }) {
-      my ($red, $path_mtime) = $self->_read_file( $path, FALSE );
-
-      if ($red) {
-         $path_mtime > $newest and $newest = $path_mtime;
-         $self->_merge_hash_data( $data, $red );
-      }
-
-      $path_mtime = __load_gettext( $data, $self->_gettext( $path ) );
-      $path_mtime and $path_mtime > $newest and $newest = $path_mtime;
-   }
-
-   return ($data, $newest);
-}
-
-# Private subroutines
-
-sub __get_attributes {
-   my ($condition, $source) = @_;
-
-   return grep { not m{ \A _ }msx
-                 and $_ ne q(name)
-                 and $condition->( $_ ) } @{ $source->attributes || [] };
-}
-
-sub __load_gettext {
-   my ($data, $gettext) = @_; $gettext->path->is_file or return;
+   my $gettext = $self->_gettext( $path ); $gettext->path->is_file or return;
 
    my $gettext_data = $gettext->load->{ $gettext->source_name };
 
@@ -232,6 +225,16 @@ sub __load_gettext {
    }
 
    return $gettext->path->stat->{mtime};
+}
+
+# Private subroutines
+
+sub __get_attributes {
+   my ($condition, $source) = @_;
+
+   return grep { not m{ \A _ }msx
+                 and $_ ne q(name)
+                 and $condition->( $_ ) } @{ $source->attributes || [] };
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -250,7 +253,7 @@ File::DataClass::Storage::WithLanguage - Split/merge language dependent data
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 
@@ -326,7 +329,7 @@ None
 
 =over 3
 
-=item L<File::DataClass::Util>
+=item L<File::Gettext>
 
 =back
 

@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Constants.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -21,8 +21,9 @@ class_has 'Exception_Class' => is => 'rw', isa => 'File::DataClass::Exception',
 my @constants;
 
 BEGIN {
-   @constants = ( qw(ARRAY CODE CYGWIN EVIL EXCEPTION_CLASS FALSE HASH LANG
-                     LOCALIZE NO_UMASK_STACK NUL PERMS SPC STAT_FIELDS TRUE) );
+   @constants = ( qw(ARRAY CODE CYGWIN EVIL EXCEPTION_CLASS EXTENSIONS FALSE
+                     HASH LANG LOCALIZE NO_UMASK_STACK NUL PERMS SPC
+                     STAT_FIELDS TRUE) );
 }
 
 use Sub::Exporter -setup => {
@@ -43,6 +44,8 @@ sub SPC      () { q( )        }
 sub TRUE     () { 1           }
 
 sub EXCEPTION_CLASS () { __PACKAGE__->Exception_Class }
+sub EXTENSIONS      () { { '.json' => [ q(JSON) ],
+                           '.xml'  => [ q(XML::Simple), q(XML::Bare) ], } }
 sub NO_UMASK_STACK  () { -1 }
 sub STAT_FIELDS     () { qw(device inode mode nlink uid gid device_id
                             size atime mtime ctime blksize blocks) }
@@ -64,7 +67,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.10.$Rev: 380 $
+0.11.$Rev: 401 $
 
 =head1 Synopsis
 
@@ -97,6 +100,10 @@ The devil's spawn
 =head2 EXCEPTION_CLASS
 
 The class to use when throwing exceptions
+
+=head2 EXTENSIONS
+
+Hash ref that map filename extensions (keys) onto storage subclasses (values)
 
 =head2 FALSE
 

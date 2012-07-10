@@ -7,6 +7,7 @@ lib/File/DataClass/Cache.pm
 lib/File/DataClass/Constants.pm
 lib/File/DataClass/Constraints.pm
 lib/File/DataClass/Exception.pm
+lib/File/DataClass/Functions.pm
 lib/File/DataClass/HashMerge.pm
 lib/File/DataClass/IO.pm
 lib/File/DataClass/List.pm
@@ -23,7 +24,6 @@ lib/File/DataClass/Storage/WithLanguage.pm
 lib/File/DataClass/Storage/XML.pm
 lib/File/DataClass/Storage/XML/Bare.pm
 lib/File/DataClass/Storage/XML/Simple.pm
-lib/File/DataClass/Util.pm
 lib/File/Gettext.pm
 lib/File/Gettext/Constants.pm
 lib/File/Gettext/Storage/MO.pm

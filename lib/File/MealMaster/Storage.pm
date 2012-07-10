@@ -1,16 +1,17 @@
-# @(#)$Id: Storage.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Storage.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::MealMaster::Storage;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
 use Template;
 use Template::Stash;
 use English qw( -no_match_vars );
 use File::DataClass::Constants;
+use File::DataClass::Functions qw(throw);
 
 extends qw(File::DataClass::Storage);
 
@@ -22,7 +23,11 @@ has 'template'       => is => 'ro', isa => 'Object', lazy    => TRUE,
 has 'write_template' => is => 'ro', isa => 'Str',    default => $DATA;
 
 augment '_read_file' => sub {
-   my ($self, $rdr) = @_; return $rdr->all;
+   my ($self, $rdr) = @_;
+
+   $self->encoding and $rdr->encoding( $self->encoding );
+
+   return $rdr->all;
 };
 
 around '_read_file' => sub {
@@ -39,7 +44,11 @@ around '_read_file' => sub {
 };
 
 augment '_write_file' => sub {
-   my ($self, $wtr, $data) = @_; return $self->_write_filter( $wtr, $data );
+   my ($self, $wtr, $data) = @_;
+
+   $self->encoding and $wtr->encoding( $self->encoding );
+
+   return $self->_write_filter( $wtr, $data );
 };
 
 sub make_key {
@@ -67,7 +76,7 @@ sub _write_filter {
       my $buffer = NUL;
 
       $self->template->process( \$template_data, $recipes->{ $_ }, \$buffer )
-         or $self->throw( $self->template->error );
+         or throw $self->template->error;
       $output .= $buffer;
    }
 
@@ -80,7 +89,7 @@ sub _write_filter {
 sub _build_template {
    my $self = shift;
    my $args = { INTERPOLATE => FALSE, COMPILE_DIR => $self->schema->tempdir };
-   my $new  = Template->new( $args ) or $self->throw( Template->error );
+   my $new  = Template->new( $args ) or throw Template->error;
 
    $Template::Stash::SCALAR_OPS->{sprintf} = sub {
       my ($val, $format) = @_; return sprintf $format, $val;
@@ -210,7 +219,7 @@ File::MealMaster::Storage - MealMaster food recipe file storage
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

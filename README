@@ -2,7 +2,7 @@ Name
     File::DataClass - Structured data file IO with OO paradigm
 
 Version
-    This document describes File::DataClass version 0.10.$Revision: 380 $
+    This document describes File::DataClass version 0.11.$Revision: 401 $
 
 Synopsis
        use File::DataClass::Schema;

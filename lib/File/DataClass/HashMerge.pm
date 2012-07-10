@@ -1,10 +1,10 @@
-# @(#)$Id: HashMerge.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: HashMerge.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::DataClass::HashMerge;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Carp;
@@ -66,7 +66,7 @@ sub _merge_attr_arrays {
    my ($self, $to, $from) = @_; my $updated = FALSE;
 
    for (0 .. $#{ $to }) {
-      if ($from->[ $_ ]) {
+      if (defined $from->[ $_ ]) {
          my $res = $self->_merge_attr( \$to->[ $_ ], $from->[ $_ ] );
 
          $updated ||= $res;
@@ -85,7 +85,7 @@ sub _merge_attr_hashes {
    my ($self, $to, $from) = @_; my $updated = FALSE;
 
    for (keys %{ $to }) {
-      if ($from->{ $_ }) {
+      if (defined $from->{ $_ }) {
          my $res = $self->_merge_attr( \$to->{ $_ }, $from->{ $_ } );
 
          $updated ||= $res;
@@ -95,7 +95,7 @@ sub _merge_attr_hashes {
 
    if (keys %{ $from } > keys %{ $to }) {
       for (keys %{ $from }) {
-         if ($from->{ $_ } and not exists $to->{ $_ }) {
+         if (defined $from->{ $_ } and not exists $to->{ $_ }) {
             $to->{ $_ } = $from->{ $_ }; $updated = TRUE;
          }
       }
@@ -116,7 +116,7 @@ File::DataClass::HashMerge - Merge hashes with update flag
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

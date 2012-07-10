@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Storage.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::MailAlias::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Date::Format;
 use File::DataClass::Constants;
@@ -16,12 +16,15 @@ extends qw(File::DataClass::Storage);
 augment '_read_file' => sub {
    my ($self, $rdr) = @_;
 
+   $self->encoding and $rdr->encoding( $self->encoding );
+
    return $self->_read_filter( [ $rdr->chomp->getlines ] );
 };
 
 augment '_write_file' => sub {
    my ($self, $wtr, $data) = @_;
 
+   $self->encoding and $wtr->encoding( $self->encoding );
    $wtr->println( @{ $self->_write_filter( $data ) } );
    return $data;
 };
@@ -132,7 +135,7 @@ File::MailAlias::Storage - Storage class file the mail alias file
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 

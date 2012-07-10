@@ -1,19 +1,20 @@
-# @(#)$Id: Gettext.pm 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: Gettext.pm 401 2012-07-10 00:31:02Z pjf $
 
 package File::Gettext;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 
 use Moose;
 use Moose::Util::TypeConstraints;
 use English qw(-no_match_vars);
 use File::DataClass::Constants;
 use File::DataClass::Constraints qw(Directory);
+use File::DataClass::Functions   qw(throw);
 use File::DataClass::IO;
 use File::Gettext::Constants;
-use File::Spec;
+use File::Spec::Functions        qw(catfile tmpdir);
 
 extends qw(File::DataClass::Schema);
 
@@ -77,7 +78,7 @@ around 'load' => sub {
    my ($next, $self, $lang, @names) = @_;
 
    my @paths     = grep { $self->_is_file_or_log_debug( $_ ) }
-                   map  { $self->_get_path( $lang, $_ ) } @names;
+                   map  { $self->_get_path_io( $lang, $_ ) } @names;
    my $data      = $self->$next( @paths );
    my $po_header = exists $data->{po_header}
                  ? $data->{po_header}->{msgstr} || {} : {};
@@ -108,21 +109,24 @@ around 'load' => sub {
    return $data;
 };
 
+sub get_path {
+   my ($self, $lang, $file) = @_;
+
+   $lang or throw 'Language not specified';
+   $file or throw 'Language file path not specified';
+
+   return catfile( $self->localedir, $lang,
+                   $self->catagory_name, $file.$self->storage->extn );
+}
+
 sub set_path {
-   my ($self, @rest) = @_; return $self->path( $self->_get_path( @rest ) );
+   my ($self, @rest) = @_; return $self->path( $self->_get_path_io( @rest ) );
 }
 
 # Private methods
 
-sub _get_path {
-   my ($self, $lang, $file) = @_;
-
-   $lang or $self->throw( 'Language not specified' );
-   $file or $self->throw( 'Language file path not specified' );
-
-   my $cn = $self->catagory_name; my $extn = $self->storage->extn;
-
-   return $self->io( [ $self->localedir, $lang, $cn, $file.$extn ] );
+sub _get_path_io {
+   return io( $_[ 0 ]->get_path( $_[ 1 ], $_[ 2 ] ) );
 }
 
 sub _is_file_or_log_debug {
@@ -153,7 +157,7 @@ sub __build_localedir {
       $dir->is_dir and return $dir;
    }
 
-   return io( File::Spec->tmpdir );
+   return io( tmpdir() );
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -173,7 +177,7 @@ File::Gettext - Read and write GNU gettext po/mo files
 
 =head1 Version
 
-0.10.$Revision: 380 $
+0.11.$Revision: 401 $
 
 =head1 Synopsis
 
@@ -182,6 +186,12 @@ File::Gettext - Read and write GNU gettext po/mo files
 =head1 Description
 
 =head1 Subroutines/Methods
+
+=head2 get_path
+
+   $gettext->get_path( $lang, $file );
+
+Returns the path to the po/mo file for the specified language
 
 =head2 set_path
 

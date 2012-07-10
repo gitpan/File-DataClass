@@ -1,8 +1,8 @@
-# @(#)$Id: 20data-class.t 380 2012-05-19 21:01:16Z pjf $
+# @(#)$Id: 20data-class.t 401 2012-07-10 00:31:02Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 380 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -163,7 +163,7 @@ $args = { acl => q(@support) };
 
 my @res = test( $rs, q(search), $args );
 
-ok $res[0] && $res[0]->name eq q(admin), 'Can search';
+ok $res[ 0 ] && $res[ 0 ]->name eq q(admin), 'Can search';
 
 $args = { list => q(acl), name => q(admin) };
 $args->{items} = [ qw(group1 group2) ];

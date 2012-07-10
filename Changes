@@ -1,5 +1,28 @@
 Revision history for File::DataClass
 
+0.11.401 2012-07-10
+         - Added email_address method to F::MailAlias
+         - Add class attribute to F::DC::Exception
+         - F::DC::Storage::WithLanguage does not throw if no lang dep updates
+         - Fixed F::Gettext::Storage::PO using name for msgid
+         - Fixed gettext caching in F::DC::Storage::WithLanguage
+         - Fixed bug in F::DC::HashMerge. Will update undef to 0
+         - Made EXTENSIONS available in F::DC::Schema
+         - Replace F::DC::Util with F::DC::Functions
+         - Made JSON untaint the data it reads
+         - Moved F::DC::Storage::extensions to F::DC::Util
+         - Fixed using F::DC::Storage::WithLanguage with F::DC::S::Any
+         - F::DC::Schema::translate defaults to storage class Any
+         - Fixed bug in update detection logic
+         - Fixed F::MailAlias api
+         - Added Schema attribute builder, deprecated ioc_obj
+         - Added columns and has_column to F::DC::ResultSource
+         - Do not allow setting attributes to undef in F::DC::IO
+         - Optimised coercions in F::DC::Constraints
+         - Optimised F::DC::Storage::WithLanguage::_get_key_and_newest
+         - Added type coercion to LanguageType from Undef in
+           F::DC::Schema::WithLanguage
+
 0.10.380 2012-05-19
          - Added F::DC::Storage::Any
          - Fixed attribute merging in F::DC::Schema::BUILDARGS
