@@ -1,10 +1,10 @@
-# @(#)$Id: WithLanguage.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: WithLanguage.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::DataClass::Schema::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -62,7 +62,7 @@ File::DataClass::Schema::WithLanguage - Adds language support to the default sch
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 
@@ -78,9 +78,9 @@ Defines these attributes
 
 =over 3
 
-=item B<lang>
+=item C<lang>
 
-The two character language code, e.g. de.
+The two character language code, e.g. C<de>.
 
 =back
 

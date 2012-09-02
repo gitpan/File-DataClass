@@ -1,10 +1,10 @@
-# @(#)$Id: WithLanguage.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: WithLanguage.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::DataClass::Storage::WithLanguage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Moose;
 use File::Basename qw(basename);
@@ -253,7 +253,7 @@ File::DataClass::Storage::WithLanguage - Split/merge language dependent data
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 
@@ -269,11 +269,11 @@ Defines the attributes
 
 =over 3
 
-=item B<lang>
+=item C<lang>
 
 Two character language code
 
-=item B<storage>
+=item C<storage>
 
 Instance of L<File::DataClass::Storage>
 

@@ -1,8 +1,8 @@
-# @(#)$Id: 20data-class.t 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: 20data-class.t 406 2012-09-02 13:41:57Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -196,7 +196,7 @@ use File::DataClass::Constants ();
 File::DataClass::Constants->Exception_Class( q(MyException) );
 
 $schema = File::DataClass::Schema->new
-   ( ioc_obj => Dummy->new, path => [ qw(t default.xml) ] );
+   ( builder => Dummy->new, path => [ qw(t default.xml) ] );
 
 is ref $schema, q(File::DataClass::Schema),
    'File::DataClass::Schema - with inversion of control';

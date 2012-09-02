@@ -1,11 +1,11 @@
-# @(#)$Id: Constraints.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: Constraints.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use MooseX::Types -declare => [ qw(Cache DummyClass HashRefOfBools Lock Path
                                    Directory File Result Symbol) ];
@@ -20,7 +20,7 @@ subtype Cache, as Object,
    };
 
 subtype DummyClass, as Str,
-   where   { $_ eq q(none) }, message { "Class $_ is not 'none'" };
+   where   { $_ eq q(none) }, message { "Class ${_} is not 'none'" };
 
 subtype HashRefOfBools, as HashRef;
 
@@ -86,7 +86,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 
@@ -103,33 +103,33 @@ Defines these subtypes
 
 =over 3
 
-=item B<Cache>
+=item C<Cache>
 
 Is a L<File::DataClass::Cache>
 
-=item B<Exception>
+=item C<Exception>
 
 Can C<throw>
 
-=item B<Lock>
+=item C<Lock>
 
 Is a L<Class::Null> or can C<set> and C<reset>
 
-=item B<Path>
+=item C<Path>
 
 Is a L<File::DataClass::IO>. Can be coerced from either a string or
 an array ref
 
-=item B<Result>
+=item C<Result>
 
 Is a L<File::DataClass::Result>
 
-=item B<Directory>
+=item C<Directory>
 
 Subtype of C<Path> which is a directory. Can be coerced from
 either a string or an array ref
 
-=item B<File>
+=item C<File>
 
 Subtype of C<Path> which is a file. Can be coerced from either a
 string or an array ref

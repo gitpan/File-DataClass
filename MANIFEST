@@ -47,6 +47,7 @@ t/03podcoverage.t
 t/04critic.t
 t/05kwalitee.t
 t/06yaml.t
+t/07podspelling.t
 t/10io.t
 t/20data-class.t
 t/25parse-dtd.t

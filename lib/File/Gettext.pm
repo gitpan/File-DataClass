@@ -1,10 +1,10 @@
-# @(#)$Id: Gettext.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: Gettext.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::Gettext;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Moose;
 use Moose::Util::TypeConstraints;
@@ -177,7 +177,7 @@ File::Gettext - Read and write GNU gettext po/mo files
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 

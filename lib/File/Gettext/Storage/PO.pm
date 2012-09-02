@@ -1,10 +1,10 @@
-# @(#)$Id: PO.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: PO.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::Gettext::Storage::PO;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Date::Format ();
 use Encode qw(decode encode);
@@ -427,11 +427,11 @@ __END__
 
 =head1 Name
 
-File::Gettext::Storage::PO - Storage class for GNU gettext portable object format
+File::Gettext::Storage::PO - Storage class for GNU Gettext portable object format
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 
@@ -443,7 +443,7 @@ File::Gettext::Storage::PO - Storage class for GNU gettext portable object forma
 
 =head2 make_key
 
-Concatenates the I<msgctxt> and I<msgid> attributes to form the hash key
+Concatenates the C<msgctxt> and C<msgid> attributes to form the hash key
 
 =head1 Configuration and Environment
 

@@ -1,10 +1,10 @@
-# @(#)$Id: Functions.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: Functions.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::DataClass::Functions;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Class::MOP;
 use File::DataClass::Constants;
@@ -112,7 +112,7 @@ File::DataClass::Functions - <One-line description of module's purpose>
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 
@@ -171,9 +171,9 @@ accessor methods are called
 
 =head2 merge_hash_data
 
-   merge_hash_data $existsing, $new;
+   merge_hash_data $existing, $new;
 
-Uses L<Hash::Merge> to merge data from the new hash ref in with the existsing
+Uses L<Hash::Merge> to merge data from the new hash ref in with the existing
 
 =head2 throw
 

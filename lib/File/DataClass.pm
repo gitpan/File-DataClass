@@ -1,20 +1,18 @@
-# @(#)$Id: DataClass.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: DataClass.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::DataClass;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
-use MooseX::Types::Moose qw(HashRef Undef);
-use File::DataClass::Constraints qw(Cache Lock);
+use MooseX::Types::Moose qw(HashRef);
+use File::DataClass::Constraints qw(Cache);
 
-class_has 'F_DC_Cache' => is => 'rw', isa => HashRef[Cache],
-   default        => sub { {} };
-
-class_has 'F_DC_Lock'  => is => 'rw', isa => Lock | Undef;
+class_has 'F_DC_Cache' => is => 'ro', isa => HashRef[Cache],
+   default             => sub { {} };
 
 __PACKAGE__->meta->make_immutable;
 
@@ -33,7 +31,7 @@ File::DataClass - Structured data file IO with OO paradigm
 
 =head1 Version
 
-This document describes File::DataClass version 0.11.$Revision: 401 $
+This document describes File::DataClass version 0.12.$Revision: 406 $
 
 =head1 Synopsis
 
@@ -69,10 +67,6 @@ of L<File::DataClass::Schema> is created
 
 This is a L<Cache::Cache> object which is used to cache the results of
 reading a file. Maybe of type C<Cache>
-
-=item B<Lock>
-
-A lock object that has the methods C<set> and C<reset>. Maybe of type C<Lock>
 
 =back
 

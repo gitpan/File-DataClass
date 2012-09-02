@@ -1,10 +1,10 @@
-# @(#)$Id: MailAlias.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: MailAlias.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::MailAlias;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Moose;
 use IPC::Cmd qw( can_run run );
@@ -191,7 +191,7 @@ File::MailAlias - Domain model for the system mail aliases file
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 
@@ -207,32 +207,32 @@ Sets these attributes:
 
 =over 3
 
-=item system_aliases
+=item C<system_aliases>
 
 The real mail alias file. Defaults to F</etc/mail/aliases>
 
-=item commit
+=item C<commit>
 
 Boolean indicating whether source code control tracking is being
-used. Defaults to I<false>
+used. Defaults to C<false>
 
-=item path
+=item C<path>
 
-Path to the copy of the I<aliases> file that this module works on. Defaults
-to I<aliases> in the I<ctrldir>
+Path to the copy of the C<aliases> file that this module works on. Defaults
+to C<aliases> in the C<ctrldir>
 
-=item prog
+=item C<prog>
 
-Path to the I<appname>_misc program which is optionally used to
+Path to the C<appname>_misc program which is optionally used to
 commit changes to the local copy of the aliases file to a source
 code control repository
 
-=item new_aliases
+=item C<new_aliases>
 
 Path to the C<newaliases> program that is used to update the MTA
 when changes are made
 
-=item suid
+=item C<suid>
 
 Path to the C<suid> root wrapper program that is called to enable update
 access to the real mail alias file

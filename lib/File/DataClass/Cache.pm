@@ -1,10 +1,10 @@
-# @(#)$Id: Cache.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: Cache.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::DataClass::Cache;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -145,7 +145,7 @@ File::DataClass::Cache - Adds extra methods to the CHI API
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 

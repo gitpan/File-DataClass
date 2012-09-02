@@ -1,10 +1,10 @@
-# @(#)$Id: Bare.pm 401 2012-07-10 00:31:02Z pjf $
+# @(#)$Id: Bare.pm 406 2012-09-02 13:41:57Z pjf $
 
 package File::DataClass::Storage::XML::Bare;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 401 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::Bare;
@@ -166,7 +166,7 @@ File::DataClass::Storage::XML::Bare - Read/write XML data storage model
 
 =head1 Version
 
-0.11.$Revision: 401 $
+0.12.$Revision: 406 $
 
 =head1 Synopsis
 
