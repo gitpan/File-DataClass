@@ -1,10 +1,10 @@
-# @(#)$Id: Functions.pm 406 2012-09-02 13:41:57Z pjf $
+# @(#)$Id: Functions.pm 408 2012-09-03 00:23:14Z pjf $
 
 package File::DataClass::Functions;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 408 $ =~ /\d+/gmx );
 
 use Class::MOP;
 use File::DataClass::Constants;
@@ -108,17 +108,19 @@ __END__
 
 =head1 Name
 
-File::DataClass::Functions - <One-line description of module's purpose>
+File::DataClass::Functions - Common functions used in this distribution
 
 =head1 Version
 
-0.12.$Revision: 406 $
+0.12.$Revision: 408 $
 
 =head1 Synopsis
 
    use File::DataClass::Functions qw(list of functions to import);
 
 =head1 Description
+
+Common functions used in this distribution
 
 =head1 Subroutines/Methods
 

@@ -68,6 +68,7 @@
             "namespace::autoclean" : "0.13",
             "namespace::clean" : "0.22",
             "overload" : "1.04",
+            "parent" : "0.224",
             "perl" : "5.01",
             "version" : "0.74"
          }
@@ -76,7 +77,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.12.406"
+         "version" : "v0.12.409"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -96,7 +97,7 @@
       },
       "File::DataClass::Functions" : {
          "file" : "lib/File/DataClass/Functions.pm",
-         "version" : "v0.12.406"
+         "version" : "v0.12.408"
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
@@ -221,5 +222,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.12.406"
+   "version" : "0.12.409"
 }
