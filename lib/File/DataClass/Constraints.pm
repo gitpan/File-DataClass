@@ -1,11 +1,11 @@
-# @(#)$Id: Constraints.pm 406 2012-09-02 13:41:57Z pjf $
+# @(#)$Id: Constraints.pm 416 2012-11-07 07:46:46Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
 
 use MooseX::Types -declare => [ qw(Cache DummyClass HashRefOfBools Lock Path
                                    Directory File Result Symbol) ];
@@ -86,7 +86,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.12.$Revision: 406 $
+0.13.$Revision: 416 $
 
 =head1 Synopsis
 

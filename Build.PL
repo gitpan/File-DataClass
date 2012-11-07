@@ -1,9 +1,9 @@
-# @(#)$Id: Build.PL 409 2012-09-06 13:58:43Z pjf $
+# @(#)$Id: Build.PL 416 2012-11-07 07:46:46Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 409 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
 
 Bob->new( {
    module     => q(File::DataClass),
@@ -53,6 +53,8 @@ Bob->new( {
 } )->create_build_script; # Goal!
 
 # Local Variables:
+# tab-title: Dataclass
+# eval: (load-project-state "file-dataclass")
 # mode: perl
 # tab-width: 3
 # End:

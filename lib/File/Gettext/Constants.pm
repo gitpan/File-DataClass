@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 406 2012-09-02 13:41:57Z pjf $
+# @(#)$Id: Constants.pm 416 2012-11-07 07:46:46Z pjf $
 
 package File::Gettext::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
 
 my @_constants;
 
@@ -50,7 +50,7 @@ File::Gettext::Constants - Definitions of constant values
 
 =head1 Version
 
-0.4.$Rev: 406 $
+0.4.$Rev: 416 $
 
 =head1 Synopsis
 

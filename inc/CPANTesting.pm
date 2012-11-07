@@ -1,29 +1,29 @@
-# @(#)$Id: CPANTesting.pm 405 2012-09-02 13:37:01Z pjf $
+# @(#)$Id: CPANTesting.pm 416 2012-11-07 07:46:46Z pjf $
+# Bob-Version: 1.6
 
 package CPANTesting;
 
 use strict;
 use warnings;
 
-my $osname = lc $^O; my $uname = qx(uname -a);
+use Sys::Hostname; my $host = lc hostname; my $osname = lc $^O;
+
+# Is this an attempted install on a CPAN testing platform?
+sub is_testing { !! ($ENV{AUTOMATED_TESTING} || $ENV{PERL_CR_SMOKER_CURRENT}
+                 || ($ENV{PERL5OPT} || q()) =~ m{ CPAN-Reporter }mx) }
 
 sub should_abort {
    return 0;
 }
 
 sub test_exceptions {
-   my $p = shift; __is_testing() or return 0;
+   my $p = shift; is_testing() or return 0;
 
    $p->{stop_tests} and return 'CPAN Testing stopped in Build.PL';
 
-   $osname eq q(mirbsd) and return 'Mirbsd OS unsupported';
+   $osname eq q(mirbsd) and return 'Mirbsd  OS unsupported';
    return 0;
 }
-
-# Private functions
-
-sub __is_testing { !! ($ENV{AUTOMATED_TESTING} || $ENV{PERL_CR_SMOKER_CURRENT}
-                   || ($ENV{PERL5OPT} || q()) =~ m{ CPAN-Reporter }mx) }
 
 1;
 

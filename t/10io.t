@@ -1,8 +1,8 @@
-# @(#)$Id: 10io.t 406 2012-09-02 13:41:57Z pjf $
+# @(#)$Id: 10io.t 416 2012-11-07 07:46:46Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -83,6 +83,10 @@ is( io()->file( catdir( qw(doo foo) ) )->catfile( qw(goo hoo) ),
 is( io()->file->catfile( qw(goo hoo) ), f( catfile( qw(goo hoo) ) ),
     'Catfile 2' );
 is( io()->catfile( qw(goo hoo) ), f( catfile( qw(goo hoo) ) ), 'Catfile 3' );
+
+is io( [ qw(t mydir dir1) ] )->dirname, catdir( qw(t mydir) ), 'Dirname';
+
+ok io( [ qw(t mydir dir1) ] )->parent->is_dir, 'Parent';
 
 # Absolute/relative
 

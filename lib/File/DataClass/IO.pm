@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 406 2012-09-02 13:41:57Z pjf $
+# @(#)$Id: IO.pm 416 2012-11-07 07:46:46Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -137,7 +137,7 @@ sub assert_dirpath {
 
    $dir_name or return; -d $dir_name and return $dir_name;
 
-   $self->_umask_push( oct q(07777) ); my $perms = $self->_mkdir_perms;
+   my $perms = $self->_mkdir_perms; $self->_umask_push( oct q(07777) );
 
    CORE::mkdir( $dir_name, $perms )
       or File::Path::make_path( $dir_name, { mode => $perms } );
@@ -643,14 +643,21 @@ sub _open_file {
 
    $self->_assert and $self->assert_filepath;
    $self->_umask_push( $perms );
-   $self->io_handle( IO::File->new( $path, $mode ) )
-      or $self->_throw( error => 'File [_1] cannot open',
-                        args  => [ $path ] );
+
+   unless ($self->io_handle( IO::File->new( $path, $mode ) )) {
+      $self->_umask_pop;
+      $self->_throw( error => 'File [_1] cannot open', args  => [ $path ] );
+   }
+
    $self->_umask_pop;
    $self->is_open( TRUE );
    $self->set_binmode;
    $self->set_lock;
    return $self;
+}
+
+sub parent {
+   my $self = shift; return $self->_constructor( $self->dirname );
 }
 
 sub pathname {
@@ -868,9 +875,9 @@ sub touch {
 sub _umask_pop {
    my $self = shift; my $perms = $self->_umask->[ -1 ];
 
-   ($perms and $perms != NO_UMASK_STACK) or return umask;
-   umask pop @{ $self->_umask };
-   return $perms;
+   (defined $perms and $perms != NO_UMASK_STACK) or return umask;
+
+   umask pop @{ $self->_umask }; return $perms;
 }
 
 sub _umask_push {
@@ -878,9 +885,10 @@ sub _umask_push {
 
    my $first = $self->_umask->[ 0 ];
 
-   $first and $first == NO_UMASK_STACK and return umask;
+   defined $first and $first == NO_UMASK_STACK and return umask;
 
    $perms ^= oct q(0777); push @{ $self->_umask }, umask $perms;
+
    return $perms;
 }
 
@@ -939,7 +947,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.12.$Revision: 406 $
+0.13.$Revision: 416 $
 
 =head1 Synopsis
 
@@ -1394,6 +1402,12 @@ L</assert_filepath> if C<assert> is true. Mode defaults to the C<mode>
 attribute value which defaults to C<r>. Permissions defaults to the
 C<_perms> attribute value. Throws C<eCannotOpen> on error. If the open
 succeeds L</set_lock> and L</set_binmode> are called
+
+=head2 parent
+
+   $parent_io_object = $self->parent;
+
+Return L</dirname> as an IO object
 
 =head2 pathname
 

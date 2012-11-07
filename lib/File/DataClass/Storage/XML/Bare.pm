@@ -1,10 +1,10 @@
-# @(#)$Id: Bare.pm 406 2012-09-02 13:41:57Z pjf $
+# @(#)$Id: Bare.pm 416 2012-11-07 07:46:46Z pjf $
 
 package File::DataClass::Storage::XML::Bare;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::Bare;
@@ -71,7 +71,14 @@ sub _write_filter {
    my $padding = $PADDING x $level;
 
    if (ref $data eq ARRAY) {
-      $xml .= $padding.__bracket( $element, $_ )."\n" for (sort @{ $data });
+      for my $value (@{ $data }) {
+         if (ref $value) {
+            $xml .= "${padding}<${element}>\n";
+            $xml .= $self->_write_filter( $level, NUL, $value );
+            $xml .= "${padding}</${element}>\n";
+         }
+         else { $xml .= $padding.__bracket( $element, $value )."\n" }
+      }
    }
    elsif (ref $data eq HASH) {
       $padding = $PADDING x ($level + 1);
@@ -81,10 +88,10 @@ sub _write_filter {
 
          if (ref $value eq HASH) {
             for (sort keys %{ $value }) {
-               $xml .= $padding.q(<).$key.q(>)."\n";
+               $xml .= "${padding}<${key}>\n";
                $xml .= $padding.$PADDING.__bracket( q(name), $_ )."\n";
                $xml .= $self->_write_filter( $level + 1, NUL, $value->{ $_ } );
-               $xml .= $padding.q(</).$key.q(>)."\n";
+               $xml .= "${padding}</${key}>\n";
             }
          }
          else { $xml .= $self->_write_filter( $level + 1, $key, $value ) }
@@ -95,7 +102,7 @@ sub _write_filter {
    }
 
    if ($level == 0 && $element) {
-      $xml = q(<).$element.q(>)."\n".$xml.q(</).$element.q(>)."\n";
+      $xml = "<${element}>\n${xml}</${element}>\n";
    }
 
    return $xml;
@@ -106,7 +113,7 @@ sub _write_filter {
 sub __bracket {
    my ($k, $v) = @_; $BORKED and $v =~ s{ [&] }{&amp;}gmsx;
 
-   return q(<).$k.q(>).$v.q(</).$k.q(>);
+   return "<${k}>${v}</${k}>";
 }
 
 sub __coerce_array {
@@ -166,7 +173,7 @@ File::DataClass::Storage::XML::Bare - Read/write XML data storage model
 
 =head1 Version
 
-0.12.$Revision: 406 $
+0.13.$Revision: 416 $
 
 =head1 Synopsis
 

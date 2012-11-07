@@ -1,10 +1,10 @@
-# @(#)$Id: Any.pm 406 2012-09-02 13:41:57Z pjf $
+# @(#)$Id: Any.pm 416 2012-11-07 07:46:46Z pjf $
 
 package File::DataClass::Storage::Any;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 406 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
 
 use Moose;
 use File::Basename             qw(basename);
@@ -145,7 +145,7 @@ File::DataClass::Storage::Any - Selects storage class using the extension on the
 
 =head1 Version
 
-0.1.$Revision: 406 $
+0.1.$Revision: 416 $
 
 =head1 Synopsis
 
