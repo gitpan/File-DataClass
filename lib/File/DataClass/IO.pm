@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 416 2012-11-07 07:46:46Z pjf $
+# @(#)$Id: IO.pm 420 2012-12-12 23:23:04Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 420 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -285,8 +285,8 @@ sub clear {
 sub close {
    my $self = shift; $self->is_open or return $self;
 
-   $OSNAME eq EVIL || $OSNAME eq CYGWIN ? $self->_close_and_rename
-                                        : $self->_rename_and_close;
+   if ($OSNAME eq EVIL or $OSNAME eq CYGWIN) { $self->_close_and_rename }
+   else { $self->_rename_and_close }
 
    $self->io_handle( undef );
    $self->is_open  ( FALSE );
@@ -295,9 +295,10 @@ sub close {
 }
 
 sub _close_and_rename {
-   my $self = shift;
+   my $self = shift; $self->unlock;
 
-   $self->unlock; $self->io_handle and $self->io_handle->close;
+   my $handle = $self->io_handle; $handle and undef $handle;
+
    $self->_atomic and $self->_rename_atomic;
    return $self;
 }
@@ -305,8 +306,10 @@ sub _close_and_rename {
 sub _rename_and_close {
    my $self = shift;
 
-   $self->_atomic and $self->_rename_atomic;
-   $self->unlock; $self->io_handle and $self->io_handle->close;
+   $self->_atomic and $self->_rename_atomic; $self->unlock;
+
+   my $handle = $self->io_handle; $handle and undef $handle;
+
    return $self;
 }
 
@@ -897,10 +900,10 @@ sub unlink {
 }
 
 sub unlock {
-   my $self = shift; $self->_lock or return;
+   my $self = shift; $self->_lock or return; my $handle = $self->io_handle;
 
    if ($self->_lock_obj) { $self->_lock_obj->reset( k => $self->name ) }
-   else { defined $self->io_handle and flock $self->io_handle, LOCK_UN }
+   else { $handle and $handle->opened and flock $handle, LOCK_UN }
 
    return $self;
 }
@@ -947,7 +950,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.13.$Revision: 416 $
+0.13.$Revision: 420 $
 
 =head1 Synopsis
 

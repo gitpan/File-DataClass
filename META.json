@@ -77,7 +77,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.13.418"
+         "version" : "v0.13.420"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -105,7 +105,7 @@
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.13.416"
+         "version" : "v0.13.420"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
@@ -129,7 +129,7 @@
       },
       "File::DataClass::Schema" : {
          "file" : "lib/File/DataClass/Schema.pm",
-         "version" : "v0.13.416"
+         "version" : "v0.13.419"
       },
       "File::DataClass::Schema::WithLanguage" : {
          "file" : "lib/File/DataClass/Schema/WithLanguage.pm",
@@ -222,5 +222,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.13.418"
+   "version" : "0.13.420"
 }

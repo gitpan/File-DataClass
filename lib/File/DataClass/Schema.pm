@@ -1,10 +1,10 @@
-# @(#)$Id: Schema.pm 416 2012-11-07 07:46:46Z pjf $
+# @(#)$Id: Schema.pm 419 2012-11-22 05:41:53Z pjf $
 
 package File::DataClass::Schema;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 419 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
@@ -34,8 +34,7 @@ has 'cache_attributes'         => is => 'ro', isa => HashRef,
 has 'cache_class'              => is => 'ro', isa => ClassName | DummyClass,
    default                     => q(File::DataClass::Cache);
 
-has 'debug'                    => is => 'ro', isa => Bool,
-   default                     => FALSE;
+has 'debug'                    => is => 'ro', isa => Bool, default => FALSE;
 
 has 'lock'                     => is => 'ro', isa => Lock,
    default                     => sub { Class::Null->new }, lazy => TRUE;
@@ -43,11 +42,9 @@ has 'lock'                     => is => 'ro', isa => Lock,
 has 'log'                      => is => 'ro', isa => Object,
    default                     => sub { Class::Null->new }, lazy => TRUE;
 
-has 'path'                     => is => 'rw', isa => Path,
-   coerce                      => TRUE;
+has 'path'                     => is => 'rw', isa => Path, coerce => TRUE;
 
-has 'perms'                    => is => 'rw', isa => Num,
-   default                     => PERMS;
+has 'perms'                    => is => 'rw', isa => Num, default => PERMS;
 
 has 'result_source_attributes' => is => 'ro', isa => HashRef,
    default                     => sub { {} };
@@ -70,9 +67,8 @@ has 'storage_base'             => is => 'ro', isa => ClassName,
 has 'storage_class'            => is => 'rw', isa => Str,
    default                     => q(XML::Simple);
 
-has 'tempdir'                  => is => 'ro', isa => Directory,
-   default                     => File::Spec->tmpdir,
-   coerce                      => TRUE;
+has 'tempdir'                  => is => 'ro', isa => Directory, coerce => TRUE,
+   default                     => File::Spec->tmpdir;
 
 around 'BUILDARGS' => sub {
    my ($next, $class, @args) = @_; my $attr = $class->$next( @args );
@@ -87,7 +83,9 @@ around 'BUILDARGS' => sub {
 };
 
 sub dump {
-   my ($self, $args) = @_; my $path = $args->{path} || $self->path;
+   my ($self, $args) = @_; blessed $self or $self = $self->_constructor;
+
+   my $path = $args->{path} || $self->path;
 
    blessed $path or $path = io( $path );
 
@@ -99,7 +97,9 @@ sub extensions {
 }
 
 sub load {
-   my ($self, @paths) = @_; $paths[ 0 ] or $paths[ 0 ] = $self->path;
+   my ($self, @paths) = @_; blessed $self or $self = $self->_constructor;
+
+   $paths[ 0 ] or $paths[ 0 ] = $self->path;
 
    @paths = map { blessed $_ ? $_ : io( $_ ) } @paths;
 
@@ -185,6 +185,13 @@ sub _build_storage {
    return $class->new( { %{ $self->storage_attributes }, schema => $self } );
 }
 
+sub _constructor {
+   my $class = shift;
+   my $attr  = { cache_class => q(none), storage_class => q(Any) };
+
+   return $class->new( $attr );
+}
+
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
@@ -201,7 +208,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-0.13.$Revision: 416 $
+0.13.$Revision: 419 $
 
 =head1 Synopsis
 
