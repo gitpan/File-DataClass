@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 416 2012-11-07 07:46:46Z pjf $
+# @(#)$Id: Constants.pm 421 2012-12-14 17:44:12Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 421 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -33,7 +33,7 @@ use Sub::Exporter -setup => {
 sub ARRAY    () { q(ARRAY)    }
 sub CODE     () { q(CODE)     }
 sub CYGWIN   () { q(cygwin)   }
-sub EVIL     () { q(MSWin32)  }
+sub EVIL     () { q(mswin32)  }
 sub FALSE    () { 0           }
 sub HASH     () { q(HASH)     }
 sub LANG     () { q(en)       }
@@ -67,7 +67,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.13.$Rev: 416 $
+0.13.$Rev: 421 $
 
 =head1 Synopsis
 

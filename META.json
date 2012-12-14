@@ -58,6 +58,7 @@
             "MooseX::Types" : "0.25",
             "Scalar::Util" : "1.18",
             "Sub::Exporter" : "0.982",
+            "Sub::Exporter::Progressive" : "0.001006",
             "Template" : "2.18",
             "Template::Stash" : "2.9",
             "Text::Wrap" : "2005.082401",
@@ -77,7 +78,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.13.420"
+         "version" : "v0.13.421"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -85,7 +86,7 @@
       },
       "File::DataClass::Constants" : {
          "file" : "lib/File/DataClass/Constants.pm",
-         "version" : "v0.13.416"
+         "version" : "v0.13.421"
       },
       "File::DataClass::Constraints" : {
          "file" : "lib/File/DataClass/Constraints.pm",
@@ -105,7 +106,7 @@
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.13.420"
+         "version" : "v0.13.421"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
@@ -222,5 +223,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.13.420"
+   "version" : "0.13.421"
 }
