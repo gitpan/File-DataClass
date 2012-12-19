@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 416 2012-11-07 07:46:46Z pjf $
+# @(#)$Id: Storage.pm 422 2012-12-19 22:21:10Z pjf $
 
 package File::DataClass::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 422 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
@@ -139,11 +139,9 @@ sub select {
 }
 
 sub txn_do {
-   my ($self, $path, $code_ref) = @_;
+   my ($self, $path, $code_ref) = @_; my $wantarray = wantarray;
 
-   $self->validate_params( $path, TRUE );
-
-   my $key = q(txn:).$path; my $wantarray = wantarray; my $res;
+   $self->validate_params( $path, TRUE ); my $key = q(txn:).$path; my $res;
 
    $self->_lock->set( k => $key );
 
@@ -266,7 +264,7 @@ File::DataClass::Storage - Storage base class
 
 =head1 Version
 
-0.13.$Revision: 416 $
+0.13.$Revision: 422 $
 
 =head1 Synopsis
 

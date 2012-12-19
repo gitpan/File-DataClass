@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 421 2012-12-14 17:44:12Z pjf $
+# @(#)$Id: IO.pm 422 2012-12-19 22:21:10Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 421 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 422 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -295,7 +295,6 @@ sub close {
 }
 
 sub _close_and_rename { # This creates a race condition
-   warn "CPANTesting - Winshite detected\n";
    my $self = shift; $self->unlock; my $handle = $self->io_handle;
 
    $handle and $handle->close; $handle and undef $handle;
@@ -955,7 +954,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.13.$Revision: 421 $
+0.13.$Revision: 422 $
 
 =head1 Synopsis
 

@@ -1,10 +1,10 @@
-# @(#)$Id: ResultSet.pm 416 2012-11-07 07:46:46Z pjf $
+# @(#)$Id: ResultSet.pm 422 2012-12-19 22:21:10Z pjf $
 
 package File::DataClass::ResultSet;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 422 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -86,11 +86,12 @@ sub find {
    return $self->_txn_do( sub { $self->_find( $name ) } );
 }
 
-sub find_and_update {
+sub find_and_update { # TODO: Why is this not private?
    my ($self, $args) = @_;
 
-   my $name   = $args->{name} or return;
-   my $result = $self->_find( $name ) or return;
+   my $name   = $args->{name} or throw 'Record name not specified';
+   my $result = $self->_find( $name )
+      or throw error => 'Record [_1] not found', args => [ $name ];
 
    for (grep { exists $args->{ $_ } } @{ $self->attributes }) {
       $result->$_( $args->{ $_ } );
@@ -134,7 +135,7 @@ sub push {
       $self->find_and_update( $attrs );
    } );
 
-   return $res ? $added : $res;
+   return $res ? $added : undef;
 }
 
 sub reset {
@@ -166,7 +167,7 @@ sub splice {
       $self->find_and_update( $attrs );
    } );
 
-   return $res ? $removed : $res;
+   return $res ? $removed : undef;
 }
 
 sub update {
@@ -174,7 +175,7 @@ sub update {
 
    my $res = $self->_txn_do( sub { $self->find_and_update( $args ) } );
 
-   return $res ? $name : $res;
+   return $res ? $name : undef;
 }
 
 # Private methods
@@ -376,7 +377,7 @@ File::DataClass::ResultSet - Core element methods
 
 =head1 Version
 
-0.13.$Revision: 416 $
+0.13.$Revision: 422 $
 
 =head1 Synopsis
 
