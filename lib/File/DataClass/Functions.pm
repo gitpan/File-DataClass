@@ -1,18 +1,21 @@
-# @(#)$Id: Functions.pm 416 2012-11-07 07:46:46Z pjf $
+# @(#)$Id: Functions.pm 424 2012-12-21 20:45:23Z pjf $
 
 package File::DataClass::Functions;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 424 $ =~ /\d+/gmx );
 
 use Class::MOP;
+use English      qw(-no_match_vars);
 use File::DataClass::Constants;
 use Hash::Merge  qw(merge);
 use List::Util   qw(first);
 use Scalar::Util qw(blessed);
 use Try::Tiny;
 
+my $osname = lc $OSNAME;
+my $ntfs   = $osname eq 'mswin32' || $osname eq 'cygwin' ? 1 : 0;
 my @_functions;
 
 BEGIN {
@@ -21,7 +24,7 @@ BEGIN {
                       throw) );
 }
 
-use Sub::Exporter -setup => {
+use Sub::Exporter::Progressive -setup => {
    exports => [ @_functions ], groups => { default => [], },
 };
 
@@ -65,6 +68,8 @@ sub is_member (;@) {
 
 sub is_stale (;$$$) {
    my ($data, $cache_mtime, $path_mtime) = @_;
+
+   $ntfs and return 1; # Assume NTFS does not support mtime
 
    return ! defined $data || ! defined $path_mtime || ! defined $cache_mtime
          || $path_mtime > $cache_mtime
@@ -112,7 +117,7 @@ File::DataClass::Functions - Common functions used in this distribution
 
 =head1 Version
 
-0.13.$Revision: 416 $
+0.13.$Revision: 424 $
 
 =head1 Synopsis
 

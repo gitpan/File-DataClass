@@ -1,8 +1,8 @@
-# @(#)$Id: 20data-class.t 422 2012-12-19 22:21:10Z pjf $
+# @(#)$Id: 20data-class.t 424 2012-12-21 20:45:23Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 422 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 424 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -115,13 +115,9 @@ $args->{text} = q(value1); $res = test( $rs, q(create), $args );
 
 is $res, q(dummy), 'Creates dummy element and inserts';
 
-$ntfs and $schema->path->close; # See if this fixes winshite
-
 $args->{text} = q(value2); $res = test( $rs, q(update), $args );
 
 is $res, q(dummy), 'Can update';
-
-$ntfs and $schema->path->close; # See if this fixes winshite
 
 delete $args->{text}; $res = test( $rs, q(find), $args );
 
@@ -134,8 +130,6 @@ like $e, qr{ already \s+ exists }mx, 'Detects already existing element';
 $res = test( $rs, q(delete), $args );
 
 is $res, q(dummy), 'Deletes dummy element';
-
-$ntfs and $schema->path->close; # See if this fixes winshite
 
 $e = test( $rs, q(delete), $args );
 

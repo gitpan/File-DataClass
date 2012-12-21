@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 421 2012-12-14 17:44:12Z pjf $
+# @(#)$Id: Constants.pm 424 2012-12-21 20:45:23Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 421 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 424 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -26,7 +26,7 @@ BEGIN {
                      STAT_FIELDS TRUE) );
 }
 
-use Sub::Exporter -setup => {
+use Sub::Exporter::Progressive -setup => {
    exports => [ @constants ], groups => { default => [ @constants ], },
 };
 
@@ -67,7 +67,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.13.$Rev: 421 $
+0.13.$Rev: 424 $
 
 =head1 Synopsis
 

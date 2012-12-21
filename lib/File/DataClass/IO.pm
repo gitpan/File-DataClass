@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 422 2012-12-19 22:21:10Z pjf $
+# @(#)$Id: IO.pm 424 2012-12-21 20:45:23Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 422 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 424 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -21,7 +21,7 @@ use File::Temp     ();
 use IO::File;
 use IO::Dir;
 
-use Sub::Exporter -setup => {
+use Sub::Exporter::Progressive -setup => {
    exports => [ qw(io) ], groups => { default => [ qw(io) ], },
 };
 
@@ -954,7 +954,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.13.$Revision: 422 $
+0.13.$Revision: 424 $
 
 =head1 Synopsis
 
