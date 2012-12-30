@@ -78,7 +78,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.13.424"
+         "version" : "v0.13.427"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -98,7 +98,7 @@
       },
       "File::DataClass::Functions" : {
          "file" : "lib/File/DataClass/Functions.pm",
-         "version" : "v0.13.424"
+         "version" : "v0.13.426"
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
@@ -106,7 +106,7 @@
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.13.424"
+         "version" : "v0.13.427"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
@@ -138,7 +138,7 @@
       },
       "File::DataClass::Storage" : {
          "file" : "lib/File/DataClass/Storage.pm",
-         "version" : "v0.13.424"
+         "version" : "v0.13.426"
       },
       "File::DataClass::Storage::Any" : {
          "file" : "lib/File/DataClass/Storage/Any.pm",
@@ -223,5 +223,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.13.424"
+   "version" : "0.13.427"
 }

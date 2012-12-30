@@ -1,14 +1,14 @@
-# @(#)$Id: Storage.pm 424 2012-12-21 20:45:23Z pjf $
+# @(#)$Id: Storage.pm 426 2012-12-30 02:58:43Z pjf $
 
 package File::DataClass::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 424 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 426 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
-use English     qw(-no_match_vars);
+use English qw(-no_match_vars);
 use File::Copy;
 use File::DataClass::Constants;
 use File::DataClass::Functions qw(is_stale merge_hash_data throw);
@@ -264,7 +264,7 @@ File::DataClass::Storage - Storage base class
 
 =head1 Version
 
-0.13.$Revision: 424 $
+0.13.$Revision: 426 $
 
 =head1 Synopsis
 

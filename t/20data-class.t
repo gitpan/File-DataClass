@@ -1,8 +1,8 @@
-# @(#)$Id: 20data-class.t 424 2012-12-21 20:45:23Z pjf $
+# @(#)$Id: 20data-class.t 426 2012-12-30 02:58:43Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 424 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 426 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -22,18 +22,13 @@ use File::DataClass::IO;
 use Text::Diff;
 
 sub test {
-   my ($obj, $method, @args) = @_; local $EVAL_ERROR;
+   my ($obj, $method, @args) = @_; my $wantarray = wantarray; local $EVAL_ERROR;
 
-   my $wantarray = wantarray; my ($e, $res);
-
-   eval {
-      if ($wantarray) { $res = [ $obj->$method( @args ) ] }
-      else            { $res =   $obj->$method( @args )   }
+   my $res = eval {
+      $wantarray ? [ $obj->$method( @args ) ] : $obj->$method( @args );
    };
 
-   $e = $EVAL_ERROR and return $e;
-
-   return $wantarray ? @{ $res } : $res;
+   $EVAL_ERROR and return $EVAL_ERROR; return $wantarray ? @{ $res } : $res;
 }
 
 use File::DataClass::Schema;
@@ -86,12 +81,12 @@ ok ! $diff, 'Load and dump roundtrips';
 
 $e = test( $schema, q(resultset) );
 
-ok $e =~ m{ \QResult source not specified\E }msx,
-    'Result source not specified';
+like $e, qr{ \QResult source not specified\E }msx,
+   'Result source not specified';
 
 $e = test( $schema, q(resultset), q(globals) );
 
-ok $e =~ m{ \QResult source globals unknown\E }msx, 'Result source unknown';
+like $e, qr{ \QResult source globals unknown\E }msx, 'Result source unknown';
 
 $schema = File::DataClass::Schema->new
    ( path    => [ qw(t default.xml) ],
