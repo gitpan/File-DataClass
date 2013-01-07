@@ -1,10 +1,10 @@
-# @(#)$Id: ResultSet.pm 422 2012-12-19 22:21:10Z pjf $
+# @(#)$Id: ResultSet.pm 429 2013-01-07 00:49:36Z pjf $
 
 package File::DataClass::ResultSet;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 422 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 429 $ =~ /\d+/gmx );
 
 use Moose;
 use File::DataClass::Constants;
@@ -377,7 +377,7 @@ File::DataClass::ResultSet - Core element methods
 
 =head1 Version
 
-0.13.$Revision: 422 $
+0.14.$Revision: 429 $
 
 =head1 Synopsis
 
@@ -598,7 +598,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

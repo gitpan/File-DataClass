@@ -1,10 +1,10 @@
-# @(#)$Id: Storage.pm 426 2012-12-30 02:58:43Z pjf $
+# @(#)$Id: Storage.pm 429 2013-01-07 00:49:36Z pjf $
 
 package File::DataClass::Storage;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 426 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 429 $ =~ /\d+/gmx );
 
 use Moose;
 use Class::Null;
@@ -264,7 +264,7 @@ File::DataClass::Storage - Storage base class
 
 =head1 Version
 
-0.13.$Revision: 426 $
+0.14.$Revision: 429 $
 
 =head1 Synopsis
 
@@ -370,7 +370,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

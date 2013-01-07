@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 424 2012-12-21 20:45:23Z pjf $
+# @(#)$Id: Constants.pm 429 2013-01-07 00:49:36Z pjf $
 
 package File::Gettext::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 424 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 429 $ =~ /\d+/gmx );
 
 my @_constants;
 
@@ -50,7 +50,7 @@ File::Gettext::Constants - Definitions of constant values
 
 =head1 Version
 
-0.4.$Rev: 424 $
+0.4.$Rev: 429 $
 
 =head1 Synopsis
 
@@ -118,7 +118,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2011 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

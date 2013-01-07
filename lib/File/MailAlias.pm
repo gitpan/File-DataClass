@@ -1,10 +1,10 @@
-# @(#)$Id: MailAlias.pm 416 2012-11-07 07:46:46Z pjf $
+# @(#)$Id: MailAlias.pm 429 2013-01-07 00:49:36Z pjf $
 
 package File::MailAlias;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 416 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 429 $ =~ /\d+/gmx );
 
 use Moose;
 use IPC::Cmd qw( can_run run );
@@ -191,7 +191,7 @@ File::MailAlias - Domain model for the system mail aliases file
 
 =head1 Version
 
-0.13.$Revision: 416 $
+0.14.$Revision: 429 $
 
 =head1 Synopsis
 
@@ -355,7 +355,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

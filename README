@@ -2,7 +2,7 @@ Name
     File::DataClass - Structured data file IO with OO paradigm
 
 Version
-    This document describes File::DataClass version 0.13.$Revision: 427 $
+    This document describes File::DataClass version 0.14.$Revision: 429 $
 
 Synopsis
        use File::DataClass::Schema;
@@ -45,7 +45,8 @@ Dependencies
     MooseX::ClassAttribute
 
 Incompatibilities
-    There are no known incompatibilities in this module
+    On "MSWin32" and "Cygwin" it is assumed that NTFS is being used and that
+    it does not support "mtime" so caching on those platforms is disabled
 
 Bugs and Limitations
     There are no known bugs in this module. Please report problems to the
@@ -62,7 +63,7 @@ Author
     Peter Flanigan, "<Support at RoxSoft.co.uk>"
 
 License and Copyright
-    Copyright (c) 2012 Peter Flanigan. All rights reserved
+    Copyright (c) 2013 Peter Flanigan. All rights reserved
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself. See perlartistic
