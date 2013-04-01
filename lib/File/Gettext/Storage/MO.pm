@@ -1,10 +1,10 @@
-# @(#)$Id: MO.pm 429 2013-01-07 00:49:36Z pjf $
+# @(#)$Id: MO.pm 431 2013-04-01 01:11:58Z pjf $
 
 package File::Gettext::Storage::MO;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 429 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 431 $ =~ /\d+/gmx );
 
 use Encode qw(decode);
 use File::DataClass::Constants;
@@ -154,7 +154,7 @@ File::Gettext::Storage::MO - Storage class for GNU gettext machine object format
 
 =head1 Version
 
-0.14.$Revision: 429 $
+0.15.$Revision: 431 $
 
 =head1 Synopsis
 

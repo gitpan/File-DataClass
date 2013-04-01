@@ -1,10 +1,10 @@
-# @(#)$Id: PO.pm 429 2013-01-07 00:49:36Z pjf $
+# @(#)$Id: PO.pm 431 2013-04-01 01:11:58Z pjf $
 
 package File::Gettext::Storage::PO;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 429 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 431 $ =~ /\d+/gmx );
 
 use Date::Format ();
 use Encode qw(decode encode);
@@ -431,7 +431,7 @@ File::Gettext::Storage::PO - Storage class for GNU Gettext portable object forma
 
 =head1 Version
 
-0.14.$Revision: 429 $
+0.15.$Revision: 431 $
 
 =head1 Synopsis
 

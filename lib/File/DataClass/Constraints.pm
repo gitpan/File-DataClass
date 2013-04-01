@@ -1,17 +1,17 @@
-# @(#)$Id: Constraints.pm 429 2013-01-07 00:49:36Z pjf $
+# @(#)$Id: Constraints.pm 431 2013-04-01 01:11:58Z pjf $
 
 package File::DataClass::Constraints;
 
 use strict;
 use warnings;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 429 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 431 $ =~ /\d+/gmx );
 
 use MooseX::Types -declare => [ qw(Cache DummyClass HashRefOfBools Lock Path
-                                   Directory File Result Symbol) ];
+                                   Directory File OctalNum Result Symbol) ];
 use MooseX::Types::Moose        qw(ArrayRef CodeRef HashRef Object Str Undef);
 use File::DataClass::IO ();
-use Scalar::Util qw(blessed);
+use Scalar::Util qw(blessed dualvar);
 
 subtype Cache, as Object,
    where   { $_->isa( q(File::DataClass::Cache) ) || $_->isa( q(Class::Null) )},
@@ -33,6 +33,13 @@ subtype Lock, as Object,
    message {
       'Object '.(blessed $_ || $_ || 'undef').' is missing set or reset methods'
    };
+
+subtype OctalNum, as Str, where {
+   (my $x = $_.'') =~ s{ [0-7]+ }{}mx; length $x != 0 and return 0;
+      ($x = $_.'') =~ s{ \A 0   }{}mx; return $x eq $_ + 0 ? 0 : 1; },
+   message { 'Not an octal number '.($_ // '<undef>') };
+
+coerce OctalNum, from Str, via { s{ \A 0 }{}mx; dualvar oct "0${_}", "0${_}" };
 
 subtype Result, as Object,
    where   { $_->isa( q(File::DataClass::Result) ) },
@@ -86,7 +93,7 @@ File::DataClass::Constraints - Role defining package constraints
 
 =head1 Version
 
-0.14.$Revision: 429 $
+0.15.$Revision: 431 $
 
 =head1 Synopsis
 

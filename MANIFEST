@@ -77,6 +77,7 @@ t/mydir/dir2/file1
 t/mydir/file1
 t/mydir/file2
 t/mydir/file3
+t/passwd
 t/recipes.mmf
 t/shadow
 SIGNATURE    Added here by Module::Build
