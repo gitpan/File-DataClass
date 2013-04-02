@@ -1,9 +1,9 @@
-# @(#)$Id: Build.PL 431 2013-04-01 01:11:58Z pjf $
+# @(#)$Id: Build.PL 434 2013-04-02 14:14:56Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 431 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 434 $ =~ /\d+/gmx );
 
 Bob->new( {
    module    => q(File::DataClass),
@@ -32,8 +32,8 @@ Bob->new( {
       'JSON'                       => 2.16,
       'Lingua::EN::NameParse'      => 1.28,
       'MealMaster'                 => 0.28,
-      'Moose'                      => 2.0402,
-      'MooseX::ClassAttribute'     => 0.26,
+      'Moose'                      => 2.0801,
+      'MooseX::ClassAttribute'     => 0.27,
       'MooseX::Types'              => 0.25,
       'Scalar::Util'               => 1.18,
       'Sub::Exporter'              => 0.982,
@@ -45,7 +45,8 @@ Bob->new( {
       'XML::Bare'                  => 0.30,
       'XML::DTD'                   => 0.09,
       'XML::Simple'                => 2.14, },
-   recommends         => { 'Pod::Markdown'    => 1.322, },
+   recommends         => { 'App::cpanminus'   => 1.6005,
+                           'Pod::Markdown'    => 1.322, },
    configure_requires => { 'Module::Build'    => 0.32,
                            'version'          => 0.74, },
    build_requires     => { 'utf8'             => 1.06,

@@ -37,6 +37,7 @@
       },
       "runtime" : {
          "recommends" : {
+            "App::cpanminus" : "1.6005",
             "Pod::Markdown" : "1.322"
          },
          "requires" : {
@@ -56,8 +57,8 @@
             "JSON" : "2.16",
             "Lingua::EN::NameParse" : "1.28",
             "MealMaster" : "0.28",
-            "Moose" : "2.0402",
-            "MooseX::ClassAttribute" : "0.26",
+            "Moose" : "2.0801",
+            "MooseX::ClassAttribute" : "0.27",
             "MooseX::Types" : "0.25",
             "Scalar::Util" : "1.18",
             "Sub::Exporter" : "0.982",
@@ -81,7 +82,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.15.431"
+         "version" : "v0.15.434"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -226,5 +227,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.15.431"
+   "version" : "0.15.434"
 }
