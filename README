@@ -2,7 +2,7 @@ Name
     File::DataClass - Structured data file IO with OO paradigm
 
 Version
-    This document describes File::DataClass version 0.15.$Revision: 434 $
+    This document describes File::DataClass version 0.16.$Revision: 438 $
 
 Synopsis
        use File::DataClass::Schema;
@@ -60,7 +60,7 @@ Acknowledgements
     The API for the file IO was taken from IO::All
 
 Author
-    Peter Flanigan, "<Support at RoxSoft.co.uk>"
+    Peter Flanigan, "<pjfl@cpan.org>"
 
 License and Copyright
     Copyright (c) 2013 Peter Flanigan. All rights reserved

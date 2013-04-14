@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 431 2013-04-01 01:11:58Z pjf $
+# @(#)$Id: IO.pm 440 2013-04-14 12:22:38Z pjf $
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 431 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 440 $ =~ /\d+/gmx );
 
 use Moose;
 use Moose::Util::TypeConstraints;
@@ -154,7 +154,7 @@ sub assert_dirpath {
    $self->_umask_pop;
 
    -d $dir_name or $self->_throw( error => 'Path [_1] cannot create: [_2]',
-                                  args  => [ $dir_name, $ERRNO ] );
+                                  args  => [ $dir_name, $OS_ERROR ] );
    return $dir_name;
 }
 
@@ -404,7 +404,7 @@ sub error_check {
 
    $self->io_handle->can( q(error) ) or return;
    $self->io_handle->error or return;
-   $self->_throw( error => 'IO error [_1]', args => [ $ERRNO ] );
+   $self->_throw( error => 'IO error [_1]', args => [ $OS_ERROR ] );
    return;
 }
 
@@ -569,7 +569,7 @@ sub mkdir {
    $self->_umask_pop;
 
    -d $self->name or $self->_throw( error => 'Path [_1] cannot create: [_2]',
-                                    args  => [ $self->name, $ERRNO ] );
+                                    args  => [ $self->name, $OS_ERROR ] );
    return $self;
 }
 
@@ -589,7 +589,7 @@ sub mkpath {
    $self->_umask_pop;
 
    -d $self->name or $self->_throw( error => 'Path [_1] cannot create: [_2]',
-                                    args  => [ $self->name, $ERRNO ] );
+                                    args  => [ $self->name, $OS_ERROR ] );
    return $self;
 }
 
@@ -619,7 +619,7 @@ sub open {
    $self->type or $self->_set_type; $self->type or $self->file;
    $self->is_open and $self->close;
    $self->is_dir
-      and return $self->_open_dir ( $self->_open_args( $mode, $perms ) );
+      and return $self->_open_dir( $self->_open_args( $mode, $perms ) );
 
    return $self->_open_file( $self->_open_args( $mode, $perms ) );
 }
@@ -689,7 +689,7 @@ sub _print {
 
    for (@rest) {
       print {$self->io_handle} $_
-         or $self->_throw( error => 'IO error [_1]', args  => [ $ERRNO ] );
+         or $self->_throw( error => 'IO error [_1]', args  => [ $OS_ERROR ] );
    }
 
    return $self;
@@ -752,15 +752,16 @@ sub _rename_atomic {
    File::Copy::move( $path, $self->name ) and return;
 
    $ntfs or $self->_throw( error => 'Path [_1] move to [_2] failed: [_3]',
-                           args  => [ $path, $self->name, $ERRNO ] );
+                           args  => [ $path, $self->name, $OS_ERROR ] );
 
    # Try this instead on Winshite
-   warn 'NTFS: Path '.$self->name." move failure: ${ERRNO}\n";
+   warn 'NTFS: Path '.$self->name." move failure: ${OS_ERROR}\n";
    eval { unlink $self->name };
-   my $errno; File::Copy::copy( $path, $self->name ) or $errno = $ERRNO;
+   my $os_error;
+   File::Copy::copy( $path, $self->name ) or $os_error = $OS_ERROR;
    eval { unlink $path };
-   $errno and $self->_throw( error => 'Path [_1] copy to [_2] failed: [_3]',
-                             args  => [ $path, $self->name, $errno ] );
+   $os_error and $self->_throw( error => 'Path [_1] copy to [_2] failed: [_3]',
+                                args  => [ $path, $self->name, $os_error ] );
    return;
 }
 
@@ -769,7 +770,7 @@ sub rmdir {
 
    CORE::rmdir $self->name
       or $self->_throw( error => 'Path [_1] not removed: [_2]',
-                        args  => [ $self->name, $ERRNO ] );
+                        args  => [ $self->name, $OS_ERROR ] );
    return $self;
 }
 
@@ -970,7 +971,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.15.$Revision: 431 $
+0.16.$Revision: 440 $
 
 =head1 Synopsis
 

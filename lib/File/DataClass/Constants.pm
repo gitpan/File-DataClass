@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 431 2013-04-01 01:11:58Z pjf $
+# @(#)$Id: Constants.pm 437 2013-04-11 17:35:14Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 431 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 437 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -67,7 +67,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.15.$Rev: 431 $
+0.16.$Rev: 437 $
 
 =head1 Synopsis
 
