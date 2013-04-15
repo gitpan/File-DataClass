@@ -73,7 +73,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.16.438"
+         "version" : "v0.16.442"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -158,5 +158,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.16.438"
+   "version" : "v0.16.442"
 }
