@@ -73,7 +73,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.16.442"
+         "version" : "v0.16.445"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -97,7 +97,7 @@
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
-         "version" : "v0.16.437"
+         "version" : "v0.16.443"
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
@@ -141,7 +141,7 @@
       },
       "File::DataClass::Storage::XML::Bare" : {
          "file" : "lib/File/DataClass/Storage/XML/Bare.pm",
-         "version" : "v0.16.437"
+         "version" : "v0.16.444"
       },
       "File::DataClass::Storage::XML::Simple" : {
          "file" : "lib/File/DataClass/Storage/XML/Simple.pm",
@@ -158,5 +158,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.16.442"
+   "version" : "v0.16.445"
 }

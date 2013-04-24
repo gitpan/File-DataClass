@@ -1,10 +1,10 @@
-# @(#)$Id: Bare.pm 437 2013-04-11 17:35:14Z pjf $
+# @(#)$Id: Bare.pm 444 2013-04-24 03:40:17Z pjf $
 
 package File::DataClass::Storage::XML::Bare;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 437 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 444 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use XML::Bare;
@@ -12,7 +12,8 @@ use Moose;
 
 extends qw(File::DataClass::Storage::XML);
 
-my $BORKED  = $XML::Bare::VERSION > 0.45 ? TRUE : FALSE;
+my $XBVER   = $XML::Bare::VERSION;
+my $BORKED  = $XBVER > 0.45 && $XBVER < 0.48 ? TRUE : FALSE;
 my $PADDING = q(  );
 
 augment '_read_file' => sub {
@@ -173,7 +174,7 @@ File::DataClass::Storage::XML::Bare - Read/write XML data storage model
 
 =head1 Version
 
-0.16.$Revision: 437 $
+0.16.$Revision: 444 $
 
 =head1 Synopsis
 

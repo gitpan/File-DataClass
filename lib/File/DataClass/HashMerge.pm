@@ -1,10 +1,10 @@
-# @(#)$Id: HashMerge.pm 437 2013-04-11 17:35:14Z pjf $
+# @(#)$Id: HashMerge.pm 443 2013-04-17 14:38:40Z pjf $
 
 package File::DataClass::HashMerge;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 437 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 443 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Carp;
@@ -29,7 +29,8 @@ sub merge {
       }
    }
 
-   $updated and ${ $dest_ref }->{name} = $src->{name};
+# TODO: Should this be removed? Keeps adding the name attr to records
+#   $updated and ${ $dest_ref }->{name} = $src->{name};
 
    return $updated;
 }
@@ -116,7 +117,7 @@ File::DataClass::HashMerge - Merge hashes with update flag
 
 =head1 Version
 
-0.16.$Revision: 437 $
+0.16.$Revision: 443 $
 
 =head1 Synopsis
 

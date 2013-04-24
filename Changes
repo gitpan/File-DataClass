@@ -1,5 +1,9 @@
 Revision history for File::DataClass
 
+0.16.445 2012-04-24
+         - XML::Bare 0.48 reverts to old &amp; behaviour
+         - Stopped HashMerge adding the name attribute
+
 0.16.442 2013-04-15
          - Added Stauner d2777308-a5e7-11e2-83b7-87183f85d660 to list of
            CPAN Testers who should pack up and go home
