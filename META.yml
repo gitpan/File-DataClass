@@ -25,61 +25,67 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.16.445
+    version: v0.17.450
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Constants:
     file: lib/File/DataClass/Constants.pm
-    version: v0.16.437
+    version: v0.17.450
   File::DataClass::Constraints:
     file: lib/File/DataClass/Constraints.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Exception:
     file: lib/File/DataClass/Exception.pm
-    version: v0.16.437
+    version: v0.15.450
   File::DataClass::Functions:
     file: lib/File/DataClass/Functions.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::HashMerge:
     file: lib/File/DataClass/HashMerge.pm
-    version: v0.16.443
+    version: v0.17.449
   File::DataClass::IO:
     file: lib/File/DataClass/IO.pm
-    version: v0.16.440
+    version: v0.17.449
   File::DataClass::List:
     file: lib/File/DataClass/List.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Result:
     file: lib/File/DataClass/Result.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::ResultSet:
     file: lib/File/DataClass/ResultSet.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::ResultSource:
     file: lib/File/DataClass/ResultSource.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Schema:
     file: lib/File/DataClass/Schema.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Storage:
     file: lib/File/DataClass/Storage.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Storage::Any:
     file: lib/File/DataClass/Storage/Any.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Storage::JSON:
     file: lib/File/DataClass/Storage/JSON.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Storage::XML:
     file: lib/File/DataClass/Storage/XML.pm
-    version: v0.16.437
+    version: v0.17.449
   File::DataClass::Storage::XML::Bare:
     file: lib/File/DataClass/Storage/XML/Bare.pm
-    version: v0.16.444
+    version: v0.17.449
   File::DataClass::Storage::XML::Simple:
     file: lib/File/DataClass/Storage/XML/Simple.pm
-    version: v0.16.437
+    version: v0.17.449
+  File::DataClass::TraitFor::ThrowingExceptions:
+    file: lib/File/DataClass/TraitFor/ThrowingExceptions.pm
+    version: v0.1.450
+  File::DataClass::TraitFor::TracingStacks:
+    file: lib/File/DataClass/TraitFor/TracingStacks.pm
+    version: v0.1.450
 recommends:
   App::cpanminus: 1.6005
   Pod::Markdown: 1.322
@@ -88,7 +94,7 @@ requires:
   Cache::FastMmap: 1.36
   Carp: 0
   Class::Null: 1.09
-  Exception::Class: 1.23
+  Devel::StackTrace: 1.26
   File::Path: 2.08
   File::Temp: 0.2
   Hash::Merge: 0.08
@@ -98,6 +104,8 @@ requires:
   Moose: 2.0801
   MooseX::ClassAttribute: 0.27
   MooseX::Types: 0.25
+  MooseX::Types::Common: 0.001002
+  MooseX::Types::LoadableClass: 0.007
   Scalar::Util: 1.18
   Sub::Exporter: 0.982
   Sub::Exporter::Progressive: 0.001006
@@ -114,4 +122,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: v0.16.445
+version: v0.17.450

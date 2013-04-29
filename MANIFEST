@@ -22,6 +22,8 @@ lib/File/DataClass/Storage/JSON.pm
 lib/File/DataClass/Storage/XML.pm
 lib/File/DataClass/Storage/XML/Bare.pm
 lib/File/DataClass/Storage/XML/Simple.pm
+lib/File/DataClass/TraitFor/ThrowingExceptions.pm
+lib/File/DataClass/TraitFor/TracingStacks.pm
 LICENSE
 MANIFEST			This list of files
 META.json
@@ -34,7 +36,8 @@ t/04critic.t
 t/05kwalitee.t
 t/06yaml.t
 t/07podspelling.t
-t/10io.t
+t/10exception.t
+t/15io.t
 t/20data-class.t
 t/25parse-dtd.t
 t/40xml-bare.t

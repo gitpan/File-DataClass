@@ -14,48 +14,51 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 34d092bcca662ff85282753ae3897aa82d2f1a70 Build.PL
-SHA1 5e51081c45410afb071d268d36e3ed821ad1f569 Changes
+SHA1 7aeac12e8ac7b27b2568ccc9435ab0d20fced7aa Build.PL
+SHA1 5324468a813b63a3091a3d57a9dd4e2184d4e2cb Changes
 SHA1 2b3ccb88f716f614f8af721a1c69dba0bcdbbb32 LICENSE
-SHA1 9f2741bf7b363863e8eee9b4c96a09926914a4a8 MANIFEST
-SHA1 b2590c81b99918b3c469fc72cb824c610dfb1bee META.json
-SHA1 4bfc2f8e65331d55f84eeb1a553c7d3d28cb0b1c META.yml
-SHA1 e02226b785bfa1a02bc46690084353994e97d5c5 README
+SHA1 6c6afc76fbf5be79c60f4fb775c2da5f88031d5d MANIFEST
+SHA1 bfc74e7ee435b3e9fc2aa26db3c1e4a6b21b69e8 META.json
+SHA1 1e9a2c7f65f5f9d4e5a2e1209340c6ae18a02992 META.yml
+SHA1 77a1cb86115317b5b7a0b528eb864afc3c8f136a README
 SHA1 4efd622830066cf222e8f2542024a7fed26666a2 inc/Bob.pm
 SHA1 d84ee03a3d351b35aea71fedcce8b88ddfdcaf06 inc/CPANTesting.pm
 SHA1 32d0d60cba78d86b9c2cc6ce3b511c0fbe6e0b91 inc/SubClass.pm
-SHA1 49c2d3a52992dac6b5f90b2113f7cebf3df1aa7f lib/File/DataClass.pm
-SHA1 9a1f56a8f3e3d3583ce62d90254374a613eb20a1 lib/File/DataClass/Cache.pm
-SHA1 8f55695c038003ba2cdfc4bd688adde3085e9d0c lib/File/DataClass/Constants.pm
-SHA1 8cd06029f932dc759eb04604d161b7e055055b91 lib/File/DataClass/Constraints.pm
-SHA1 db1306fa6b7bfa56a78909dbfba91fff9c1b6d6d lib/File/DataClass/Exception.pm
-SHA1 f74a4de73879c19ecdf58e0ae0e5d06fac9edcb7 lib/File/DataClass/Functions.pm
-SHA1 064396e9b224bd25f9a5033e6b1f9a732e603445 lib/File/DataClass/HashMerge.pm
-SHA1 661298c3f44082aec55268c67a3fc0862f1ded1d lib/File/DataClass/IO.pm
-SHA1 908d46ca73af167b6d33024704f8060638f40956 lib/File/DataClass/List.pm
-SHA1 aeb729ecbef1cdb3be8b411a2c5a689a5d7d9d3b lib/File/DataClass/Result.pm
-SHA1 9632f42573e6dc1c40360cb9476b3391224c3a6c lib/File/DataClass/ResultSet.pm
-SHA1 bd58779ea4f123407e975b4895c9d981d8f65814 lib/File/DataClass/ResultSource.pm
-SHA1 7ef433d758b45321ebd8e2c5a18305601cbb3974 lib/File/DataClass/Schema.pm
-SHA1 1d14809e5508671559e511090ab258764ac34052 lib/File/DataClass/Storage.pm
-SHA1 ad357d0a2a2796984e1ca337fcd5afc6cac95b30 lib/File/DataClass/Storage/Any.pm
-SHA1 404a9c2f1df2534a4808ff6db112c724d982ece9 lib/File/DataClass/Storage/JSON.pm
-SHA1 28eeb510dadf42d06e8d9cb100532388c151e5da lib/File/DataClass/Storage/XML.pm
-SHA1 844fb69d4b607ee6cff4ec3a35e0665bc6e59ca4 lib/File/DataClass/Storage/XML/Bare.pm
-SHA1 a58ab7363d95ac2cc22ae47c8beeb751adb529ee lib/File/DataClass/Storage/XML/Simple.pm
+SHA1 d671db7c8ab4dc5db1790bea54ae9ab651504d4a lib/File/DataClass.pm
+SHA1 b621da9a13134460871253698524fc5d875d3fe8 lib/File/DataClass/Cache.pm
+SHA1 37174850d26c4990cc2d68d2646b522fd0327ed2 lib/File/DataClass/Constants.pm
+SHA1 0b54f7b2b91e22c4b547e67c22a9a7280c55bd51 lib/File/DataClass/Constraints.pm
+SHA1 021a960a367b8d93d40f79e1c26242015ee76437 lib/File/DataClass/Exception.pm
+SHA1 59df24bf06da8db392e529e394e49d828dc3ea53 lib/File/DataClass/Functions.pm
+SHA1 d7605197a8efd0597a7777c3de9564140ef2d09f lib/File/DataClass/HashMerge.pm
+SHA1 25f5db62067f08114d91653c724e6a04beaecc51 lib/File/DataClass/IO.pm
+SHA1 e9fb40682be939f3847a08a2fc2d5ce2fe87e4b7 lib/File/DataClass/List.pm
+SHA1 8cc6834331e0209c5dece07e693c4653a7d9fb93 lib/File/DataClass/Result.pm
+SHA1 4eebe05817aca03bfd03dc989f641f7e44cb6047 lib/File/DataClass/ResultSet.pm
+SHA1 da745481a398f90410015ffebb600f2bcd3fdfe2 lib/File/DataClass/ResultSource.pm
+SHA1 b31723594a80bd8038f2f6d2e14716897936c5ef lib/File/DataClass/Schema.pm
+SHA1 162b44ebfcb3131715835a9e77d7332636efe07f lib/File/DataClass/Storage.pm
+SHA1 d7f7452def334a27a17cad3872dba39b12faf19a lib/File/DataClass/Storage/Any.pm
+SHA1 58bf5e2b87d796ea05f941fa9068ed1e5ec739f3 lib/File/DataClass/Storage/JSON.pm
+SHA1 8f23f66b893d3dfe688e92fdd52a6ab770bc54e7 lib/File/DataClass/Storage/XML.pm
+SHA1 2a96549c1a4dfd4f7e0b90cff7ec241bb6e7a090 lib/File/DataClass/Storage/XML/Bare.pm
+SHA1 48f3802fc569c145ebe0692221a52451f4f45a32 lib/File/DataClass/Storage/XML/Simple.pm
+SHA1 8e67324aba180bfdd0f04d40937e5b57f4366c24 lib/File/DataClass/TraitFor/ThrowingExceptions.pm
+SHA1 b28d613989ffb0d4e90c58ed2a03ceebf92db8cc lib/File/DataClass/TraitFor/TracingStacks.pm
 SHA1 5b418179c13d5f6c7995c9021ec067a20cab70dc t/01always_pass.t
-SHA1 7de1aa4851aed2cfeea3b59e41d96d5b5079921c t/02pod.t
-SHA1 c37797212c6dc887dcd9e2746703fd65db4a5ccc t/03podcoverage.t
-SHA1 93c9781cb6824e1deb1d2d73d37d2c811b8ecd41 t/04critic.t
-SHA1 f3cabd99455597d7116ebe7c913d93411e4c9eb0 t/05kwalitee.t
-SHA1 09a7745e43d4e68824fd71a50f167538b7a389c0 t/06yaml.t
-SHA1 e7d2130fc7e4b72819f50052161da96e9f2cd7c4 t/07podspelling.t
-SHA1 9d0e01a1986d33deea9b1dada2cf4fb3b0615e91 t/10io.t
-SHA1 8d71bd07646485bcc391dd5e9c5439f0ef5fef76 t/20data-class.t
-SHA1 b5d10bd32a4ae8884a3bec13193e8f3fc378bb67 t/25parse-dtd.t
-SHA1 35e8a67cea40cca02235636ff97974d3b1e12f41 t/40xml-bare.t
-SHA1 bbdabe7fbad6556069d9824a01aca544cd0bb958 t/50json.t
-SHA1 ddf296e252373e9765057ebc5980e61083da5ad1 t/77multiclass.t
+SHA1 7cacac4d876fe877f56d5cce1a7d56df215a2008 t/02pod.t
+SHA1 3024c9c3e132e435ed0ccf51813b022d5576e5cd t/03podcoverage.t
+SHA1 09425935245168d20ce848e317d2bebd3731fd36 t/04critic.t
+SHA1 3014a8ee80714b96c880d38dec7311c1494ddf19 t/05kwalitee.t
+SHA1 1aa809256ba994977be1edfbaa016f494932d5a4 t/06yaml.t
+SHA1 8fcc26c122ee89c71a06bc786a97a29adb30eeee t/07podspelling.t
+SHA1 fe72177d969e4c3cfc0c71e4e3e4163f98f7d37b t/10exception.t
+SHA1 fe7f5838e99478d2537f79b7d15bb96af51bf2a5 t/15io.t
+SHA1 b89b3616a95ba70bacda007ddda3bba22500dca1 t/20data-class.t
+SHA1 ff08cfac64959c7ebd2d63b26f57d7f7759c1c7b t/25parse-dtd.t
+SHA1 5a7afa9dcf63dc62d473d7ce37803a7c9293f79b t/40xml-bare.t
+SHA1 4c41adae77c26820a3d9c9aefb67b23ff1a33d46 t/50json.t
+SHA1 9b090ee780446e2bca1087bc97e5f247e7338a5d t/77multiclass.t
 SHA1 00aa2e48a788f7ec7de8365693f0ba278f86c98c t/critic.rc
 SHA1 1a92cb2e0902264e56ec80bffedf5a8d5bd36590 t/default.json
 SHA1 8c6e6a9ec7dabf064371ec0e2d0391b051000938 t/default.xml
@@ -70,11 +73,11 @@ SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/mydir/file3
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJRd1WKAAoJEK492j4Im1BpEFAH/3AYZdJ+rp94KmeCIy7UPTU3
-vhnsostagJULKOOsLWg+OTIvc/UHNLmPpcrwC0rog+dEHpJe71HK/RLuHtXNGe8G
-/AJjDq7lZ2oKSQy7mbWSDpwq44B+wm8k+u8R84E7+pwX7Q/QZJDJK8UTWYEchpM4
-la0yGL+0zhO/PrteA1V2lOqf15+SO/FpKfE807lKbDNQ83ZBZXAytavGVd64phbS
-In3mWYjOg2gBk9rcnnJCcyil9O34hk1yMnUWN2vdD8hELHKVUcj0Xc/EekKhOm6+
-IJlfm2sWY/z4uidSnyMWAkRYATgy5bBR9tnzUyCCygR5ZefblIr78kTUe87g5o4=
-=zbDB
+iQEcBAEBAgAGBQJRfqmvAAoJEK492j4Im1BpuJMIAMB5FHl10QDE4+ap1DRT2V2e
+OXQVCe7ixagQIhDMl663WPAb7gutllk5yzjR0zkrOF1V9VClf45aNMh1x3RmzT3c
+KvabCRXu/poZ7q38+nhxfvIRbf+TMeRAewD+/ZBMrruuePPTY/6VKVvE+q86GBfd
+wOb3uCwYonXkv4jDJ++1s2dELuk9eFExsk2NTXlNKn/iQ9yOsM8i0jbA7vl3qURk
+TqvdwktmXRVDxXfTbJdDoiz++nhHpCpWung0/wCLfpgLujeJe8EG3tSTrEjB2ATU
+qoCruiyieetRo0NntJAIgToJ4NqpJgBB9d6u/vhxAGoedqWfMqlhse6ySE0iOHQ=
+=deXx
 -----END PGP SIGNATURE-----

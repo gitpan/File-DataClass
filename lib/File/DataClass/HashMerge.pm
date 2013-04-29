@@ -1,10 +1,10 @@
-# @(#)$Id: HashMerge.pm 443 2013-04-17 14:38:40Z pjf $
+# @(#)$Id: HashMerge.pm 449 2013-04-29 15:19:09Z pjf $
 
 package File::DataClass::HashMerge;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 443 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.17.%d', q$Rev: 449 $ =~ /\d+/gmx );
 
 use File::DataClass::Constants;
 use Carp;
@@ -117,7 +117,7 @@ File::DataClass::HashMerge - Merge hashes with update flag
 
 =head1 Version
 
-0.16.$Revision: 443 $
+0.17.$Revision: 449 $
 
 =head1 Synopsis
 

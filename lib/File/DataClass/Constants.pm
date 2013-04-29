@@ -1,21 +1,22 @@
-# @(#)$Id: Constants.pm 437 2013-04-11 17:35:14Z pjf $
+# @(#)$Id: Constants.pm 450 2013-04-29 17:11:07Z pjf $
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 437 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.17.%d', q$Rev: 450 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
-use Moose::Util::TypeConstraints;
+use MooseX::Types -declare => [ q(ExceptionTC) ];
+use MooseX::Types::Moose       qw(ClassName);
 use File::DataClass::Exception;
 
-subtype 'File::DataClass::Exception' => as 'ClassName' =>
-   where   { $_->can( q(throw) ) } =>
-   message { "Class $_ is not loaded or has no throw method" };
+subtype ExceptionTC, as ClassName,
+   where   { $_->can( q(throw) ) },
+   message { "Class ${_} is not loaded or has no throw method" };
 
-class_has 'Exception_Class' => is => 'rw', isa => 'File::DataClass::Exception',
+class_has 'Exception_Class' => is => 'rw', isa => ExceptionTC,
    default                  => q(File::DataClass::Exception);
 
 my @constants;
@@ -67,7 +68,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-0.16.$Rev: 437 $
+0.17.$Rev: 450 $
 
 =head1 Synopsis
 
