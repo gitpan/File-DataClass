@@ -1,8 +1,8 @@
-# @(#)$Id: 50json.t 449 2013-04-29 15:19:09Z pjf $
+# @(#)$Ident: 50json.t 2013-04-30 01:34 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.17.%d', q$Rev: 449 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );

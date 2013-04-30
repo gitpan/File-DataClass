@@ -1,11 +1,11 @@
-# @(#)$Id: IO.pm 449 2013-04-29 15:19:09Z pjf $
+# @(#)$Ident: IO.pm 2013-04-30 01:31 pjf ;
 
 package File::DataClass::IO;
 
 use strict;
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->pathname }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.17.%d', q$Rev: 449 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moose;
 use Moose::Util::TypeConstraints;
@@ -972,7 +972,7 @@ File::DataClass::IO - Better IO syntax
 
 =head1 Version
 
-0.17.$Revision: 449 $
+This document describes version v0.18.$Rev: 1 $
 
 =head1 Synopsis
 

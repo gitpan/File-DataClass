@@ -1,46 +1,32 @@
-# @(#)$Id: Exception.pm 450 2013-04-29 17:11:07Z pjf $
+# @(#)$Ident: Exception.pm 2013-04-30 21:40 pjf ;
 
 package File::DataClass::Exception;
 
 # Package namespace::autoclean does not play nice with overload
 use namespace::clean -except => 'meta';
 use overload '""' => sub { shift->as_string }, fallback => 1;
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 450 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 4 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
-use MooseX::Types::Common::String  qw(NonEmptySimpleStr);
-use MooseX::Types::Common::Numeric qw(PositiveInt);
-use MooseX::Types::Moose           qw(ArrayRef);
+use MooseX::Types::Common::String qw(NonEmptySimpleStr);
+use MooseX::Types::Moose          qw(ArrayRef);
 
 # Class attributes
 class_has 'Ignore' => is => 'ro', isa => ArrayRef, traits => [ 'Array' ],
    default         => sub { [ qw(File::DataClass::IO) ] },
-   handles         => { ignore_class => 'push' };
+   handles         => { ignore_class => 'push' },  reader => 'ignore';
 
 # Object attributes (public)
-has 'args'   => is => 'ro',   isa => ArrayRef, default => sub { [] };
+has 'args'  => is => 'ro', isa => ArrayRef,          default => sub { [] };
 
-has 'class'  => is => 'ro',   isa => NonEmptySimpleStr,
-   default   => __PACKAGE__;
+has 'class' => is => 'ro', isa => NonEmptySimpleStr, default => __PACKAGE__;
 
-has 'error'  => is => 'ro',   isa => NonEmptySimpleStr,
-   default   => 'Unknown error';
-
-has 'ignore' => is => 'ro',   isa => ArrayRef,
-   default   => sub { __PACKAGE__->Ignore }, init_arg => undef;
-
-has 'leader' => is => 'ro',   isa => NonEmptySimpleStr,
-   builder   => 'build_leader', init_arg => undef, lazy => 1;
-
-has 'level'  => is => 'ro',   isa => PositiveInt, default => 1;
-
-with q(File::DataClass::TraitFor::ThrowingExceptions);
-with q(File::DataClass::TraitFor::TracingStacks);
+has 'error' => is => 'ro', isa => NonEmptySimpleStr, default => 'Unknown error';
 
 # Construction
 around 'BUILDARGS' => sub {
-   my ($next, $self, @args) = @_; my $attr = __get_attr( @args );
+   my ($next, $self, @args) = @_; my $attr = __build_attr_from( @args );
 
    $attr->{error} and $attr->{error} .= q() and chomp $attr->{error};
 
@@ -48,23 +34,26 @@ around 'BUILDARGS' => sub {
 };
 
 # Public methods
-sub as_string {
-   my $self = shift; my $text = $self->error or return;
+sub as_string { # Expand positional parameters of the form [_<n>]
+   my $self = shift; my $error = $self->error or return;
 
-   # Expand positional parameters of the form [_<n>]
-   0 > index $text, q([_)  and return $self->leader.$text;
+   0 > index $error, q([_) and return $error;
 
    my @args = map { $_ // '[?]' } @{ $self->args }, map { '[?]' } 0 .. 9;
 
-   $text =~ s{ \[ _ (\d+) \] }{$args[ $1 - 1 ]}gmx;
+   $error =~ s{ \[ _ (\d+) \] }{$args[ $1 - 1 ]}gmx;
 
-   return $self->leader.$text;
+   return $error;
+}
+
+sub is_one_of_us {
+   return $_[ 1 ] && blessed $_[ 1 ] && $_[ 1 ]->isa( __PACKAGE__ );
 }
 
 # Private functions
-sub __get_attr {
+sub __build_attr_from {
    return ($_[ 0 ] && ref $_[ 0 ] eq q(HASH)) ? { %{ $_[ 0 ] } }
-        : (defined $_[ 1 ])                   ? { @_ }
+        :        (defined $_[ 1 ])            ? { @_ }
                                               : { error => $_[ 0 ] };
 }
 
@@ -78,11 +67,11 @@ __END__
 
 =head1 Name
 
-File::DataClass::Exception - Exception handling
+File::DataClass::Exception - Base class for exception handling
 
 =head1 Version
 
-This documents version v0.15.$Rev: 450 $ of L<File::DataClass::Exception>
+This documents version v0.18.$Rev: 4 $ of L<File::DataClass::Exception>
 
 =head1 Synopsis
 
@@ -97,13 +86,13 @@ This documents version v0.15.$Rev: 450 $ of L<File::DataClass::Exception>
    }
 
    # OR
-   use File::DataClass::Exception;
+   use File::DataClass::Exception::Simple;
 
    sub some_method {
       my $self = shift;
 
       eval { this_will_fail };
-      File::DataClass::Exception->throw_on_error;
+      File::DataClass::Exception::Simple->throw_on_error;
    }
 
    # THEN
@@ -113,9 +102,9 @@ This documents version v0.15.$Rev: 450 $ of L<File::DataClass::Exception>
 =head1 Description
 
 An exception class that supports error messages with placeholders, a
-L</throw> method with automatic re-throw upon detection of self,
-conditional throw if an exception was caught and a simplified
-stacktrace
+L<File::DataClass::TraitFor::ThrowingExceptions/throw> method with
+automatic re-throw upon detection of self, conditional throw if an
+exception was caught and a simplified stacktrace
 
 Error objects are overloaded to stringify to the full error message
 plus a leader
@@ -124,7 +113,8 @@ plus a leader
 
 The C<< File::DataClass::Exception->Ignore >> class attribute is an
 array ref of methods whose presence should be ignored by the error
-message leader
+message leader. It does the 'Array' trait where C<push> implements the
+C<ignore_class> method
 
 Defines the following list of read only attributes;
 
@@ -146,15 +136,6 @@ The actually error message which defaults to C<Unknown error>. Can contain
 placeholders of the form C<< [_<n>] >> where C<< <n> >> is an integer
 starting at one
 
-=item C<leader>
-
-Set to the package and line number where the error should be reported
-
-=item C<level>
-
-A positive integer which defaults to one. How many additional stack frames
-to pop before calculating the C<leader> attribute
-
 =back
 
 =head1 Subroutines/Methods
@@ -163,7 +144,19 @@ to pop before calculating the C<leader> attribute
 
    $error_text = $self->as_string;
 
-This is what the object stringifies to, including the C<leader> attribute
+This is what the object stringifies to
+
+=head2 is_one_of_us
+
+   $bool = $self->is_one_of_us( $string_or_exception_object_ref );
+
+Class method which detects instances of this exception class
+
+=head2 __build_attr_from
+
+   $hash_ref = __build_attr_from( @args );
+
+Function that coerces a hash ref from whatever is passed to it
 
 =head1 Diagnostics
 
@@ -177,17 +170,11 @@ None
 
 =item L<overload>
 
-=item L<File::DataClass::TraitFor::ThrowingExceptions>
-
-=item L<File::DataClass::TraitFor::TracingStacks>
-
 =item L<Moose>
 
 =item L<MooseX::ClassAttribute>
 
 =item L<MooseX::Types::Common::String>
-
-=item L<MooseX::Types::Common::Numeric>
 
 =item L<MooseX::Types::Moose>
 

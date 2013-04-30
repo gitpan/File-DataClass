@@ -75,87 +75,95 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.17.450"
+         "version" : "v0.18.6"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Constants" : {
          "file" : "lib/File/DataClass/Constants.pm",
-         "version" : "v0.17.450"
+         "version" : "v0.18.4"
       },
       "File::DataClass::Constraints" : {
          "file" : "lib/File/DataClass/Constraints.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Exception" : {
          "file" : "lib/File/DataClass/Exception.pm",
-         "version" : "v0.15.450"
+         "version" : "v0.18.4"
+      },
+      "File::DataClass::Exception::Simple" : {
+         "file" : "lib/File/DataClass/Exception/Simple.pm",
+         "version" : "v0.18.4"
       },
       "File::DataClass::Functions" : {
          "file" : "lib/File/DataClass/Functions.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Result" : {
          "file" : "lib/File/DataClass/Result.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::ResultSource" : {
          "file" : "lib/File/DataClass/ResultSource.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Schema" : {
          "file" : "lib/File/DataClass/Schema.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Storage" : {
          "file" : "lib/File/DataClass/Storage.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Storage::Any" : {
          "file" : "lib/File/DataClass/Storage/Any.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Storage::JSON" : {
          "file" : "lib/File/DataClass/Storage/JSON.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Storage::XML" : {
          "file" : "lib/File/DataClass/Storage/XML.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Storage::XML::Bare" : {
          "file" : "lib/File/DataClass/Storage/XML/Bare.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
       },
       "File::DataClass::Storage::XML::Simple" : {
          "file" : "lib/File/DataClass/Storage/XML/Simple.pm",
-         "version" : "v0.17.449"
+         "version" : "v0.18.1"
+      },
+      "File::DataClass::TraitFor::PrependingErrorLeader" : {
+         "file" : "lib/File/DataClass/TraitFor/PrependingErrorLeader.pm",
+         "version" : "v0.18.5"
       },
       "File::DataClass::TraitFor::ThrowingExceptions" : {
          "file" : "lib/File/DataClass/TraitFor/ThrowingExceptions.pm",
-         "version" : "v0.1.450"
+         "version" : "v0.18.2"
       },
       "File::DataClass::TraitFor::TracingStacks" : {
          "file" : "lib/File/DataClass/TraitFor/TracingStacks.pm",
-         "version" : "v0.1.450"
+         "version" : "v0.18.3"
       }
    },
    "release_status" : "stable",
@@ -168,5 +176,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.17.450"
+   "version" : "v0.18.6"
 }

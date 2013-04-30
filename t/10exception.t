@@ -1,8 +1,8 @@
-# @(#)Ident: 10exception.t 2013-04-29 15:13 pjf ;
+# @(#)Ident: 10exception.t 2013-04-30 21:43 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.17.%d', q$Rev: 449 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 4 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -19,9 +19,10 @@ BEGIN {
 }
 
 use Class::Null;
-use File::DataClass::Exception;
 
-my $class = 'File::DataClass::Exception'; $EVAL_ERROR = undef;
+use_ok 'File::DataClass::Exception::Simple';
+
+my $class = 'File::DataClass::Exception::Simple'; $EVAL_ERROR = undef;
 
 eval { $class->throw_on_error }; my $e = $EVAL_ERROR; $EVAL_ERROR = undef;
 
@@ -32,9 +33,9 @@ eval { $class->throw( 'PracticeKill' ) };
 $e = $EVAL_ERROR; $EVAL_ERROR = undef; my $min_level = $e->level;
 
 is ref $e, $class, 'Good class';
-like $e, qr{ \A main \[\d+\] \[ $min_level \] }mx, 'Package and default level';
+like $e, qr{ \A main \[\d+ / $min_level \] }mx, 'Package and default level';
 like $e, qr{ PracticeKill \s* \z   }mx, 'Throws error message';
-is $e->class, $class, 'Default error class';
+is $e->class, 'File::DataClass::Exception', 'Default error class';
 
 my ($line1, $line2, $line3);
 
@@ -46,7 +47,7 @@ eval { test_throw1() }; $line3 = __LINE__;
 
 $e = $EVAL_ERROR; $EVAL_ERROR = undef; my @lines = $e->stacktrace;
 
-like $e, qr{ \A main \[ $line2 \] }mx, 'Package and line number';
+like $e, qr{ \A main \[ $line2 / \d+ \] }mx, 'Package and line number';
 is $lines[ 0 ], "main::test_throw line ${line1}", 'Stactrace line 1';
 is $lines[ 1 ], "main::test_throw1 line ${line2}", 'Stactrace line 2';
 is $lines[ 2 ], "main line ${line3}", 'Stactrace line 3';
@@ -61,7 +62,7 @@ sub test_throw4 { test_throw3() }; $line1 = __LINE__;
 
 eval { test_throw4() }; $e = $EVAL_ERROR; $EVAL_ERROR = undef;
 
-like $e, qr{ \A main \[ $line1 \] \[ $level \] }mx, 'Specific leader level';
+like $e, qr{ \A main \[ $line1 / $level \] }mx, 'Specific leader level';
 
 $line1 = __LINE__; eval {
    $class->throw( args  => [ 'flap' ],
@@ -72,7 +73,7 @@ $e = $EVAL_ERROR; $EVAL_ERROR = undef;
 
 is $e->class, 'nonDefault', 'Specific error class';
 
-like $e, qr{ main\[ $line1 \]\[1\]:\scat:\sflap\scannot\sopen:\s\[\?\] }mx,
+like $e, qr{ main\[ $line1 / 1 \]:\scat:\sflap\scannot\sopen:\s\[\?\] }mx,
    'Placeholer substitution';
 
 done_testing;
