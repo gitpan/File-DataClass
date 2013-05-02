@@ -1,9 +1,9 @@
-# @(#)Ident: PrependingErrorLeader.pm 2013-04-30 22:01 pjf ;
+# @(#)Ident: ErrorLeader.pm 2013-05-01 17:32 pjf ;
 
-package File::DataClass::TraitFor::PrependingErrorLeader;
+package File::DataClass::Exception::TraitFor::ErrorLeader;
 
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.19.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use MooseX::Types::Common::Numeric qw(PositiveInt);
@@ -65,18 +65,18 @@ __END__
 
 =head1 Name
 
-File::DataClass::TraitFor::PrependingErrorLeader - Prepends a leader to the exception
+File::DataClass::Exception::TraitFor::ErrorLeader - Prepends a leader to the exception
 
 =head1 Synopsis
 
    use Moose;
 
-   with 'File::DataClass::TraitFor::PrependingErrorLeader';
+   with 'File::DataClass::Exception::TraitFor::ErrorLeader';
 
 =head1 Version
 
-This documents version v0.18.$Rev: 5 $
-of L<File::DataClass::TraitFor::PrependingErrorLeader>
+This documents version v0.19.$Rev: 1 $
+of L<File::DataClass::Exception::TraitFor::ErrorLeader>
 
 =head1 Description
 
@@ -86,9 +86,6 @@ Prepends a one line stack summary to the exception error message
 
 Requires the C<as_string> method and the C<ignore> attribute in the
 consuming class
-
-Modifies C<as_string> in the consuming class. Prepends the C<leader> attribute
-to the return value
 
 Defines the following attributes;
 
@@ -104,6 +101,9 @@ A positive integer which defaults to one. How many additional stack frames
 to pop before calculating the C<leader> attribute
 
 =back
+
+Modifies C<as_string> in the consuming class. Prepends the C<leader>
+attribute to the return value
 
 =head1 Subroutines/Methods
 

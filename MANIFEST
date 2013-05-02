@@ -1,3 +1,4 @@
+.directory
 Build.PL
 Changes
 inc/Bob.pm
@@ -8,7 +9,10 @@ lib/File/DataClass/Cache.pm
 lib/File/DataClass/Constants.pm
 lib/File/DataClass/Constraints.pm
 lib/File/DataClass/Exception.pm
-lib/File/DataClass/Exception/Simple.pm
+lib/File/DataClass/Exception/Base.pm
+lib/File/DataClass/Exception/TraitFor/ErrorLeader.pm
+lib/File/DataClass/Exception/TraitFor/Throwing.pm
+lib/File/DataClass/Exception/TraitFor/TracingStacks.pm
 lib/File/DataClass/Functions.pm
 lib/File/DataClass/HashMerge.pm
 lib/File/DataClass/IO.pm
@@ -23,9 +27,6 @@ lib/File/DataClass/Storage/JSON.pm
 lib/File/DataClass/Storage/XML.pm
 lib/File/DataClass/Storage/XML/Bare.pm
 lib/File/DataClass/Storage/XML/Simple.pm
-lib/File/DataClass/TraitFor/PrependingErrorLeader.pm
-lib/File/DataClass/TraitFor/ThrowingExceptions.pm
-lib/File/DataClass/TraitFor/TracingStacks.pm
 LICENSE
 MANIFEST			This list of files
 META.json

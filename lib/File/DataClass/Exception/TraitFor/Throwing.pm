@@ -1,19 +1,34 @@
-# @(#)Ident: ThrowingExceptions.pm 2013-04-30 17:10 pjf ;
+# @(#)Ident: Throwing.pm 2013-05-01 20:10 pjf ;
 
-package File::DataClass::TraitFor::ThrowingExceptions;
+package File::DataClass::Exception::TraitFor::Throwing;
 
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 2 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.19.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Moose::Role;
+use Carp      ();
 use English qw(-no_match_vars);
+use Moose::Role;
 
 requires qw(is_one_of_us);
 
+my %_CACHE;
+
+# Lifted from Throwable
+has 'previous_exception' => is => 'ro',
+   default               => sub { $_CACHE{ __cache_key() } };
+
+# Construction
+sub BUILD {}
+
+after 'BUILD' => sub {
+   my $self = shift; $self->_cache_exception; return;
+};
+
 # Public methods
 sub caught {
-   my ($self, @args) = @_; my $attr = __build_attr_from( @args );
+   my ($self, @args) = @_; $self->_is_object_ref( @args ) and return $self;
 
+   my $attr  = __build_attr_from( @args );
    my $error = $attr->{error} ||= $EVAL_ERROR; $error or return;
 
    return $self->is_one_of_us( $error ) ? $error : $self->new( $attr );
@@ -22,11 +37,30 @@ sub caught {
 sub throw {
    my ($self, @args) = @_;
 
-   die $self->is_one_of_us( $args[ 0 ] ) ? $args[ 0 ] : $self->new( @args );
+   $self->_is_object_ref( @args )    and die $self;
+   $self->is_one_of_us( $args[ 0 ] ) and die $args[ 0 ];
+                                         die $self->new( @args );
 }
 
 sub throw_on_error {
-   my $self = shift; my $e; $e = $self->caught( @_ ) and die $e; return;
+   my $e; $e = shift->caught( @_ ) and die $e; return;
+}
+
+# Private methods
+sub _cache_exception {
+   my $self = shift; my $e = bless { %{ $self } }, blessed $self;
+
+   delete $e->{previous_exception}; $_CACHE{ __cache_key() } = $e;
+
+   return;
+}
+
+sub _is_object_ref {
+   my ($self, @args) = @_; blessed $self or return 0;
+
+   scalar @args and Carp::confess
+      'Trying to throw an Exception object with arguments';
+   return 1;
 }
 
 # Private functions
@@ -34,6 +68,10 @@ sub __build_attr_from {
    return ($_[ 0 ] && ref $_[ 0 ] eq q(HASH)) ? { %{ $_[ 0 ] } }
         :        (defined $_[ 1 ])            ? { @_ }
                                               : { error => $_[ 0 ] };
+}
+
+sub __cache_key {
+   return $PID.'-'.(exists $INC{ 'threads.pm' } ? threads->tid() : 0);
 }
 
 1;
@@ -46,17 +84,18 @@ __END__
 
 =head1 Name
 
-File::DataClass::TraitFor::ThrowingExceptions - Detects and throws exceptions
+File::DataClass::Exception::TraitFor::Throwing - Detects and throws exceptions
 
 =head1 Synopsis
 
    use Moose;
 
-   with 'File::DataClass::TraitFor::ThrowingExceptions';
+   with 'File::DataClass::Exception::TraitFor::Throwing';
 
 =head1 Version
 
-This documents version v0.18.$Rev: 2 $ of L<File::DataClass::TraitFor::ThrowingExceptions>
+This documents version v0.19.$Rev: 1 $ of
+L<File::DataClass::Exception::TraitFor::Throwing>
 
 =head1 Description
 
@@ -66,9 +105,24 @@ Detects and throws exceptions
 
 Requires the consuming class to have the class method C<is_one_of_us>
 
-Defines no attributes
+Defines the following list of attributes;
+
+=over 3
+
+=item C<previous_exception>
+
+May hold a reference to the previous exception in this thread
+
+=back
+
+Modifies C<BUILD> in the consuming class. Caches the new exception for
+use by the C<previous_exception> attribute in the next exception thrown
 
 =head1 Subroutines/Methods
+
+=head2 BUILD
+
+Default subroutine enable method modifiers
 
 =head2 caught
 
