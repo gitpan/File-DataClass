@@ -1,22 +1,22 @@
-# @(#)Ident: ErrorLeader.pm 2013-05-01 17:32 pjf ;
+# @(#)Ident: ErrorLeader.pm 2013-05-07 22:37 pjf ;
 
 package File::DataClass::Exception::TraitFor::ErrorLeader;
 
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.19.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 0 $ =~ /\d+/gmx );
 
 use Moose::Role;
-use MooseX::Types::Common::Numeric qw(PositiveInt);
-use MooseX::Types::Common::String  qw(NonEmptySimpleStr);
+use MooseX::Types::Common::Numeric qw(PositiveOrZeroInt);
+use MooseX::Types::Common::String  qw(SimpleStr);
 use List::Util                     qw(first);
 
-requires qw(as_string frames ignore);
+requires qw(as_string filtered_frames ignore);
 
 # Object methods (public)
-has 'leader' => is => 'ro', isa => NonEmptySimpleStr,
+has 'leader' => is => 'ro', isa => SimpleStr,
    builder   => '_build_leader', init_arg => undef, lazy => 1;
 
-has 'level'  => is => 'ro', isa => PositiveInt, default => 1;
+has 'level'  => is => 'ro', isa => PositiveOrZeroInt, default => 1;
 
 # Construction
 around 'as_string' => sub {
@@ -29,7 +29,7 @@ around 'as_string' => sub {
 sub _build_leader {
    my $self = shift; my $level = $self->level;
 
-   my @frames = $self->frames; my ($leader, $line, $package);
+   my @frames = $self->filtered_frames; my ($leader, $line, $package);
 
    $level >= scalar @frames and $level = scalar @frames - 1;
 
@@ -41,9 +41,9 @@ sub _build_leader {
       }
       else { $leader = $package = q() }
    }
-   while ($package and __is_member( $package, $self->ignore) );
+   while ($package and __is_member( $package, $self->ignore ));
 
-   return $leader;
+   return $leader || q();
 }
 
 # Private functions
@@ -69,13 +69,13 @@ File::DataClass::Exception::TraitFor::ErrorLeader - Prepends a leader to the exc
 
 =head1 Synopsis
 
-   use Moose;
+   use File::DataClass::Exception;
 
-   with 'File::DataClass::Exception::TraitFor::ErrorLeader';
+   File::DataClass::Exception->add_roles( 'ErrorLeader' );
 
 =head1 Version
 
-This documents version v0.19.$Rev: 1 $
+This documents version v0.20.$Rev: 0 $
 of L<File::DataClass::Exception::TraitFor::ErrorLeader>
 
 =head1 Description
@@ -123,9 +123,7 @@ None
 
 =item L<List::Util>
 
-=item L<MooseX::Types::Common::Numeric>
-
-=item L<MooseX::Types::Common::String>
+=item L<MooseX::Types::Common>
 
 =back
 

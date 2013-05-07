@@ -1,9 +1,9 @@
-# @(#)Ident: TracingStacks.pm 2013-05-01 19:43 pjf ;
+# @(#)Ident: TracingStacks.pm 2013-05-07 22:54 pjf ;
 
 package File::DataClass::Exception::TraitFor::TracingStacks;
 
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.19.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 0 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use MooseX::Types   -declare => [ q(Tracer) ];
@@ -11,7 +11,8 @@ use MooseX::Types::LoadableClass qw(LoadableClass);
 use MooseX::Types::Moose         qw(HashRef Object);
 use Scalar::Util                 qw(weaken);
 
-# Type constraints
+requires qw(BUILD);
+
 subtype Tracer, as Object,
    where   { $_->can( q(frames) ) },
    message { blessed $_ ? 'Object '.(blessed $_).' is missing a frames method'
@@ -29,24 +30,24 @@ has 'trace_class' => is => 'ro', isa => LoadableClass, coerce => 1,
    default        => sub { q(Devel::StackTrace) };
 
 # Construction
-sub BUILD {}
-
 before 'BUILD' => sub {
    my $self = shift; $self->trace; return;
 };
 
 # Public methods
+sub filtered_frames {
+   return grep { $_->subroutine !~ m{ :: __ANON__ \z }mx } $_[ 0 ]->frames;
+}
+
 sub stacktrace {
    my ($self, $skip) = @_; my (@lines, %seen, $subr);
 
-   for my $frame (reverse $self->frames) {
+   for my $frame (reverse $self->filtered_frames) {
       my $package = $frame->package; my $l_no;
 
       unless ($l_no = $seen{ $package } and $l_no == $frame->line) {
+         push @lines, join q( ), $subr || $package, 'line', $frame->line;
          $seen{ $package } = $frame->line;
-
-         my $symbol = $subr || $package; $symbol !~ m{ :: __ANON__ \z }mx
-            and push @lines, join q( ), $symbol, 'line', $frame->line;
       }
 
       $subr = $frame->subroutine;
@@ -112,7 +113,7 @@ File::DataClass::Exception::TraitFor::TracingStacks - Provides a minimalist stac
 
 =head1 Version
 
-This documents version v0.19.$Rev: 1 $ of
+This documents version v0.20.$Rev: 0 $ of
 L<File::DataClass::Exception::TraitFor::TracingStacks>
 
 =head1 Description
@@ -120,6 +121,9 @@ L<File::DataClass::Exception::TraitFor::TracingStacks>
 Provides a minimalist stacktrace
 
 =head1 Configuration and Environment
+
+Modifies C<BUILD> in the consuming class. Forces the instantiation of
+the C<trace> attribute
 
 Defines the following attributes;
 
@@ -140,14 +144,14 @@ A loadable class which defaults to L<Devel::StackTrace>
 
 =back
 
-Modifies C<BUILD> in the consuming class. Forces the instantiation of
-the C<trace> attribute
-
 =head1 Subroutines/Methods
 
-=head2 BUILD
+=head2 filtered_frames
 
-Default subroutine enable method modifiers
+   @frames = $self->filtered_frames;
+
+Currently frames with subroutine names matching C<__ANON__> are
+filtered out
 
 =head2 stacktrace
 

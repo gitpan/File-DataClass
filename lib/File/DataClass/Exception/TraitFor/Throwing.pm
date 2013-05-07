@@ -1,15 +1,15 @@
-# @(#)Ident: Throwing.pm 2013-05-01 20:10 pjf ;
+# @(#)Ident: Throwing.pm 2013-05-07 22:39 pjf ;
 
 package File::DataClass::Exception::TraitFor::Throwing;
 
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.19.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 0 $ =~ /\d+/gmx );
 
 use Carp      ();
 use English qw(-no_match_vars);
 use Moose::Role;
 
-requires qw(is_one_of_us);
+requires qw(BUILD is_one_of_us);
 
 my %_CACHE;
 
@@ -18,8 +18,6 @@ has 'previous_exception' => is => 'ro',
    default               => sub { $_CACHE{ __cache_key() } };
 
 # Construction
-sub BUILD {}
-
 after 'BUILD' => sub {
    my $self = shift; $self->_cache_exception; return;
 };
@@ -94,7 +92,7 @@ File::DataClass::Exception::TraitFor::Throwing - Detects and throws exceptions
 
 =head1 Version
 
-This documents version v0.19.$Rev: 1 $ of
+This documents version v0.20.$Rev: 0 $ of
 L<File::DataClass::Exception::TraitFor::Throwing>
 
 =head1 Description
@@ -102,6 +100,9 @@ L<File::DataClass::Exception::TraitFor::Throwing>
 Detects and throws exceptions
 
 =head1 Configuration and Environment
+
+Modifies C<BUILD> in the consuming class. Caches the new exception for
+use by the C<previous_exception> attribute in the next exception thrown
 
 Requires the consuming class to have the class method C<is_one_of_us>
 
@@ -115,14 +116,7 @@ May hold a reference to the previous exception in this thread
 
 =back
 
-Modifies C<BUILD> in the consuming class. Caches the new exception for
-use by the C<previous_exception> attribute in the next exception thrown
-
 =head1 Subroutines/Methods
-
-=head2 BUILD
-
-Default subroutine enable method modifiers
 
 =head2 caught
 
