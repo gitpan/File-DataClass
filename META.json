@@ -62,6 +62,7 @@
             "Sub::Exporter" : "0.982",
             "Sub::Exporter::Progressive" : "0.001006",
             "Try::Tiny" : "0.06",
+            "Unexpected" : "v0.1.0",
             "XML::Bare" : "0.3",
             "XML::DTD" : "0.09",
             "XML::Simple" : "2.14",
@@ -76,7 +77,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.20.6"
+         "version" : "v0.20.7"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -92,23 +93,7 @@
       },
       "File::DataClass::Exception" : {
          "file" : "lib/File/DataClass/Exception.pm",
-         "version" : "v0.20.0"
-      },
-      "File::DataClass::Exception::Base" : {
-         "file" : "lib/File/DataClass/Exception/Base.pm",
-         "version" : "v0.20.0"
-      },
-      "File::DataClass::Exception::TraitFor::ErrorLeader" : {
-         "file" : "lib/File/DataClass/Exception/TraitFor/ErrorLeader.pm",
-         "version" : "v0.20.0"
-      },
-      "File::DataClass::Exception::TraitFor::Throwing" : {
-         "file" : "lib/File/DataClass/Exception/TraitFor/Throwing.pm",
-         "version" : "v0.20.0"
-      },
-      "File::DataClass::Exception::TraitFor::TracingStacks" : {
-         "file" : "lib/File/DataClass/Exception/TraitFor/TracingStacks.pm",
-         "version" : "v0.20.0"
+         "version" : "v0.20.7"
       },
       "File::DataClass::Functions" : {
          "file" : "lib/File/DataClass/Functions.pm",
@@ -177,5 +162,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.20.6"
+   "version" : "v0.20.7"
 }
