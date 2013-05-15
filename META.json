@@ -44,6 +44,7 @@
             "CHI" : "0.42",
             "Cache::FastMmap" : "1.36",
             "Class::Null" : "2.10142",
+            "File::Path" : "2.08",
             "Hash::Merge" : "0.12",
             "JSON" : "2.5",
             "Moose" : "2.0802",
@@ -65,7 +66,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.20.8"
+         "version" : "v0.20.9"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -150,5 +151,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.20.8"
+   "version" : "v0.20.9"
 }
