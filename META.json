@@ -66,7 +66,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.20.9"
+         "version" : "v0.20.10"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -122,7 +122,7 @@
       },
       "File::DataClass::Storage::Any" : {
          "file" : "lib/File/DataClass/Storage/Any.pm",
-         "version" : "v0.20.0"
+         "version" : "v0.20.10"
       },
       "File::DataClass::Storage::JSON" : {
          "file" : "lib/File/DataClass/Storage/JSON.pm",
@@ -151,5 +151,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.20.9"
+   "version" : "v0.20.10"
 }
