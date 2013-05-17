@@ -3,7 +3,6 @@ abstract: 'Structured data file IO with OO paradigm'
 author:
   - 'Peter Flanigan, C<< <pjfl@cpan.org> >>'
 build_requires:
-  Exception::Class: 1.32
   Module::Build: 0.4004
   Text::Diff: 1.37
   version: 0.88
@@ -26,7 +25,7 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.20.10
+    version: v0.20.12
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
     version: v0.20.0
@@ -44,7 +43,7 @@ provides:
     version: v0.20.0
   File::DataClass::HashMerge:
     file: lib/File/DataClass/HashMerge.pm
-    version: v0.20.0
+    version: v0.20.11
   File::DataClass::IO:
     file: lib/File/DataClass/IO.pm
     version: v0.20.0
@@ -107,4 +106,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: v0.20.10
+version: v0.20.12

@@ -38,6 +38,7 @@ t/07podspelling.t
 t/10exception.t
 t/15io.t
 t/20data-class.t
+t/21hash-merge.t
 t/25parse-dtd.t
 t/40xml-bare.t
 t/50json.t

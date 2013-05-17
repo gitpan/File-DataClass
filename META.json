@@ -24,7 +24,6 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Exception::Class" : "1.32",
             "Module::Build" : "0.4004",
             "Text::Diff" : "1.37",
             "version" : "0.88"
@@ -66,7 +65,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.20.10"
+         "version" : "v0.20.12"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -90,7 +89,7 @@
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
-         "version" : "v0.20.0"
+         "version" : "v0.20.11"
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
@@ -151,5 +150,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.20.10"
+   "version" : "v0.20.12"
 }
