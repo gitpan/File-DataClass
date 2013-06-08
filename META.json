@@ -52,7 +52,7 @@
             "Sub::Exporter" : "0.982",
             "Sub::Exporter::Progressive" : "0.001006",
             "Try::Tiny" : "0.09",
-            "Unexpected" : "v0.1.0",
+            "Unexpected" : "v0.3.0",
             "XML::Bare" : "0.47",
             "XML::DTD" : "0.1",
             "XML::Simple" : "2.18",
@@ -65,7 +65,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.20.12"
+         "version" : "v0.20.13"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -150,5 +150,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.20.12"
+   "version" : "v0.20.13"
 }
