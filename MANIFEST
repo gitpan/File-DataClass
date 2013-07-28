@@ -1,4 +1,3 @@
-.directory
 Build.PL
 Changes
 inc/Bob.pm
@@ -7,7 +6,6 @@ inc/SubClass.pm
 lib/File/DataClass.pm
 lib/File/DataClass/Cache.pm
 lib/File/DataClass/Constants.pm
-lib/File/DataClass/Constraints.pm
 lib/File/DataClass/Exception.pm
 lib/File/DataClass/Functions.pm
 lib/File/DataClass/HashMerge.pm
@@ -23,6 +21,7 @@ lib/File/DataClass/Storage/JSON.pm
 lib/File/DataClass/Storage/XML.pm
 lib/File/DataClass/Storage/XML/Bare.pm
 lib/File/DataClass/Storage/XML/Simple.pm
+lib/File/DataClass/Types.pm
 LICENSE
 MANIFEST			This list of files
 META.json
@@ -37,6 +36,7 @@ t/06yaml.t
 t/07podspelling.t
 t/10exception.t
 t/15io.t
+t/17constraints.t
 t/20data-class.t
 t/21hash-merge.t
 t/25parse-dtd.t

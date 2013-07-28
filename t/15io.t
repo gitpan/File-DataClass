@@ -1,24 +1,31 @@
-# @(#)$Ident: 15io.t 2013-04-30 01:34 pjf ;
+# @(#)$Ident: 15io.t 2013-07-04 19:00 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 0 $ =~ /\d+/gmx );
-use File::Spec::Functions;
-use FindBin qw( $Bin );
-use lib catdir( $Bin, updir, q(lib) );
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use File::Spec::Functions   qw( catdir catfile curdir updir );
+use FindBin                 qw( $Bin );
+use lib                 catdir( $Bin, updir, 'lib' );
 
 use Module::Build;
 use Test::More;
 
-BEGIN {
-   my $current = eval { Module::Build->current };
+my $reason;
 
-   $current and $current->notes->{stop_tests}
-            and plan skip_all => $current->notes->{stop_tests};
+BEGIN {
+   my $builder = eval { Module::Build->current };
+
+   $builder and $reason = $builder->notes->{stop_tests};
+   $reason  and $reason =~ m{ \A TESTS: }mx and plan skip_all => $reason;
 }
 
-use English qw(-no_match_vars);
+use Config;
+use Cwd;
+use English     qw( -no_match_vars );
+use File::DataClass::Constants;
 use File::DataClass::IO;
+use File::pushd qw( tempd );
+use Test::Deep  qw( cmp_deeply );
 
 isa_ok( io( $PROGRAM_NAME ), q(File::DataClass::IO) );
 
@@ -63,14 +70,23 @@ subtest 'Polymorphic Constructor' => sub {
    ok io( \&_filename )->exists, 'Constructs from coderef';
    ok io( { name => catfile( qw(t mydir file1) ) } )->exists,
       'Constructs from hashref';
-
    $io = io( [ qw(t mydir file1) ], q(r), oct q(400) ); $io = io( $io );
-
    ok $io->exists, 'Constructs from object';
-
    is( (sprintf "%o", $io->_perms & 07777), q(400),
        'Duplicates permissions from original object' );
+
+   my ($homedir) = glob( '~' );
+
+   is io( '~' ), $homedir, 'Expands tilde';
+   is io( '~/' ), $homedir, 'Expands tilde with trailing "/"';
+   is io( '~/foo/bar' ), $homedir.'/foo/bar', 'Expands tilde with longer path';
+   $io = io( '~/foo/bar/' );
+   is $io, $homedir.'/foo/bar', 'Expands tilde, longer path and trailing "/"';
+   is io( CURDIR ), Cwd::getcwd, 'Constructs from "."';
 };
+
+# Stringifies
+$io = io( $PROGRAM_NAME ); is "${io}", $PROGRAM_NAME, 'Stringifies';
 
 subtest 'File::Spec::Functions' => sub {
    is( io( '././t/default.xml' )->canonpath, f( catfile( qw(t default.xml) ) ),
@@ -103,6 +119,7 @@ subtest 'File::Spec::Functions' => sub {
    is io()->catfile( qw(goo hoo) ), f( catfile( qw(goo hoo) ) ), 'Catfile 3';
    is io( [ qw(t mydir dir1) ] )->dirname, catdir( qw(t mydir) ), 'Dirname';
    ok io( [ qw(t mydir dir1) ] )->parent->is_dir, 'Parent';
+   is io( [ qw(t mydir dir1) ] )->parent( 2 ), 't', 'Parent with count';
 };
 
 subtest 'Absolute/relative pathname conversions' => sub {
@@ -236,13 +253,20 @@ subtest 'Create and detect empty subdirectories and files' => sub {
    $io = io( catdir( qw(t output empty) ) );
    ok $io->mkdir, 'Make a directory';
    ok $io->empty, 'The directory is empty';
-   $io = io( catfile( qw(t output file) ) );
-   ok $io->touch, 'Touch a file into existance';
+
+   my $path = catfile( qw(t output file) ); $io = io( $path ); $io->touch( 0 );
+
+   ok -e $path, 'Touch a file into existance';
+   is $io->stat->{mtime}, 0, 'Sets modidification date/time';
    ok $io->empty, 'The file is empty';
 };
 
-# Tempfile/seek
+# Cwd
+$io = io()->cwd;
 
+is "${io}", Cwd::getcwd(), 'Current working directory';
+
+# Tempfile/seek
 my @lines = io( $PROGRAM_NAME )->chomp->slurp; my $temp = io( q(t) )->tempfile;
 
 $temp->println( @lines ); $temp->seek( 0, 0 ); my $text = $temp->slurp || q();
@@ -289,7 +313,6 @@ subtest 'Creates a file using atomic write' => sub {
 };
 
 # Substitution
-
 $io = io( [ qw(t output substitute) ] );
 $io->println( qw(line1 line2 line3) );
 $io->substitute( q(line2), q(changed) );
@@ -297,7 +320,6 @@ is( ($io->chomp->getlines)[ 1 ], q(changed),
     'Substitutes one value for another' );
 
 # Copy
-
 my $to = io( [ qw(t output copy) ] ); $io->close;
 
 $io->copy( $to ); is $io->all, $to->all, 'Copies a file';
@@ -344,8 +366,76 @@ SKIP: {
    };
 }
 
-# Cleanup
+subtest 'Iterators and follow / not follow symlinks' => sub {
+   $Config{d_symlink} or plan skip => 'No symlink support', 5;
 
+   my $wd       = tempd;
+   my @tree     = qw( aaaa.txt bbbb.txt cccc/dddd.txt cccc/eeee/ffff.txt
+                      gggg.txt );
+   my @follow   = qw( aaaa.txt bbbb.txt cccc gggg.txt pppp qqqq.txt
+                      cccc/dddd.txt cccc/eeee cccc/eeee/ffff.txt
+                      pppp/ffff.txt );
+   my @nofollow = qw( aaaa.txt bbbb.txt cccc gggg.txt pppp qqqq.txt
+                      cccc/dddd.txt cccc/eeee cccc/eeee/ffff.txt );
+
+   $_->touch for (map { io( $_ )->assert_filepath } @tree);
+
+   symlink io( [ 'cccc', 'eeee' ] ), io( 'pppp' );
+   symlink io( [ 'aaaa.txt'     ] ), io( 'qqqq.txt' );
+
+   subtest 'Follow' => sub {
+      my $dir = io( '.' )->deep; my @files;
+
+      for my $f (map { $_->relative( $dir ) } $dir->all) {
+         push @files, "${f}";
+      }
+
+      cmp_deeply( [ sort @files ], [ sort @follow ], 'Follow symlinks' )
+         or diag explain \@files;
+   };
+
+   subtest 'No follow' => sub {
+      my $dir = io( '.' )->deep->no_follow; my @files;
+
+      for my $f (map { $_->relative( $dir ) } $dir->all) {
+         push @files, "${f}";
+      }
+
+      cmp_deeply( [ sort @files ], [ sort @nofollow ], "Don't follow symlinks" )
+         or diag explain \@files;
+   };
+
+   subtest 'Follow - iterator' => sub {
+      my $io = io( '.' )->deep; my $iter = $io->iterator; my @files;
+
+      while (my $f = $iter->()) { push @files, $f->relative( $io )->name }
+
+      cmp_deeply( [ sort @files ], [ sort @follow ], 'Follow symlinks' )
+         or diag explain \@files;
+   };
+
+   subtest 'No Follow - iterator' => sub {
+      my $io = io( '.' )->deep->no_follow; my $iter = $io->iterator; my @files;
+
+      while (my $f = $iter->()) { push @files, $f->relative( $io )->name }
+
+      cmp_deeply( [ sort @files ], [ sort @nofollow ], "Don't follow symlinks" )
+         or diag explain \@files;
+   };
+
+   subtest 'Follow - iterator with filter' => sub {
+      my $io = io( '.' )->deep->filter( sub { m{ ffff.txt }mx } );
+
+      my $iter = $io->iterator; my @files;
+
+      while (my $f = $iter->()) { push @files, $f->relative( $io )->name }
+
+      cmp_deeply( [ sort @files ], [ 'cccc/eeee/ffff.txt', 'pppp/ffff.txt', ],
+                  'Follow symlinks with filter' ) or diag explain \@files;
+   };
+};
+
+# Cleanup
 io( catdir( qw(t output) ) )->rmtree;
 
 done_testing;

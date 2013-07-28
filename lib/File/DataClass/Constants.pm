@@ -1,38 +1,23 @@
-# @(#)$Ident: Constants.pm 2013-05-01 19:39 pjf ;
+# @(#)$Ident: Constants.pm 2013-07-04 14:57 pjf ;
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 0 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Moose;
-use MooseX::ClassAttribute;
-use MooseX::Types -declare => [ q(ExceptionTC) ];
-use MooseX::Types::Moose       qw(ClassName);
+use Exporter 5.57 qw( import );
 use File::DataClass::Exception;
 
-subtype ExceptionTC, as ClassName,
-   where   { $_->can( q(throw) ) },
-   message { "Class ${_} is not loaded or has no throw method" };
+our @EXPORT = qw( ARRAY CODE CURDIR CYGWIN EVIL EXCEPTION_CLASS EXTENSIONS
+                  FALSE HASH LANG LOCALIZE NO_UMASK_STACK NUL PERMS SPC
+                  STAT_FIELDS TILDE TRUE );
 
-class_has 'Exception_Class' => is => 'rw', isa => ExceptionTC,
-   default                  => q(File::DataClass::Exception);
-
-my @constants;
-
-BEGIN {
-   @constants = ( qw(ARRAY CODE CYGWIN EVIL EXCEPTION_CLASS EXTENSIONS FALSE
-                     HASH LANG LOCALIZE NO_UMASK_STACK NUL PERMS SPC
-                     STAT_FIELDS TRUE) );
-}
-
-use Sub::Exporter::Progressive -setup => {
-   exports => [ @constants ], groups => { default => [ @constants ], },
-};
+my $Exception_Class = 'File::DataClass::Exception';
 
 sub ARRAY    () { q(ARRAY)    }
 sub CODE     () { q(CODE)     }
+sub CURDIR   () { q(.)        }
 sub CYGWIN   () { q(cygwin)   }
 sub EVIL     () { q(mswin32)  }
 sub FALSE    () { 0           }
@@ -42,6 +27,7 @@ sub LOCALIZE () { q([_)       }
 sub NUL      () { q()         }
 sub PERMS    () { oct q(0660) }
 sub SPC      () { q( )        }
+sub TILDE    () { q(~)        }
 sub TRUE     () { 1           }
 
 sub EXCEPTION_CLASS () { __PACKAGE__->Exception_Class }
@@ -51,10 +37,14 @@ sub NO_UMASK_STACK  () { -1 }
 sub STAT_FIELDS     () { qw(device inode mode nlink uid gid device_id
                             size atime mtime ctime blksize blocks) }
 
-__PACKAGE__->meta->make_immutable;
+sub Exception_Class {
+   my ($self, $class) = @_; defined $class or return $Exception_Class;
 
-no MooseX::ClassAttribute;
-no Moose::Util::TypeConstraints;
+   $class->can( q(throw) )
+       or die "Class ${class} is not loaded or has no throw method";
+
+   return $Exception_Class = $class;
+}
 
 1;
 
@@ -68,7 +58,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-This document describes version v0.20.$Rev: 0 $
+This document describes version v0.22.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -82,6 +72,11 @@ Exports a list of subroutines each of which returns a constants value
 
 =head1 Subroutines/Methods
 
+=head2 Exception_Class
+
+Class method. An accessor/mutator for the classname returned by the
+L</EXCEPTION_CLASS> method
+
 =head2 C<ARRAY>
 
 String ARRAY
@@ -89,6 +84,10 @@ String ARRAY
 =head2 C<CODE>
 
 String CODE
+
+=head2 C<CURDIR>
+
+Symbol representing the current working directory. A dot
 
 =head2 C<CYGWIN>
 
@@ -144,6 +143,10 @@ Space character
 
 The list of fields returned by the core C<stat> function
 
+=head2 C<TILDE>
+
+The (~) tilde character
+
 =head2 C<TRUE>
 
 Digit 1
@@ -160,9 +163,9 @@ None
 
 =over 3
 
-=item L<MooseX::ClassAttribute>
+=item L<Exporter>
 
-=item L<Sub::Exporter>
+=item L<File::DataClass::Exception>
 
 =back
 

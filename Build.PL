@@ -1,42 +1,43 @@
-# @(#)$Ident: Build.PL 2013-06-08 13:16 pjf ;
+# @(#)$Ident: Build.PL 2013-07-28 17:34 pjf ;
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 13 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 Bob->new( {
-   module    => q(File::DataClass),
-   home_page => q(http://www.roxsoft.co.uk),
+   module    => 'File::DataClass',
+   home_page => 'http://www.roxsoft.co.uk',
    requires  => {
-      'perl'                       => 5.01,
-      'namespace::autoclean'       => 0.13,
-      'namespace::clean'           => 0.23,
-      'Cache::FastMmap'            => 1.36,
-      'CHI'                        => 0.42,
-      'Class::Null'                => 2.101420,
-      'File::Path'                 => 2.08,
-      'Hash::Merge'                => 0.12,
-      'JSON'                       => 2.50,
-      'Moose'                      => 2.0802,
-      'MooseX::ClassAttribute'     => 0.27,
-      'MooseX::Types'              => 0.35,
-      'Sub::Exporter'              => 0.982,
-      'Sub::Exporter::Progressive' => 0.001006,
-      'Try::Tiny'                  => 0.09,
-      'XML::Bare'                  => 0.47,
-      'XML::DTD'                   => 0.10,
-      'XML::Simple'                => 2.18,
-      'Unexpected'                 => q(0.3.0), },
-   recommends          => {
-      'App::cpanminus' => 1.6005, },
-   configure_requires  => {
-      'version'        => 0.88,
-      'Module::Build'  => 0.4004, },
-   build_requires      => {
-      'version'        => 0.88,
-      'Module::Build'  => 0.4004,
-      'Text::Diff'     => 1.37, },
+      'perl'             => 5.010001,
+      'namespace::clean' => 0.23,
+      'namespace::sweep' => 0.006,
+      'Cache::FastMmap'  => 1.36,
+      'CHI'              => 0.58,
+      'Class::Load'      => 0.18,
+      'Class::Method::ModifiersX::Augment' => 0.001,
+      'Class::Null'      => 2.101420,
+      'File::Path'       => 2.08,
+      'Hash::Merge'      => 0.12,
+      'JSON'             => 2.50,
+      'Moo'              => 1.002,
+      'Try::Tiny'        => 0.09,
+      'Type::Tiny'       => 0.012,
+      'XML::Bare'        => 0.47,
+      'XML::DTD'         => 0.10,
+      'XML::Simple'      => 2.18,
+      'Unexpected'       => q(0.4.0), },
+   recommends            => {
+      'App::cpanminus'   => 1.6005, },
+   configure_requires    => {
+      'version'          => 0.88,
+      'Module::Build'    => 0.4004, },
+   build_requires        => {
+      'version'          => 0.88,
+      'File::pushd'      => 1.00,
+      'Module::Build'    => 0.4004,
+      'Test::Deep'       => 0.108,
+      'Text::Diff'       => 1.37, },
 } )->create_build_script; # Goal!
 
 # Local Variables:

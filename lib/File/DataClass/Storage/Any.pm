@@ -1,23 +1,23 @@
-# @(#)$Ident: Any.pm 2013-05-16 00:07 pjf ;
+# @(#)$Ident: Any.pm 2013-07-19 13:13 pjf ;
 
 package File::DataClass::Storage::Any;
 
-use strict;
-use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 10 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Moose;
 use File::Basename             qw(basename);
 use File::DataClass::Constants;
 use File::DataClass::Functions qw(ensure_class_loaded is_stale merge_hash_data
                                   throw);
 use File::DataClass::Storage;
+use Moo;
+use Unexpected::Types          qw(Object HashRef);
 
-has 'schema' => is => 'ro', isa => 'Object', required => TRUE, weak_ref => TRUE,
-   handles   => [ qw(cache storage_attributes storage_base), ];
+has 'schema'  => is => 'ro', isa => Object, required => TRUE, weak_ref => TRUE,
+   handles    => [ qw(cache storage_attributes storage_base), ];
 
 
-has '_stores' => is => 'ro', isa => 'HashRef', default => sub { {} };
+has '_stores' => is => 'ro', isa => HashRef, default => sub { {} };
 
 sub create_or_update {
    return shift->_get_store_from_path( $_[ 0 ] )->create_or_update( @_ );
@@ -32,11 +32,6 @@ sub dump {
 }
 
 sub extn {
-   return sub {
-      my $path = shift || NUL; my ($extn) = $path =~ m{ \. ([^\.]+) \z }mx;
-
-      return $extn ? q(.).$extn : NUL;
-   };
 }
 
 sub insert {
@@ -98,7 +93,6 @@ sub validate_params {
 }
 
 # Private methods
-
 sub _get_store_from_extension {
    my ($self, $extn) = @_; my $stores = $self->_stores;
 
@@ -128,10 +122,6 @@ sub _get_store_from_path {
    return $store;
 }
 
-__PACKAGE__->meta->make_immutable;
-
-no Moose;
-
 1;
 
 __END__
@@ -144,7 +134,7 @@ File::DataClass::Storage::Any - Selects storage class using the extension on the
 
 =head1 Version
 
-This document describes version v0.20.$Rev: 10 $
+This document describes version v0.22.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -157,6 +147,18 @@ This document describes version v0.20.$Rev: 10 $
 =head1 Description
 
 Selects storage class using the extension on the path
+
+=head1 Configuration and Environment
+
+Defines the following attributes;
+
+=over 3
+
+=item C<schema>
+
+A weakened reference to the schema object
+
+=back
 
 =head1 Subroutines/Methods
 
@@ -186,10 +188,6 @@ Selects storage class using the extension on the path
 
 =head2 validate_params
 
-=head1 Configuration and Environment
-
-None
-
 =head1 Diagnostics
 
 None
@@ -200,7 +198,9 @@ None
 
 =item L<File::DataClass::Storage>
 
-=item L<Moose>
+=item L<Moo>
+
+=item L<Unexpected::Types>
 
 =back
 

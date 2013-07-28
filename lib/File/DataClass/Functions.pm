@@ -1,49 +1,47 @@
-# @(#)$Ident: Functions.pm 2013-04-30 01:31 pjf ;
+# @(#)$Ident: Functions.pm 2013-07-05 11:26 pjf ;
 
 package File::DataClass::Functions;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 0 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Class::MOP;
+use Class::Load    qw( is_class_loaded load_class );
+use English        qw( -no_match_vars );
+use Exporter 5.57  qw( import );
 use File::DataClass::Constants;
-use English      qw(-no_match_vars);
-use Hash::Merge  qw(merge);
-use List::Util   qw(first);
-use Scalar::Util qw(blessed);
+use Hash::Merge    qw( merge );
+use List::Util     qw( first );
+use Scalar::Util   qw( blessed );
 use Try::Tiny;
 
-my $osname = lc $OSNAME;
-my $ntfs   = $osname eq EVIL || $osname eq CYGWIN ? TRUE : FALSE;
-my @_functions;
+our @EXPORT_OK   = qw( ensure_class_loaded first_char is_arrayref is_coderef
+                       is_hashref is_member is_stale merge_attributes
+                       merge_hash_data thread_id throw );
+our %EXPORT_TAGS =   ( all => [ @EXPORT_OK ], );
 
-BEGIN {
-   @_functions = ( qw(ensure_class_loaded is_arrayref is_coderef is_hashref
-                      is_member is_stale merge_attributes
-                      merge_hash_data throw) );
-}
+my $LC_OSNAME    = lc $OSNAME;
+my $NTFS         = $LC_OSNAME eq EVIL || $LC_OSNAME eq CYGWIN ? TRUE : FALSE;
 
-use Sub::Exporter::Progressive -setup => {
-   exports => [ @_functions ], groups => { default => [], },
-};
-
-# Private functions
-
+# Public functions
 sub ensure_class_loaded ($;$) {
    my ($class, $opts) = @_; $opts ||= {};
 
-   my $package_defined = sub { Class::MOP::is_class_loaded( $class ) };
+   my $package_defined = sub { is_class_loaded( $class ) };
 
    not $opts->{ignore_loaded} and $package_defined->() and return 1;
 
-   try   { Class::MOP::load_class( $class ) } catch { throw( $_ ) };
+   try { load_class( $class ) } catch { throw( $_ ) };
 
    $package_defined->()
       or throw( error => 'Class [_1] loaded but package undefined',
                 args  => [ $class ] );
 
    return 1;
+}
+
+sub first_char ($) {
+   return substr $_[ 0 ], 0, 1;
 }
 
 sub is_arrayref (;$) {
@@ -69,7 +67,7 @@ sub is_member (;@) {
 sub is_stale (;$$$) {
    my ($data, $cache_mtime, $path_mtime) = @_;
 
-   $ntfs and return 1; # Assume NTFS does not support mtime
+   $NTFS and return 1; # Assume NTFS does not support mtime
 
    return ! defined $data || ! defined $path_mtime || ! defined $cache_mtime
          || $path_mtime > $cache_mtime
@@ -101,6 +99,10 @@ sub merge_hash_data ($$) {
    return;
 }
 
+sub thread_id {
+   return exists $INC{ 'threads.pm' } ? threads->tid() : 0;
+}
+
 sub throw (;@) {
    EXCEPTION_CLASS->throw( @_ );
 }
@@ -117,7 +119,7 @@ File::DataClass::Functions - Common functions used in this distribution
 
 =head1 Version
 
-This document describes version v0.20.$Rev: 0 $
+This document describes version v0.22.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -134,6 +136,12 @@ Common functions used in this distribution
    ensure_class_loaded( $some_class, \%options );
 
 Require the requested class, throw an error if it doesn't load
+
+=head2 first_char
+
+   $single_char = first_char $some_string;
+
+Returns the first character of C<$string>
 
 =head2 is_arrayref
 
@@ -182,6 +190,13 @@ accessor methods are called
 
 Uses L<Hash::Merge> to merge data from the new hash ref in with the existing
 
+=head2 thread_id
+
+   $thread_id = thread_id;
+
+Returns the current thread id or zero if the the L<threads> module has
+not been loaded
+
 =head2 throw
 
    throw error => q(error_key), args => [ q(error_arg) ];
@@ -202,15 +217,11 @@ None
 
 =over 3
 
-=item L<Class::MOP>
+=item L<Class::Load>
+
+=item L<Exporter>
 
 =item L<Hash::Merge>
-
-=item L<List::Util>
-
-=item L<Scalar::Util>
-
-=item L<Sub::Exporter>
 
 =item L<Try::Tiny>
 

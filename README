@@ -2,7 +2,7 @@ Name
     File::DataClass - Structured data file IO with OO paradigm
 
 Version
-    This document describes version v0.20.$Rev: 13 $ of File::DataClass
+    This document describes version v0.22.$Rev: 1 $ of File::DataClass
 
 Synopsis
        use File::DataClass::Schema;
@@ -20,29 +20,27 @@ Synopsis
        @result = $rs->search( { 'attr name' => q(some value) } );
 
 Description
-    Provides CRUD methods for structured data stored in files of different
-    formats
+    Provides methods for manipulating structured data stored in files of
+    different formats
 
     The documentation for this distribution starts in the class
     File::DataClass::Schema
 
 Configuration and Environment
-    Defines these class attributes. They are set on first use when an
-    instance of File::DataClass::Schema is created
-
-    Cache
-       This is a Cache::Cache object which is used to cache the results of
-       reading a file. Maybe of type "Cache"
+    Defines no attributes
 
 Subroutines/Methods
-    None
+  F_DC_Cache
+       $hash_ref_of_CHI_objects = File::DataClass->F_DC_Cache;
+
+    A class method which returns a hash ref of CHI objects which are used to
+    cache the results of reading files
 
 Diagnostics
     None
 
 Dependencies
-    namespace::autoclean
-    MooseX::ClassAttribute
+    Moo
 
 Incompatibilities
     On "MSWin32" and "Cygwin" it is assumed that NTFS is being used and that
