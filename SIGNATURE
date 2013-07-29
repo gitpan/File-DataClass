@@ -15,16 +15,16 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 c73553a9803feb6cbd40cb62f8099faf05a07be6 Build.PL
-SHA1 2a85b4e5b1407b93510480201259b99cc172e2b9 Changes
+SHA1 a858ac4fddd7335e1bec92b79e3aca39562c119b Changes
 SHA1 2b3ccb88f716f614f8af721a1c69dba0bcdbbb32 LICENSE
 SHA1 4be72213562a2b600a52d5d0bafd0290dfc2feff MANIFEST
-SHA1 259e7d6591bb29a2e6d33a21196242b30174d7be META.json
-SHA1 d33e73bd5ec75181feaf69f0e9cde1459b0cec18 META.yml
-SHA1 c976127035930bc4f2cc61cee61bc46e4ceb71c0 README
+SHA1 f2c3ddb9b3b573756e2f22244f59405ce1d3cea3 META.json
+SHA1 c00e87357e2e7f5a5e7394c5a4d88a00d29f74e7 META.yml
+SHA1 4ebaba53ef249189e190b10691f51b9e8b654145 README
 SHA1 2dad6b015a19acb067ac9b3d677292796ecdb1c9 inc/Bob.pm
 SHA1 275fa34246741fe6c2770bcef61aea62a688ad66 inc/CPANTesting.pm
 SHA1 3e461b4687dcea7680dc96761ecd703556759063 inc/SubClass.pm
-SHA1 905c5a4a8728a67f938f087029d0d8ae5879ff1a lib/File/DataClass.pm
+SHA1 1360f2145982adadfff5ce3a5a633bcfaeca4e65 lib/File/DataClass.pm
 SHA1 3ecc73564fbce8ce82cb59c511211571fe68c4f0 lib/File/DataClass/Cache.pm
 SHA1 edff427db7a4f4e0c0bf9187f6691c2db14a3aab lib/File/DataClass/Constants.pm
 SHA1 f95f4221d98a4bfba77c5b656fbece4d52907f14 lib/File/DataClass/Exception.pm
@@ -32,7 +32,7 @@ SHA1 aef34605afe83d06b370597141b0589d144ab65f lib/File/DataClass/Functions.pm
 SHA1 5f61a59e39558069f8f677eb791eff74a1bb0e1e lib/File/DataClass/HashMerge.pm
 SHA1 2161a595e8bd8f074880550edbb383c87a5fa1f5 lib/File/DataClass/IO.pm
 SHA1 3dd5a68782ecd6ff365e5fa445446fca2deb274b lib/File/DataClass/List.pm
-SHA1 0e2909fd8b3aa09e9c87a3aec5df9be77db4b5d6 lib/File/DataClass/Result.pm
+SHA1 bb1402e8e275465f2bcec42c7f4b7c498d999eaf lib/File/DataClass/Result.pm
 SHA1 e0d6a39ba6c87a08889a9d074e2756c39e18c31f lib/File/DataClass/ResultSet.pm
 SHA1 aeffee92faebc6bfc3dd0493f70ea4b433768e19 lib/File/DataClass/ResultSource.pm
 SHA1 9cd7c7fcae5da9609601864c00225f4b71b24327 lib/File/DataClass/Schema.pm
@@ -73,11 +73,11 @@ SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/mydir/file3
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJR9VbyAAoJEK492j4Im1Bp7/sIAL65z2dnM5mb+J6wqBB7mYKb
-a+i/kgAdS0IJ2ifs3ARVBuA+VoW6/tZEOqiOsR+vla389ONA6Dr5K2u5N/0MkePF
-Yi5T96ggK/GLKrNPcTwyQsEx6Bj9Ihu8THrIhYQ7dem+pwhStdfgPD7UbP67Y31q
-fs+wqjlYXX0DVdHmtxzAPEYLsOx5TWSLqs1u4OpS8cX8SCoWKd+Mm0NLqGaBxB0n
-TC+WDRYt7Sa46FV8+Y+vlhgexxWcFvLWQYD3+Snc9kqqRvwQmQso62ErEUiOWhRO
-4tLdnRVYbkYtuJo9CeEOuvta461XyCyHik5IFX4xEwJ3XHl5IMpZ5k1up5p9ZhE=
-=P0hE
+iQEcBAEBAgAGBQJR9lQ1AAoJEK492j4Im1BpaeIIALtcjrgNt6C20D+QTpvl8cZu
+ICFoaTMUrlCynGs1ex+qnDk/maaAbGUpMNzLukLEXgAFbCZDfECkqfL4pvkENNAE
+hHSoDeVnK/9TINwwa/dlLNfD1A9ueGC+s5l/7y53/SD2jO3JUfhtGhCdnoAfwhNH
+EgITsFwbtf5/SQjoN2RSnlql98OHmkauNknlWvkLSOPX4ZK0SaW2m+gvKIpRqgb3
+hLs8efdjYikj/ufBGanbb+ulcIU9Sgx11yDf6Kn5UW9taaKsKlzs7K9Ojc528Xgu
+UnjwMyl+W7meyJ8ftuG+UGaN7p5dkVNmR49R7B3Sx+6u3qNOr2GQHYOKAsET+Qs=
+=pUhi
 -----END PGP SIGNATURE-----

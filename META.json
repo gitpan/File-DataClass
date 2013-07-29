@@ -66,7 +66,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.22.2"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -98,7 +98,7 @@
       },
       "File::DataClass::Result" : {
          "file" : "lib/File/DataClass/Result.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.22.2"
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
@@ -151,5 +151,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.22.1"
+   "version" : "v0.22.2"
 }
