@@ -50,10 +50,11 @@
             "File::Path" : "2.08",
             "Hash::Merge" : "0.12",
             "JSON" : "2.5",
-            "Moo" : "1.002",
+            "Moo" : "1.003",
+            "MooX::ClassStash" : "0.005",
             "Try::Tiny" : "0.09",
             "Type::Tiny" : "0.012",
-            "Unexpected" : "v0.4.0",
+            "Unexpected" : "v0.5.0",
             "XML::Bare" : "0.47",
             "XML::DTD" : "0.1",
             "XML::Simple" : "2.18",
@@ -66,7 +67,7 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.22.2"
+         "version" : "v0.22.3"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -151,5 +152,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.22.2"
+   "version" : "v0.22.3"
 }
