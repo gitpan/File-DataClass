@@ -27,7 +27,7 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.22.7
+    version: v0.22.8
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
     version: v0.22.1
@@ -108,4 +108,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: v0.22.7
+version: v0.22.8
