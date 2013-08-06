@@ -54,7 +54,7 @@
             "MooX::ClassStash" : "0.005",
             "Try::Tiny" : "0.09",
             "Type::Tiny" : "0.012",
-            "Unexpected" : "v0.5.0",
+            "Unexpected" : "v0.6.0",
             "XML::Bare" : "0.47",
             "XML::DTD" : "0.1",
             "XML::Simple" : "2.18",
@@ -67,79 +67,79 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.22.9"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Constants" : {
          "file" : "lib/File/DataClass/Constants.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Exception" : {
          "file" : "lib/File/DataClass/Exception.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Functions" : {
          "file" : "lib/File/DataClass/Functions.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Result" : {
          "file" : "lib/File/DataClass/Result.pm",
-         "version" : "v0.22.2"
+         "version" : "v0.23.1"
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::ResultSource" : {
          "file" : "lib/File/DataClass/ResultSource.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Schema" : {
          "file" : "lib/File/DataClass/Schema.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Storage" : {
          "file" : "lib/File/DataClass/Storage.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Storage::Any" : {
          "file" : "lib/File/DataClass/Storage/Any.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Storage::JSON" : {
          "file" : "lib/File/DataClass/Storage/JSON.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Storage::XML" : {
          "file" : "lib/File/DataClass/Storage/XML.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Storage::XML::Bare" : {
          "file" : "lib/File/DataClass/Storage/XML/Bare.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Storage::XML::Simple" : {
          "file" : "lib/File/DataClass/Storage/XML/Simple.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       },
       "File::DataClass::Types" : {
          "file" : "lib/File/DataClass/Types.pm",
-         "version" : "v0.22.1"
+         "version" : "v0.23.1"
       }
    },
    "release_status" : "stable",
@@ -152,5 +152,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.22.9"
+   "version" : "v0.23.1"
 }
