@@ -1,9 +1,9 @@
 ---
 abstract: 'Structured data file IO with OO paradigm'
 author:
-  - 'Peter Flanigan, C<< <pjfl@cpan.org> >>'
+  - 'Peter Flanigan <pjfl@cpan.org>'
 build_requires:
-  File::pushd: 1
+  File::pushd: 1.00
   Module::Build: 0.4004
   Test::Deep: 0.108
   Text::Diff: 1.37
@@ -12,7 +12,7 @@ configure_requires:
   Module::Build: 0.4004
   version: 0.88
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4004, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Dist::Zilla version 4.300033, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -27,85 +27,81 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.23.2
+    version: v0.24.1
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Constants:
     file: lib/File/DataClass/Constants.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Exception:
     file: lib/File/DataClass/Exception.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Functions:
     file: lib/File/DataClass/Functions.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::HashMerge:
     file: lib/File/DataClass/HashMerge.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::IO:
     file: lib/File/DataClass/IO.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::List:
     file: lib/File/DataClass/List.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Result:
     file: lib/File/DataClass/Result.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::ResultSet:
     file: lib/File/DataClass/ResultSet.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::ResultSource:
     file: lib/File/DataClass/ResultSource.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Schema:
     file: lib/File/DataClass/Schema.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Storage:
     file: lib/File/DataClass/Storage.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Storage::Any:
     file: lib/File/DataClass/Storage/Any.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Storage::JSON:
     file: lib/File/DataClass/Storage/JSON.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Storage::XML:
     file: lib/File/DataClass/Storage/XML.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Storage::XML::Bare:
     file: lib/File/DataClass/Storage/XML/Bare.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Storage::XML::Simple:
     file: lib/File/DataClass/Storage/XML/Simple.pm
-    version: v0.23.1
+    version: v0.24.1
   File::DataClass::Types:
     file: lib/File/DataClass/Types.pm
-    version: v0.23.1
-recommends:
-  App::cpanminus: 1.6005
+    version: v0.24.1
 requires:
   CHI: 0.58
   Cache::FastMmap: 1.36
   Class::Load: 0.18
   Class::Method::ModifiersX::Augment: 0.001
-  Class::Null: 2.10142
+  Class::Null: 2.101420
   File::Path: 2.08
   Hash::Merge: 0.12
-  JSON: 2.5
+  JSON: 2.50
   Moo: 1.003
   MooX::ClassStash: 0.005
   Try::Tiny: 0.09
   Type::Tiny: 0.012
   Unexpected: v0.6.0
   XML::Bare: 0.47
-  XML::DTD: 0.1
   XML::Simple: 2.18
   namespace::clean: 0.23
   namespace::sweep: 0.006
-  perl: 5.010001
 resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
-  homepage: http://www.roxsoft.co.uk
+  homepage: https://metacpan.org/author/PJFL
   license: http://dev.perl.org/licenses/
-version: v0.23.2
+version: 0.24.1

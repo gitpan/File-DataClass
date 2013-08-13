@@ -1,8 +1,11 @@
 Build.PL
 Changes
-inc/Bob.pm
-inc/CPANTesting.pm
-inc/SubClass.pm
+LICENSE
+MANIFEST
+META.json
+META.yml
+README
+SIGNATURE
 lib/File/DataClass.pm
 lib/File/DataClass/Cache.pm
 lib/File/DataClass/Constants.pm
@@ -22,11 +25,6 @@ lib/File/DataClass/Storage/XML.pm
 lib/File/DataClass/Storage/XML/Bare.pm
 lib/File/DataClass/Storage/XML/Simple.pm
 lib/File/DataClass/Types.pm
-LICENSE
-MANIFEST			This list of files
-META.json
-META.yml
-README
 t/01always_pass.t
 t/02pod.t
 t/03podcoverage.t
@@ -54,4 +52,3 @@ t/mydir/dir2/file1
 t/mydir/file1
 t/mydir/file2
 t/mydir/file3
-SIGNATURE    Added here by Module::Build
