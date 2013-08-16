@@ -27,6 +27,7 @@
             "File::pushd" : "1.00",
             "Module::Build" : "0.4004",
             "Test::Deep" : "0.108",
+            "Test::Requires" : "0.06",
             "Text::Diff" : "1.37",
             "version" : "0.88"
          }
@@ -51,18 +52,19 @@
             "MooX::ClassStash" : "0.005",
             "Try::Tiny" : "0.09",
             "Type::Tiny" : "0.012",
-            "Unexpected" : "v0.6.0",
+            "Unexpected" : "v0.7.6",
             "XML::Bare" : "0.47",
             "XML::Simple" : "2.18",
             "namespace::clean" : "0.23",
-            "namespace::sweep" : "0.006"
+            "namespace::sweep" : "0.006",
+            "perl" : "5.010001"
          }
       }
    },
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.24.1"
+         "version" : "v0.24.3"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
@@ -148,6 +150,6 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.24.1"
+   "version" : "0.24.3"
 }
 
