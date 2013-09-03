@@ -1,9 +1,9 @@
-# @(#)$Ident: DZ_Build.PL 2013-08-15 13:04 pjf ;
+# @(#)$Ident: Build.PL 2013-08-26 21:23 pjf ;
 
 use strict;
 use warnings;
 
-use Module::Build;
+use Module::Build 0.4004;
 
 sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
@@ -39,9 +39,9 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
     'JSON' => '2.50',
     'Moo' => '1.003',
     'MooX::ClassStash' => '0.005',
-    'Try::Tiny' => '0.09',
+    'Try::Tiny' => '0.18',
     'Type::Tiny' => '0.012',
-    'Unexpected' => 'v0.7.6',
+    'Unexpected' => 'v0.12.0',
     'XML::Bare' => '0.47',
     'XML::Simple' => '2.18',
     'namespace::clean' => '0.23',
