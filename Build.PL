@@ -17,6 +17,7 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
   'module_name' => $name,
   'notes'       => { min_perl_version => $perl_ver },
   'build_requires' => {
+    'Class::Null' => '2.101420',
     'File::pushd' => '1.00',
     'Module::Build' => '0.4004',
     'Test::Deep' => '0.108',

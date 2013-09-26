@@ -14,48 +14,49 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 f3a6abc536e7ef8b40f669e79ee83546f129cbde Build.PL
-SHA1 4ebcea1510514f6432e667f3cd8e0600aa962f1f Changes
+SHA1 56ac97ffb516510cb615cef798c289d28ffa2f08 Build.PL
+SHA1 e26744fe97818ad9bf8d20240c9bf2d35f0338d2 Changes
 SHA1 8835c6f04f0b79a12fb91025ee72f89d949d1d54 LICENSE
-SHA1 2cdf2d302bea12642f1803945ab516692fd6fabe MANIFEST
-SHA1 071fa490ef279e4dfb877aba6de9e5c4a6b56892 META.json
-SHA1 e1cd12cb5b7d3ec629aca0c349dd86046ff4824c META.yml
-SHA1 1f52b438f5a4a6dabc07e01b04ec35624057c7ef README
-SHA1 a5a4b5e35a9bd83a9aa2ab1c77828f718565b595 lib/File/DataClass.pm
-SHA1 6b122f6a40f6511632b3b9b0e7d97672deae8a8d lib/File/DataClass/Cache.pm
-SHA1 60a34556ce4854d5919bd00d8f4971bc5554b788 lib/File/DataClass/Constants.pm
-SHA1 b26e7c52a8eb90adb6645ac6ac8cb4328574c9c7 lib/File/DataClass/Exception.pm
-SHA1 0df1a9c1f5a3af0370a7d26caa7797700df5ae03 lib/File/DataClass/Functions.pm
-SHA1 6697e7dcb8759f0adb0b76ecd435de231ca24ecf lib/File/DataClass/HashMerge.pm
-SHA1 bf9e66cfb7de28b8d51bbc62ddabcf220f4a23f8 lib/File/DataClass/IO.pm
-SHA1 edaa47d0da6dec31354a9697230d60f856d77da1 lib/File/DataClass/List.pm
-SHA1 0827a14d412728eb12eea92fcc77e8acf723976d lib/File/DataClass/Result.pm
-SHA1 d4f79609f0d0eb28f1bd388b30e5b2e40396faa2 lib/File/DataClass/ResultSet.pm
-SHA1 dd142642274967f4648f2c6c6e81cb1304ccecd4 lib/File/DataClass/ResultSource.pm
-SHA1 adca84dc20340d10e5d7405995895e823f3cc999 lib/File/DataClass/Schema.pm
-SHA1 057e7d46efa7d8cfcd84769cddf73ff3836765cb lib/File/DataClass/Storage.pm
-SHA1 d788b4a81ab4799f1c4595e1b8e0f6f44164cb12 lib/File/DataClass/Storage/Any.pm
-SHA1 c6f9600e8e9bd297ed219c954195f78da512d50a lib/File/DataClass/Storage/JSON.pm
-SHA1 9aff629214b1609369b35b165c05fb04dd3e229f lib/File/DataClass/Storage/XML.pm
-SHA1 7c38a970c07c2e4fdfa4a150f8087f6c9da78e7e lib/File/DataClass/Storage/XML/Bare.pm
-SHA1 0f4db482f38e9292b0fbcc9f1531cd2eaa214b9c lib/File/DataClass/Storage/XML/Simple.pm
-SHA1 5c3493c798790154afee42fe3773d2130c9f9a86 lib/File/DataClass/Types.pm
-SHA1 14a470457e68fca75b219146835e3a7521a5dc74 t/01always_pass.t
-SHA1 a3ab4c9b5f558496e5c4ce55323e01a69c907e77 t/02pod.t
-SHA1 6fb5050b6a4973b8ed69c671ed32187e1ec35cad t/03podcoverage.t
-SHA1 c9ff3ba1b9638278e3d30cf7620f2cc5da37a19d t/04critic.t
-SHA1 58223a74a3f02a7d150f51b13a720798911757eb t/05kwalitee.t
-SHA1 e079478dcb1a1d50fe1d0fbd0ff7a20151a5b82c t/06yaml.t
-SHA1 16d65b643ef7e05b41f2c080cb365d11e0df6328 t/07podspelling.t
-SHA1 0569e1e293f12f93a48aaa004d45093e3ff13281 t/10exception.t
-SHA1 48946a57d7b38d536ce3878faedbeb04f2e37348 t/15io.t
-SHA1 f6ae125d88d0b092ad81c5d6de2579b1902fc8f0 t/17constraints.t
-SHA1 1cf21a9f39d6c28fa11e03b31a0e5353b1fcc04b t/20data-class.t
-SHA1 1365b835bfa1cde52d7ef151162c47dea3ee3f28 t/21hash-merge.t
-SHA1 309cd3e16bacd4f8366e9b6ac65737bc72db3f0e t/25parse-dtd.t
-SHA1 496b883110b75cfe8fce8046c4936bc59f94cc83 t/40xml-bare.t
-SHA1 58c4bde2ae1d581c52a9056a6fdd2555d632cd00 t/50json.t
-SHA1 1012c8a1c23fe498fcc786c83da78bfdf9b9c8d0 t/77multiclass.t
+SHA1 f555ae29131df74c99ed5f4cbb63d2a777e9f84e MANIFEST
+SHA1 1e821e5efb1b857e501867eda92deb9f370c0f2c META.json
+SHA1 bc852e10d01f378b9052845588c09f9cd27c73c0 META.yml
+SHA1 be23ade2dd454cdf5ee9a451a8d14880e454863a README
+SHA1 1b8a2a7c5afc76e57b0093e91b779881a81d0e64 lib/File/DataClass.pm
+SHA1 eba6cf6fa28198baff02c8adcf9c32a9bf6f38a1 lib/File/DataClass/Cache.pm
+SHA1 f19acd66f21e53198ed359a75e098b65dbfbcd45 lib/File/DataClass/Constants.pm
+SHA1 29bba98eb81ea37c302e5129186a44ba6cc84214 lib/File/DataClass/Exception.pm
+SHA1 4f22deefa9767429206125ba04bc8bb74d5af197 lib/File/DataClass/Functions.pm
+SHA1 744578c45c5827da86710f5f48de56c924849394 lib/File/DataClass/HashMerge.pm
+SHA1 1af781e7dbea984cdc24de69141724426ff06c9f lib/File/DataClass/IO.pm
+SHA1 5e4b308d020abb77a07216877f5ac973e5a93e88 lib/File/DataClass/List.pm
+SHA1 b4a3dea6f32be07f38c6f97ffc67c080244a88d7 lib/File/DataClass/Result.pm
+SHA1 de6e701490e1571a6d3cee1c5b7f0434578c8fe6 lib/File/DataClass/ResultSet.pm
+SHA1 16cfc64f085f5417ded6412e74f786c61e016c7b lib/File/DataClass/ResultSource.pm
+SHA1 46041bf5b043d7a5ff012282dfce9161482b4d84 lib/File/DataClass/Schema.pm
+SHA1 ed21cf2538f3d3b2992ef794f483d62ccb26edb5 lib/File/DataClass/Storage.pm
+SHA1 7141f9f0f0028e5b3de6168fcda742d920a4ee6f lib/File/DataClass/Storage/Any.pm
+SHA1 c8b6a699f3e5d78b258b8aee3ed3ca2c58bce39e lib/File/DataClass/Storage/JSON.pm
+SHA1 a4f38da458e7ab312068ba78716d346c109aa7e4 lib/File/DataClass/Storage/XML.pm
+SHA1 791965f9cf085d64759526295002e1b175c9ca74 lib/File/DataClass/Storage/XML/Bare.pm
+SHA1 21343bfe8416048f9e10cc63454967bcba60be76 lib/File/DataClass/Storage/XML/Simple.pm
+SHA1 bd98e457df26361663c14038d1411b069844b516 lib/File/DataClass/Types.pm
+SHA1 ebb85bc50102f9cdaa73c149b96741cdd3931c89 t/01always_pass.t
+SHA1 2dfffaf99656d7ac4f7c75f15c47dedf3ac84eec t/02pod.t
+SHA1 02256cdfc1b0ef3a701dfc19b2030453999bb024 t/03podcoverage.t
+SHA1 6d2101f282a2629a563ceabb0065f8c5862f14f4 t/04critic.t
+SHA1 5d2ece4a84900a3ea9074c26232149261a8a8f14 t/05kwalitee.t
+SHA1 2717596d9a7889d8c51b134f3fae208830903f35 t/06yaml.t
+SHA1 43877e339aa030da7f83613766391195d7874a4b t/07podspelling.t
+SHA1 4973dc8c69660160debb8ab70f8bc7af2ec8a6e3 t/10exception.t
+SHA1 72ac01a503e159ed7eb39df44e998fe8b1d3333b t/12types.t
+SHA1 71e6d17f7ef218448f7b3d0d76f314159e643be7 t/15io.t
+SHA1 232cec3d524dfc4dd450bcfc427a18fce5395453 t/17constraints.t
+SHA1 460e60d35cdac87689de12b533da2c2b6c59929e t/20data-class.t
+SHA1 53368546ec5dfd68566140f2c91469f9f0dc3a50 t/21hash-merge.t
+SHA1 915dbd22b62416d9534b4490f11041425b8776cf t/25parse-dtd.t
+SHA1 561085acbd6eaaea97dca819ff70491ac72ad567 t/40xml-bare.t
+SHA1 ed41d1672a24e31b0078e2a0d09772a9bb74006c t/50json.t
+SHA1 d3e1b3f3b6fd2781ac0ff35d9f6cd63bf00b78e3 t/77multiclass.t
 SHA1 00aa2e48a788f7ec7de8365693f0ba278f86c98c t/critic.rc
 SHA1 1a92cb2e0902264e56ec80bffedf5a8d5bd36590 t/default.json
 SHA1 8c6e6a9ec7dabf064371ec0e2d0391b051000938 t/default.xml
@@ -70,11 +71,11 @@ SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/mydir/file3
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJSJdzyAAoJEK492j4Im1Bp1bIH/0D3vNnr7CNxSmZj2ntMoCUd
-WfZx6X/9RstkcBoPkhCL6zfU+elhuCFwmBaOFKGDwKEYqybM6nA/I7bQQ1MZ74Kr
-jXKc7J3D1Hz4jeNAmDxBnEOHD3qixCM+DVhaTuMZImeG7MbCND2yViAo5erWeUMX
-jg6toU9rfaA3umDxE8uSOClZPNiFxu3Efo8j2x+SRDifAP52hvzCONx9bOX5mQlG
-1S26MphoAc/OutMiTp5QfNcLBk7JMFT7Bs6UcP9nK+w6/v2OlFqVawiJKKpvhL8H
-YfW3Vo2IopNFeFgn4XDH6IsZZGyK3j4HUwRaD1pQvRTDijNT5vv/VUi6D+pjLDM=
-=CPCH
+iQEcBAEBAgAGBQJSRFqlAAoJEK492j4Im1BpFrYH/A38C2b2YKrcYwu2RIpCZaMO
+5feBMGsztJkeQRn1UP+i8iDO+UpuFEe0oDy4Fjj6A4Ig7arH0HDNl8MlqnFPRtJy
+6nTzZLqi5pIETFNee+Wsi0d4Vou8MiY8A78JD9eRSnAjQMAGUleHD8MAO3DGGBDr
+TPFr4kbCvA2TvLRv24qeA6ywUcMw75RI1uhThDERLjTZI9o3RO5dBM6L4TT2sw5b
+vGzZyfb/t4O9s0CFZhmnn6CC6fDXL5jlaNPx2IMy0E1LDh5Nl4LqADVvya2hdudT
+pIaKvVwUuc/WYN5bMGbTtDoP9v0LqrRKxFK9wOFJE6h4sPkT/i2WIXeR97Iud9U=
+=Qdwg
 -----END PGP SIGNATURE-----

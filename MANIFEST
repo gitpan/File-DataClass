@@ -33,6 +33,7 @@ t/05kwalitee.t
 t/06yaml.t
 t/07podspelling.t
 t/10exception.t
+t/12types.t
 t/15io.t
 t/17constraints.t
 t/20data-class.t
