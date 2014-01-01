@@ -1,14 +1,16 @@
-# @(#)$Ident: 15io.t 2013-09-03 17:28 pjf ;
+# @(#)$Ident: 15io.t 2013-12-31 16:59 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.27.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use File::Spec::Functions   qw( catdir catfile curdir updir );
 use FindBin                 qw( $Bin );
 use lib                 catdir( $Bin, updir, 'lib' );
+use utf8;
 
-use Module::Build;
 use Test::More;
+use Test::Requires { version => 0.88 };
+use Module::Build;
 
 my $notes = {}; my $perl_ver;
 
@@ -21,9 +23,11 @@ BEGIN {
 use Test::Requires "${perl_ver}";
 use Config;
 use Cwd;
-use English     qw( -no_match_vars );
-use File::pushd qw( tempd );
-use Test::Deep  qw( cmp_deeply );
+use English      qw( -no_match_vars );
+use File::pushd  qw( tempd );
+use Path::Tiny   qw( );
+use Scalar::Util qw( blessed );
+use Test::Deep   qw( cmp_deeply );
 use File::DataClass::Constants;
 
 use_ok 'File::DataClass::IO';
@@ -52,7 +56,11 @@ subtest 'Deliberate errors' => sub {
 
    eval { io( 'qwerty' )->empty };
 
-   like $EVAL_ERROR, qr{ Path \s+ \S+ \s+ not \s+ found }mx, 'No test empty';
+   like $EVAL_ERROR, qr{ File \s+ \S+ \s+ not \s+ found }mx, 'No test empty';
+
+   eval { io( 'qwerty' )->encoding };
+
+   like $EVAL_ERROR, qr{ \Qnot specified\E }imx, 'Encoding requires a value';
 
    ok ! io( 'qwerty' )->exists, 'Non existant file';
 
@@ -70,22 +78,30 @@ subtest 'Polymorphic Constructor' => sub {
    ok io( \&_filename )->exists, 'Constructs from coderef';
    ok io( { name => catfile( qw( t mydir file1 ) ) } )->exists,
       'Constructs from hashref';
-   $io = io( [ qw( t mydir file1 ) ], q(r), oct q(400) ); $io = io( $io );
+   $io = io( [ qw( t mydir file1 ) ], 'r', oct '400' ); $io = io( $io );
    ok $io->exists, 'Constructs from object';
-   $io = io( [ qw( t mydir file1 ) ], { perms => oct q(400) } );
+   $io = io( [ qw( t mydir file1 ) ], { perms => oct '400' } );
    ok $io->exists && (sprintf "%o", $io->_perms & 07777) eq '400',
       'Constructs from name and hashref';
-   is( (sprintf "%o", $io->_perms & 07777), q(400),
+   is( (sprintf "%o", $io->_perms & 07777), '400',
       'Duplicates permissions from original object' );
 
    my ($homedir) = glob( '~' );
 
    is io( '~' ), $homedir, 'Expands tilde';
    is io( '~/' ), $homedir, 'Expands tilde with trailing "/"';
-   is io( '~/foo/bar' ), $homedir.'/foo/bar', 'Expands tilde with longer path';
+   is io( '~/foo/bar' ), "${homedir}/foo/bar", 'Expands tilde with longer path';
    $io = io( '~/foo/bar/' );
-   is $io, $homedir.'/foo/bar', 'Expands tilde, longer path and trailing "/"';
+   is $io, "${homedir}/foo/bar", 'Expands tilde, longer path and trailing "/"';
    is io( CURDIR ), Cwd::getcwd, 'Constructs from "."';
+
+   my $ptt = Path::Tiny::path( 't' );
+
+   is io( $ptt )->name, 't', 'Constructs from foreign object';
+   ok io( [ qw( t mydir file1 ) ], 'r' )->exists,
+    'Constructs from name and mode';
+   ok io( name => [ qw( t mydir file1 ) ], mode => 'r' )->exists,
+    'Constructs from list of keys and values';
 };
 
 # Stringifies
@@ -123,6 +139,7 @@ subtest 'File::Spec::Functions' => sub {
    is io( [ qw(t mydir dir1) ] )->dirname, catdir( qw(t mydir) ), 'Dirname';
    ok io( [ qw(t mydir dir1) ] )->parent->is_dir, 'Parent';
    is io( [ qw(t mydir dir1) ] )->parent( 2 ), 't', 'Parent with count';
+   is io( [ qw( t output print.t ) ] )->basename, 'print.t', 'Basename';
 };
 
 subtest 'Absolute/relative pathname conversions' => sub {
@@ -215,11 +232,11 @@ subtest 'Chomp newlines and record separators' => sub {
 
    for ($io->slurp) { $seen = 1 if (m{ [\n] }mx) }
 
-   ok ! $seen, 'Slurp chomps newlines'; $io->close; $seen = 0;
+   ok !$seen, 'Slurp chomps newlines'; $io->close; $seen = 0;
 
-   for ($io->chomp->separator( 'io' )->getlines) { $seen = 1 if (m { io }mx) }
+   for ($io->chomp->separator( 'io' )->getlines) { $seen = 1 if (m{ io }mx) }
 
-   ok ! $seen, 'Getlines chomps record separators';
+   ok !$seen, 'Getlines chomps record separators';
 };
 
 subtest 'Create and remove a directory subtree' => sub {
@@ -242,14 +259,37 @@ subtest 'Setting assert creates path to file' => sub {
 };
 
 subtest 'Prints with and without newlines' => sub {
-   $io = io( [ qw(t output print.t) ] );
-   is $io->print( "one" )->print( "two" )->close->slurp, 'onetwo', 'Print 1';
-   $io = io( [ qw(t output print.t) ] );
+   $io = io( [ qw( t output print.t ) ] );
+   is $io->print( 'one' )->print( 'two' )->close->slurp, 'onetwo', 'Print 1';
+   $io = io( [ qw( t output print.t ) ] );
    is $io->print( "one\n" )->print( "two\n" )->close->slurp, "one\ntwo\n",
       'Print 2';
-   $io = io( [ qw(t output print.t) ] );
-   is $io->println( "one" )->println( "two" )->close->slurp, "one\ntwo\n",
+   $io = io( [ qw( t output print.t ) ] );
+   is $io->println( 'one' )->println( 'two' )->close->slurp, "one\ntwo\n",
       'Print 3';
+};
+
+subtest 'Appends with and without newlines' => sub {
+   $io = io( [ qw( t output print.t ) ] );
+   is $io->append( 'three' )->close->slurp, "one\ntwo\nthree", 'Append';
+   is $io->appendln( 'four' )->close->slurp, "one\ntwo\nthreefour\n",
+      'Append with line feed';
+   is $io->close->assert_open( 'r' )->append( 'five' )->close->slurp,
+      "one\ntwo\nthreefour\nfive", 'Append when file open for reading';
+   is $io->close->assert_open( 'w' )->append( 'six' )->close->slurp,
+      "six", 'Append when file open for writing';
+   is $io->close->assert_open( 'r' )->appendln( 'seven' )->close->slurp,
+      "sixseven\n", 'Append when file open for reading';
+   is $io->close->assert_open( 'w' )->appendln( 'eight' )->close->slurp,
+      "eight\n", 'Append when file open for writing';
+};
+
+subtest 'Gets a single line' => sub {
+   $io = io( [ qw( t output print.t ) ] );
+   $io->binary->utf8->print( 'öne' );
+   is $io->getline, 'öne', 'Getline utf8';
+   $io->reset->binmode( ':raw' )->print( 'öne' );
+   is $io->getline( $RS ), 'öne', 'Getline utf8 - raw';
 };
 
 subtest 'Create and detect empty subdirectories and files' => sub {
@@ -270,28 +310,37 @@ $io = io()->cwd;
 
 is "${io}", Cwd::getcwd(), 'Current working directory';
 
-# Tempfile/seek
-my @lines = io( $PROGRAM_NAME )->chomp->slurp; my $temp = io( q(t) )->tempfile;
+subtest 'Tempfile/seek' => sub {
+   my @lines = io( $PROGRAM_NAME )->chomp->slurp; $io = io( 't' );
+   my $temp  = $io->tempfile;
 
-$temp->println( @lines ); $temp->seek( 0, 0 ); my $text = $temp->slurp || q();
+   $temp->println( @lines ); $temp->seek( 0, 0 );
 
-ok length $text == $size,
-   'Creates a tempfile seeks to the start and slurps content';
+   my $text = $temp->slurp || q();
+
+   ok length $text == $size,
+      'Creates a tempfile seeks to the start and slurps content';
+
+   is blessed( $io->delete_tmp_files ), 'File::DataClass::IO',
+      'Delete tmp files';
+   is blessed( $io->delete_tmp_files( '%6.6d....' ) ), 'File::DataClass::IO',
+      'Delete tmp files - non default template';
+};
 
 subtest 'Buffered reading/writing' => sub {
-   my $outfile = catfile( qw(t output out.pm) );
+   my $outfile = catfile( qw( t output out.pm ) );
 
    ok ! -f $outfile,   'Non existant output file';
 
-   my $input   = io( [ qw(lib File DataClass IO.pm) ] )->open;
+   my $input = io( [ qw(lib File DataClass IO.pm) ] )->open->block_size( 4096 );
 
    ok ref $input,      'Open input';
 
-   my $output  = io( $outfile )->open( q(w) );
+   my $output = io( $outfile )->open( 'w' );
 
    ok ref $output,     'Open output';
 
-   if ($osname eq q(mswin32)) { $input->binary; $output->binary; }
+   if ($osname eq 'mswin32') { $input->binary; $output->binary; }
 
    my $buffer; $input->buffer( $buffer ); $output->buffer( $buffer );
 
@@ -306,61 +355,113 @@ subtest 'Buffered reading/writing' => sub {
 };
 
 subtest 'Creates a file using atomic write' => sub {
-   my $atomic_file = catfile( qw(t output B_atomic) );
-   my $outfile     = catfile( qw(t output atomic) );
+   my $atomic_file = catfile( qw( t output B_atomic ) );
+   my $outfile     = catfile( qw( t output atomic ) );
 
    $io = io( $outfile )->atomic->lock->println( 'x' );
    ok  -f $atomic_file, 'Atomic file exists';
    ok !-e $outfile,     'Atomic outfile does not exist'; $io->close;
    ok !-e $atomic_file, 'Renames atomic file';
    ok  -f $outfile,     'Writes atomic file';
+
+   $atomic_file = catfile( qw( t output X_atomic ) );
+   $io = io( $outfile )->atomic->atomic_infix( 'X_*' )->print( 'x' );
+   ok  -f $atomic_file, 'Atomic file exists - infix'; $io->close;
+   ok !-e $atomic_file, 'Renames atomic file - infix';
+
+   $atomic_file = catfile( qw( t output atomic.tmp) );
+   $io = io( $outfile )->atomic->atomic_suffix( '.tmp' )->print( 'x' );
+   ok  -f $atomic_file, 'Atomic file exists - suffix'; $io->close;
+   ok !-f $atomic_file, 'Renames atomic file - suffix';
+
+   io( $outfile )->delete;
+   $io = io( $outfile )->atomic->lock->println( 'x' );
+   io( $outfile )->close;
 };
 
 # Substitution
-$io = io( [ qw(t output substitute) ] );
-$io->println( qw(line1 line2 line3) );
-$io->substitute( q(line2), q(changed) );
-is( ($io->chomp->getlines)[ 1 ], q(changed),
+$io = io( [ qw( t output substitute ) ] );
+$io->println( qw( line1 line2 line3 ) );
+$io->substitute( 'line2', 'changed' );
+is( ($io->chomp->getlines( $RS ))[ 1 ], 'changed',
     'Substitutes one value for another' );
 
-# Copy
-my $to = io( [ qw(t output copy) ] ); $io->close;
+subtest 'Copy' => sub {
+   my $to = io( [ qw( t output copy ) ] );
 
-$io->copy( $to ); is $io->all, $to->all, 'Copies a file';
+   $io->close; $io->copy( $to );
+   is $io->all, $to->all, 'Copies a file - object target';
+   $to->unlink; $io->copy( [ qw( t output copy ) ] );
+   is $io->all, $to->all, 'Copies a file - constructs target';
+   $to->unlink; $io->copy( Path::Tiny::path( "${to}" ) );
+   is $io->all, $to->all, 'Copies a file - foreign object target';
+};
 
 SKIP: {
-   ($osname eq q(mswin32) or $osname eq q(cygwin))
-      and skip 'Unix permissions not applicable', 2;
+   ($osname eq 'mswin32' or $osname eq 'cygwin')
+      and skip 'Unix ownership and permissions not applicable', 1;
+
+   subtest 'Ownership' => sub {
+      $io = io( [ qw( t output print.t ) ] );
+
+      my $uid = $io->stat->{uid}; my $gid = $io->stat->{gid};
+
+      eval { $io->chown( undef, $gid ) };
+      like $EVAL_ERROR, qr{ \Qnot specified\E }mx,
+         'Uid must be defined in chown';
+      eval { $io->chown( $uid, undef ) };
+      like $EVAL_ERROR, qr{ \Qnot specified\E }mx,
+         'Gid must be defined in chown';
+      is blessed( $io->chown( $uid, $gid ) ), 'File::DataClass::IO', 'Chown';
+   };
+
+   subtest 'Permissions' => sub {
+      $io = io();
+      ok !$io->is_executable, 'Not executable - no name';
+      ok !$io->is_link, 'Not a link - no name';
+      ok !$io->is_readable, 'Not readable - no name';
+      ok !$io->is_writable, 'Not writable - no name';
+      $io = io( [ qw( t output print.t ) ] ); $io->print( 'one' );
+      ok  $io->is_readable,   'Readable';
+      ok  $io->is_writable,   'Writable';
+      ok !$io->is_executable, 'Not executable';
+   };
 
    subtest 'Changes permissions of existing file' => sub {
-      $io->chmod( 0777 ); $stat = $io->stat;
-      is( (sprintf "%o", $stat->{mode} & 07777), q(777), 'Chmod 777' );
-      $io->chmod( 0400 ); $stat = $io->stat;
-      is( (sprintf "%o", $stat->{mode} & 07777), q(400), 'Chmod 400' );
+      $io->chmod( 0400 );
+      is( (sprintf "%o", $io->stat->{mode} & 07777), '400', 'Chmod 400' );
+      $io->chmod();
+      is( (sprintf "%o", $io->stat->{mode} & 07777), '660', 'Chmod default' );
+      $io->chmod( 0777 );
+      is( (sprintf "%o", $io->stat->{mode} & 07777), '777', 'Chmod 777' );
+   };
+
+   subtest 'More permissions' => sub {
+      ok $io->is_executable, 'Executable';
    };
 
    subtest 'Creates files with specified permissions' => sub {
-      my $path = catfile( qw(t output print.pl) );
+      my $path = catfile( qw( t output print.pl ) );
 
-      $io = io( $path, q(w), oct q(0400) )->println( 'x' );
+      $io = io( $path, 'w', oct q(0400) )->println( 'x' );
       is( (sprintf "%o", $io->stat->{mode} & 07777), q(400), 'Create 400' );
       $io->unlink;
-      $io = io( $path, q(w), oct q(0440) )->println( 'x' );
+      $io = io( $path, 'w', oct q(0440) )->println( 'x' );
       is( (sprintf "%o", $io->stat->{mode} & 07777), q(440), 'Create 440' );
       $io->unlink;
-      $io = io( $path, q(w), oct q(0600) )->println( 'x' );
+      $io = io( $path, 'w', oct q(0600) )->println( 'x' );
       is( (sprintf "%o", $io->stat->{mode} & 07777), q(600), 'Create 600' );
       $io->unlink;
-      $io = io( $path, q(w), oct q(0640) )->println( 'x' );
+      $io = io( $path, 'w', oct q(0640) )->println( 'x' );
       is( (sprintf "%o", $io->stat->{mode} & 07777), q(640), 'Create 640' );
       $io->unlink;
-      $io = io( $path, q(w), oct q(0644) )->println( 'x' );
+      $io = io( $path, 'w', oct q(0644) )->println( 'x' );
       is( (sprintf "%o", $io->stat->{mode} & 07777), q(644), 'Create 644' );
       $io->unlink;
-      $io = io( $path, q(w), oct q(0664) )->println( 'x' );
+      $io = io( $path, 'w', oct q(0664) )->println( 'x' );
       is( (sprintf "%o", $io->stat->{mode} & 07777), q(664), 'Create 664' );
       $io->unlink;
-      $io = io( $path, q(w), oct q(0666) )->println( 'x' );
+      $io = io( $path, 'w', oct q(0666) )->println( 'x' );
       is( (sprintf "%o", $io->stat->{mode} & 07777), q(666), 'Create 666' );
       $io->unlink;
       $io = io( $path )->perms( oct q(0640) )->println( 'x' );
@@ -377,6 +478,7 @@ SKIP: {
       my $wd       = tempd;
       my @tree     = qw( aaaa.txt bbbb.txt cccc/dddd.txt cccc/eeee/ffff.txt
                          gggg.txt );
+      my @shallow  = qw( aaaa.txt bbbb.txt cccc gggg.txt pppp qqqq.txt );
       my @follow   = qw( aaaa.txt bbbb.txt cccc gggg.txt pppp qqqq.txt
                          cccc/dddd.txt cccc/eeee cccc/eeee/ffff.txt
                          pppp/ffff.txt );
@@ -389,14 +491,14 @@ SKIP: {
       symlink io( [ 'aaaa.txt'     ] ), io( 'qqqq.txt' );
 
       subtest 'Follow' => sub {
-         my $dir = io( '.' )->deep; my @files;
+         my $dir = io( '.' )->deep; my @files = ();
 
          for my $f (map { $_->relative( $dir ) } $dir->all) {
             push @files, "${f}";
          }
 
-         cmp_deeply( [ sort @files ], [ sort @follow ], 'Follow symlinks' )
-            or diag explain \@files;
+         cmp_deeply( [ sort @files ], [ sort @follow ],
+                     'Follow symlinks - deep' ) or diag explain \@files;
       };
 
       subtest 'No follow' => sub {
@@ -411,12 +513,19 @@ SKIP: {
       };
 
       subtest 'Follow - iterator' => sub {
-         my $io = io( '.' )->deep; my $iter = $io->iterator; my @files;
+         my $io = io( '.' ); my $iter = $io->iterator; my @files;
 
          while (my $f = $iter->()) { push @files, $f->relative( $io )->name }
 
-         cmp_deeply( [ sort @files ], [ sort @follow ], 'Follow symlinks' )
-            or diag explain \@files;
+         cmp_deeply( [ sort @files ], [ sort @shallow ],
+                     'Follow symlinks - shallow' ) or diag explain \@files;
+
+         $io = io( '.' )->deep; $iter = $io->iterator; @files = ();
+
+         while (my $f = $iter->()) { push @files, $f->relative( $io )->name }
+
+         cmp_deeply( [ sort @files ], [ sort @follow ],
+                     'Follow symlinks - deep' ) or diag explain \@files;
       };
 
       subtest 'No Follow - iterator' => sub {
@@ -438,7 +547,7 @@ SKIP: {
 
          cmp_deeply( [ sort @files ],
                      [ 'cccc/eeee/ffff.txt', 'pppp/ffff.txt', ],
-                     'Follow symlinks with filter' ) or diag explain \@files;
+                       'Follow symlinks with filter' ) or diag explain \@files;
       };
    };
 }
@@ -449,6 +558,7 @@ io( catdir( qw( t output ) ) )->rmtree;
 done_testing;
 
 # Local Variables:
+# coding: utf-8
 # mode: perl
 # tab-width: 3
 # End:

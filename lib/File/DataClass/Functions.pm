@@ -1,19 +1,20 @@
-# @(#)$Ident: Functions.pm 2013-09-25 12:28 pjf ;
+# @(#)$Ident: Functions.pm 2013-12-30 23:36 pjf ;
 
 package File::DataClass::Functions;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.27.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Class::Load    qw( is_class_loaded load_class );
-use English        qw( -no_match_vars );
-use Exporter 5.57  qw( import );
+use English                 qw( -no_match_vars );
+use Exporter 5.57           qw( import );
 use File::DataClass::Constants;
-use Hash::Merge    qw( merge );
-use List::Util     qw( first );
-use Scalar::Util   qw( blessed );
+use Hash::Merge             qw( merge );
+use List::Util              qw( first );
+use Module::Runtime         qw( require_module );
+use Scalar::Util            qw( blessed );
 use Try::Tiny;
+use Unexpected::Functions   qw( is_class_loaded );
 
 our @EXPORT_OK   = qw( ensure_class_loaded first_char is_arrayref is_coderef
                        is_hashref is_member is_stale merge_attributes
@@ -27,13 +28,11 @@ my $NTFS         = $LC_OSNAME eq EVIL || $LC_OSNAME eq CYGWIN ? TRUE : FALSE;
 sub ensure_class_loaded ($;$) {
    my ($class, $opts) = @_; $opts ||= {};
 
-   my $package_defined = sub { is_class_loaded( $class ) };
+   not $opts->{ignore_loaded} and is_class_loaded( $class ) and return 1;
 
-   not $opts->{ignore_loaded} and $package_defined->() and return 1;
+   try { require_module( $class ) } catch { throw( $_ ) };
 
-   try { load_class( $class ) } catch { throw( $_ ) };
-
-   $package_defined->()
+   is_class_loaded( $class )
       or throw( error => 'Class [_1] loaded but package undefined',
                 args  => [ $class ] );
 
@@ -67,11 +66,12 @@ sub is_member (;@) {
 sub is_stale (;$$$) {
    my ($data, $cache_mtime, $path_mtime) = @_;
 
-   $NTFS and return 1; # Assume NTFS does not support mtime
+   # Assume NTFS does not support mtime
+   $NTFS and return 1; # uncoverable branch true
 
-   return ! defined $data || ! defined $path_mtime || ! defined $cache_mtime
-         || $path_mtime > $cache_mtime
-          ? 1 : 0;
+   my $is_def = defined $data && defined $path_mtime && defined $cache_mtime;
+
+   return !$is_def || $path_mtime > $cache_mtime ? 1 : 0;
 }
 
 sub merge_attributes ($$;$) {
@@ -100,6 +100,7 @@ sub merge_file_data ($$) {
 }
 
 sub thread_id {
+   # uncoverable branch true
    return exists $INC{ 'threads.pm' } ? threads->tid() : 0;
 }
 
@@ -119,7 +120,7 @@ File::DataClass::Functions - Common functions used in this distribution
 
 =head1 Version
 
-This document describes version v0.27.$Rev: 1 $
+This document describes version v0.28.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -217,13 +218,15 @@ None
 
 =over 3
 
-=item L<Class::Load>
-
 =item L<Exporter>
 
 =item L<Hash::Merge>
 
+=item L<Module::Runtime>
+
 =item L<Try::Tiny>
+
+=item L<Unexpected>
 
 =back
 
@@ -247,7 +250,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

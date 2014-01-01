@@ -1,10 +1,11 @@
-# @(#)$Ident: Schema.pm 2013-09-13 17:41 pjf ;
+# @(#)$Ident: Schema.pm 2013-12-31 17:05 pjf ;
 
 package File::DataClass::Schema;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.27.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
+use Moo;
 use Class::Null;
 use File::DataClass::Cache;
 use File::DataClass::Constants;
@@ -15,8 +16,8 @@ use File::DataClass::Storage;
 use File::DataClass::Types     qw( Bool Cache ClassName Directory DummyClass
                                    HashRef Lock Num Object Path Str );
 use File::Spec;
-use Moo;
 use Scalar::Util               qw( blessed );
+use Unexpected::Functions      qw( Unspecified );
 
 extends q(File::DataClass);
 
@@ -25,7 +26,7 @@ has 'cache'                    => is => 'lazy', isa => Cache;
 has 'cache_attributes'         => is => 'ro',   isa => HashRef,
    default                     => sub { {
       driver                   => 'FastMmap',
-      page_size                => 131072,
+      page_size                => 131_072,
       num_pages                => 89,
       unlink_on_exit           => TRUE, } };
 
@@ -63,12 +64,13 @@ has 'storage_base'             => is => 'ro',   isa => ClassName,
    default                     => 'File::DataClass::Storage';
 
 has 'storage_class'            => is => 'rw',   isa => Str,
-   default                     => 'XML::Simple', lazy => TRUE;
+   default                     => 'JSON', lazy => TRUE;
 
 has 'tempdir'                  => is => 'ro',   isa => Directory,
    coerce                      => Directory->coercion,
    default                     => sub { File::Spec->tmpdir };
 
+# Construction
 around 'BUILDARGS' => sub {
    my ($orig, $class, @args) = @_; my $attr = $orig->( $class, @args );
 
@@ -81,63 +83,6 @@ around 'BUILDARGS' => sub {
    return $attr;
 };
 
-sub dump {
-   my ($self, $args) = @_; blessed $self or $self = $self->_constructor;
-
-   my $path = $args->{path} || $self->path;
-
-   blessed $path or $path = io( $path );
-
-   return $self->storage->dump( $path, $args->{data} || {} );
-}
-
-sub extensions {
-   return EXTENSIONS;
-}
-
-sub load {
-   my ($self, @paths) = @_; blessed $self or $self = $self->_constructor;
-
-   $paths[ 0 ] or $paths[ 0 ] = $self->path;
-
-   @paths = map { blessed $_ ? $_ : io( $_ ) } @paths;
-
-   return $self->storage->load( @paths ) || {};
-}
-
-sub resultset {
-   my ($self, $moniker) = @_; return $self->source( $moniker )->resultset;
-}
-
-sub source {
-   my ($self, $moniker) = @_; $moniker or throw 'Result source not specified';
-
-   my $source = $self->source_registrations->{ $moniker }
-      or throw error => 'Result source [_1] unknown', args => [ $moniker ];
-
-   return $source;
-}
-
-sub sources {
-   return keys %{ shift->source_registrations };
-}
-
-sub translate {
-   my ($self, $args) = @_;
-
-   my $class      = blessed $self       || $self;
-   my $from_class = $args->{from_class} || 'Any';
-   my $to_class   = $args->{to_class  } || 'Any';
-   my $attrs      = { path => $args->{from}, storage_class => $from_class };
-   my $data       = $class->new( $attrs )->load;
-
-   $attrs = { path => $args->{to}, storage_class => $to_class };
-   $class->new( $attrs )->dump( { data => $data } );
-
-   return;
-}
-
-# Private methods
 sub _build_cache {
    my $self  = shift; (my $ns = lc __PACKAGE__) =~ s{ :: }{-}gmx; my $cache;
 
@@ -183,6 +128,65 @@ sub _build_storage {
    return $class->new( { %{ $self->storage_attributes }, schema => $self } );
 }
 
+# Public methods
+sub dump {
+   my ($self, $args) = @_; blessed $self or $self = $self->_constructor;
+
+   my $path = $args->{path} || $self->path; # uncoverable condition false
+
+   blessed $path or $path = io( $path );
+
+   return $self->storage->dump( $path, $args->{data} );
+}
+
+sub extensions {
+   return EXTENSIONS;
+}
+
+sub load {
+   my ($self, @paths) = @_; blessed $self or $self = $self->_constructor;
+
+   $paths[ 0 ] or $paths[ 0 ] = $self->path;
+
+   @paths = map { blessed $_ ? $_ : io( $_ ) } @paths;
+
+   return $self->storage->load( @paths );
+}
+
+sub resultset {
+   my ($self, $moniker) = @_; return $self->source( $moniker )->resultset;
+}
+
+sub source {
+   my ($self, $moniker) = @_;
+
+   $moniker or throw class => Unspecified, args => [ 'Result source' ];
+
+   my $source = $self->source_registrations->{ $moniker }
+      or throw error => 'Result source [_1] unknown', args => [ $moniker ];
+
+   return $source;
+}
+
+sub sources {
+   return keys %{ shift->source_registrations };
+}
+
+sub translate {
+   my ($self, $args) = @_;
+
+   my $class      = blessed $self       || $self;
+   my $from_class = $args->{from_class} || 'Any';
+   my $to_class   = $args->{to_class  } || 'Any';
+   my $attrs      = { path => $args->{from}, storage_class => $from_class };
+   my $data       = $class->new( $attrs )->load;
+
+   $attrs = { path => $args->{to}, storage_class => $to_class };
+   $class->new( $attrs )->dump( { data => $data } );
+   return;
+}
+
+# Private methods
 sub _constructor {
    my $class = shift;
    my $attr  = { cache_class => 'none', storage_class => 'Any' };
@@ -202,7 +206,7 @@ File::DataClass::Schema - Base class for schema definitions
 
 =head1 Version
 
-This document describes version v0.27.$Rev: 1 $
+This document describes version v0.28.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -434,7 +438,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

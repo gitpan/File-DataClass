@@ -1,14 +1,15 @@
-# @(#)Ident: 17constraints.t 2013-08-16 22:02 pjf ;
+# @(#)Ident: 17constraints.t 2013-12-21 01:59 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.27.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use File::Spec::Functions   qw( catdir updir );
 use FindBin                 qw( $Bin );
 use lib                 catdir( $Bin, updir, 'lib' );
 
-use Module::Build;
 use Test::More;
+use Test::Requires { version => 0.88 };
+use Module::Build;
 
 my $notes = {}; my $perl_ver;
 
@@ -19,6 +20,7 @@ BEGIN {
 }
 
 use Test::Requires "${perl_ver}";
+use English qw( -no_match_vars );
 
 {  package TC1;
 
@@ -42,11 +44,14 @@ ok defined $tc, 'Failed to construct coercion test case';
 defined $tc
    and is $tc->path, 't', 'Moose + Inheritance + Type::Tiny + Coercion';
 
-done_testing;
+use_ok 'File::DataClass::Constants';
 
-#SKIP: {
-#   $reason and $reason =~ m{ \A tests: }mx and skip $reason, 1;
-#}
+eval { File::DataClass::Constants->Exception_Class( 'TC1' ) };
+
+like $EVAL_ERROR, qr{ \A Class \s TC1 \s is \s not \s loaded }mx,
+   'Bad exception class';
+
+done_testing;
 
 # Local Variables:
 # mode: perl

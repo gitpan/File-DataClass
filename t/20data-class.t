@@ -1,14 +1,15 @@
-# @(#)$Ident: 20data-class.t 2013-10-21 15:05 pjf ;
+# @(#)$Ident: 20data-class.t 2013-12-31 17:11 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.27.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use File::Spec::Functions   qw( catdir catfile updir );
 use FindBin                 qw( $Bin );
 use lib                 catdir( $Bin, updir, 'lib' );
 
-use Module::Build;
 use Test::More;
+use Test::Requires { version => 0.88 };
+use Module::Build;
 
 my $notes = {}; my $perl_ver;
 
@@ -37,96 +38,104 @@ use File::DataClass::Schema;
 
 my $osname     = lc $OSNAME;
 my $ntfs       = $osname eq 'mswin32' || $osname eq 'cygwin' ? 1 : 0;
-my $path       = catfile( qw( t default.xml ) );
-my $dumped     = catfile( qw( t dumped.xml ) );
+my $path       = catfile( qw( t default.json ) );
+my $dumped     = catfile( qw( t dumped.json ) );
 my $cache_file = catfile( qw( t file-dataclass-schema.dat ) );
 my $schema     = File::DataClass::Schema->new
-   ( cache_class => 'none',                  lock_class => 'none',
-     path        => [ qw( t default.xml ) ], tempdir    => 't' );
+   ( cache_class => 'none',                   lock_class => 'none',
+     path        => [ qw( t default.json ) ], tempdir    => 't' );
 
 isa_ok $schema, 'File::DataClass::Schema';
 
-ok ! -f $cache_file, 'Cache file not created';
+is $schema->extensions->{ '.json' }->[ 0 ], 'JSON', 'Default extension';
+
+ok !-f $cache_file, 'Cache file not created';
 
 $schema = File::DataClass::Schema->new
-   ( path => [ qw( t default.xml ) ], tempdir => 't' );
+   ( path => [ qw( t default.json ) ], tempdir => 't' );
 
-ok ! -f $cache_file, 'Cache file not created too early';
+ok !-f $cache_file, 'Cache file not created too early';
 
 my $e = test( $schema, qw( load nonexistant_file ) );
 
-like $e, qr{ \QFile 'nonexistant_file' cannot open\E }msx,
-    'Cannot open nonexistant_file';
+like $e, qr{ \QFile 'nonexistant_file' not found\E }msx,
+    'Nonexistant file not found';
 
 is ref $e, 'File::DataClass::Exception', 'Default exception class';
 
 ok -f $cache_file, 'Cache file found'; ! -f $cache_file and warn "${e}\n";
 
-my $data = test( $schema, qw(load t/default.xml t/default_en.xml) );
+my $data = test( $schema, 'load', $path, catfile( qw( t other.json ) ) );
 
 like $data->{ '_cvs_default' } || q(), qr{ @\(\#\)\$Id: }mx,
    'Has reference element 1';
 
-like $data->{ '_cvs_lang_default' } || q(), qr{ @\(\#\)\$Id: }mx,
+like $data->{ '_cvs_other' } || q(), qr{ @\(\#\)\$Id: }mx,
    'Has reference element 2';
 
 ok exists $data->{levels}
-   && ref $data->{levels}->{entrance}->{acl} eq 'ARRAY', 'Detects arrays';
+   && ref $data->{levels}->{admin}->{acl} eq 'ARRAY', 'Detects arrays';
 
 $data = $schema->load( $path ); my $args = { data => $data, path => $dumped };
 
-test( $schema, q(dump), $args ); my $diff = diff $path, $dumped;
+test( $schema, 'dump', $args ); my $diff = diff $path, $dumped;
 
-ok ! $diff, 'Load and dump roundtrips';
+ok !$diff, 'Load and dump roundtrips';
 
-$e = test( $schema, q(resultset) );
+$data = File::DataClass::Schema->load( $path );
 
-like $e, qr{ \QResult source not specified\E }msx,
+like $data->{ '_cvs_default' }, qr{ default\.xml }mx, 'Loads from class method';
+
+$e = test( $schema, 'resultset' );
+
+like $e, qr{ \Q'Result source' not specified\E }msx,
    'Result source not specified';
 
-$e = test( $schema, q(resultset), q(globals) );
+$e = test( $schema, qw( resultset globals ) );
 
 like $e, qr{ \QResult source 'globals' unknown\E }msx, 'Result source unknown';
 
 $schema = File::DataClass::Schema->new
-   ( path    => [ qw(t default.xml) ],
+   ( path    => [ qw( t default.json ) ],
      result_source_attributes => {
-        globals => { attributes => [ qw(text) ], }, },
-     tempdir => q(t) );
+        globals => { attributes => [ qw( text ) ], }, },
+     tempdir => 't' );
 
-my $rs = test( $schema, q(resultset), q(globals) );
+is( ($schema->sources)[ 0 ], 'globals', 'Sources' );
 
-$args = {}; $e = test( $rs, q(create), $args );
+my $rs = test( $schema, qw( resultset globals ) );
 
-like $e, qr{ \QNo element name specified\E }msx, 'No element name specified';
+$args = {}; $e = test( $rs, 'create', $args );
 
-$args->{name} = q(dummy); my $res = test( $rs, q(create), $args );
+like $e, qr{ \Q'Record name' not specified\E }msx, 'Record name not specified';
 
-ok ! defined $res, 'Creates dummy element but does not insert';
+$args->{name} = 'dummy'; my $res = test( $rs, 'create', $args );
 
-$args->{text} = q(value1); $res = test( $rs, q(create), $args );
+ok !defined $res, 'Creates dummy element but does not insert';
 
-is $res, q(dummy), 'Creates dummy element and inserts';
+$args->{text} = 'value1'; $res = test( $rs, 'create', $args );
 
-$args->{text} = q(value2); $res = test( $rs, q(update), $args );
+is $res, 'dummy', 'Creates dummy element and inserts';
 
-is $res, q(dummy), 'Can update';
+$args->{text} = 'value2'; $res = test( $rs, 'update', $args );
 
-delete $args->{text}; $res = test( $rs, q(find), $args );
+is $res, 'dummy', 'Can update';
 
-is $res->text, q(value2), 'Can find';
+delete $args->{text}; $res = test( $rs, 'find', $args );
 
-$e = test( $rs, q(create), $args );
+is $res->text, 'value2', 'Can find';
+
+$e = test( $rs, 'create', $args );
 
 like $e, qr{ already \s+ exists }mx, 'Detects already existing element';
 
-$res = test( $rs, q(delete), $args );
+$res = test( $rs, 'delete', $args );
 
-is $res, q(dummy), 'Deletes dummy element';
+is $res, 'dummy', 'Deletes dummy element';
 
-$e = test( $rs, q(delete), $args );
+$e = test( $rs, 'delete', $args );
 
-like $e, qr{ does \s+ not \s+ exist }mx, 'Detects non existing element';
+like $e, qr{ \Qdoes not exist\E }mx, 'Detects non existing element';
 
 $args = { name => 'dummy', text => 'value3' };
 
@@ -143,96 +152,125 @@ $res = test( $rs, 'delete', $args );
 is( ($rs->source->columns)[ 0 ], 'text', 'Result source columns' );
 
 is $rs->source->has_column( 'text' ), 1, 'Has column - true';
-
 is $rs->source->has_column( 'nochance' ), 0, 'Has column - false';
-
 is $rs->source->has_column(), 0, 'Has column - undef';
 
 $schema = File::DataClass::Schema->new
-   ( path    => [ qw(t default.xml) ],
+   ( path    => [ qw( t default.json ) ],
      result_source_attributes => {
-        fields => { attributes => [ qw(width) ], }, },
-     tempdir => q(t) );
+        fields => { attributes => [ qw( width ) ], }, },
+     storage_class => '+File::DataClass::Storage::JSON',
+     tempdir => 't' );
 
-$rs   = $schema->resultset( q(fields) );
-$args = { name => q(feedback.body) };
-$res  = test( $rs, q(list), $args );
+$rs   = $schema->resultset( 'fields' );
+$args = { name => 'feedback.body' };
+$res  = test( $rs, 'list', $args );
 
 ok $res->result->width == 72 && scalar @{ $res->list } == 3, 'Can list';
 
 $schema = File::DataClass::Schema->new
-   ( path    => [ qw(t default.xml) ],
+   ( path    => [ qw( t default.json ) ],
      result_source_attributes => {
-        levels => { attributes => [ qw(acl state) ] }, },
-     tempdir => q(t) );
+        levels => { attributes => [ qw( acl count state ) ] }, },
+     tempdir => 't' );
 
-$rs   = $schema->resultset( q(levels) );
-$args = { list => q(acl), name => q(admin) };
-$args->{items} = [ qw(group1 group2) ];
-$res  = test( $rs, q(push), $args );
+$rs   = $schema->resultset( 'levels' );
+$args = { list => 'acl', name => 'admin' };
+$res  = test( $rs, 'push', $args );
+
+like $res, qr{ no \s items }mx, 'Cannot push an empty list';
+
+$args->{items} = [ qw( group1 group2 ) ];
+$res  = test( $rs, 'push', $args );
 
 ok $res->[0] eq $args->{items}->[0] && $res->[1] eq $args->{items}->[1],
    'Can push';
 
-$args = { acl => q(@support) };
+$args = { list => 'acl', name => 'admin' };
+$res  = test( $rs, 'splice', $args );
 
-my @res = test( $rs, q(search), $args );
+like $res, qr{ no \s items }mx, 'Cannot splice an empty list';
 
-ok $res[ 0 ] && $res[ 0 ]->name eq q(admin), 'Can search';
-
-is $rs->search( $args )->first->name, 'admin', 'RS - first';
-is $rs->search( $args )->last->name, 'admin', 'RS - last';
-is $rs->search( $args )->next->name, 'admin', 'RS - next';
-
-$args = { list => q(acl), name => q(admin) };
-$args->{items} = [ qw(group1 group2) ];
-$res  = test( $rs, q(splice), $args );
+$args->{items} = [ qw( group1 group2 ) ];
+$res  = test( $rs, 'splice', $args );
 
 ok $res->[0] eq $args->{items}->[0] && $res->[1] eq $args->{items}->[1],
    'Can splice';
 
-my $translate = catfile( qw(t translate.json) ); io( $translate )->unlink;
+my @res = test( $rs, 'search', $args = { acl => '@support' } );
 
-$args = { from => $path,      from_class => q(XML::Simple),
-          to   => $translate, to_class   => q(JSON) };
+ok $res[ 0 ] && $res[ 0 ]->name eq 'admin', 'Can search';
+is $rs->search( $args )->first->name, 'admin', 'RS - first';
+is $rs->search( $args )->last->name,  'admin', 'RS - last';
+is $rs->search( $args )->next->name,  'admin', 'RS - next';
 
-$e = test( $schema, q(translate), $args );
+$rs = $schema->resultset( 'levels' );
 
-$diff = diff catfile( qw(t default.json) ), $translate;
+my $search_rs = $rs->search( $args ); $search_rs->next; $search_rs->reset;
 
-ok ! $diff, 'Can translate from XML to JSON';
+is $search_rs->next->name, 'admin', 'RS - reset';
+
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { name => { 'eq' => 'admin' } } )->first->name, 'admin',
+   'RS - eq operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { count => { '==' => '1' } } )->first->name, 'admin',
+   'RS - == operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { name => { 'ne' => 'admin' } } )->first->name, 'library',
+   'RS - != operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { count => { '!=' => '1' } } )->last->name, 'entrance',
+   'RS - > operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { count => { '>' => '1' } } )->last->name, 'entrance',
+   'RS - > operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { count => { '>=' => '2' } } )->last->name, 'entrance',
+   'RS - >= operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { count => { '<' => '3' } } )->last->name, 'entrance',
+   'RS - < operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { count => { '<=' => '2' } } )->last->name, 'entrance',
+   'RS - <= operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { acl => { '=~' => 'port' } } )->first->name, 'admin',
+   'RS - match operator';
+$rs = $schema->resultset( 'levels' );
+is $rs->search( { acl => { '!~' => 'fred' } } )->first->name, 'admin',
+   'RS - not match operator';
 
 {  package Dummy;
 
-   sub new { bless { tempdir => q(t) }, q(Dummy) }
+   sub new { bless { tempdir => 't' }, 'Dummy' }
 
    sub tempdir { $_[ 0 ]->{tempdir} }
 }
 
 use File::DataClass::Constants ();
 
-File::DataClass::Constants->Exception_Class( q(Unexpected) );
+File::DataClass::Constants->Exception_Class( 'Unexpected' );
 
 $schema = File::DataClass::Schema->new
-   ( builder => Dummy->new, path => [ qw(t default.xml) ] );
+   ( builder => Dummy->new, path => [ qw( t default.json ) ] );
 
 is ref $schema, q(File::DataClass::Schema),
    'File::DataClass::Schema - with inversion of control';
 
-is $schema->tempdir, q(t), 'IOC tempdir';
+is $schema->tempdir, 't', 'IOC tempdir';
 
-$e = test( $schema, qw(load nonexistant_file) );
+$e = test( $schema, qw( load nonexistant_file ) );
 
-is ref $e, q(Unexpected), 'Non default exception class';
+is ref $e, 'Unexpected', 'Non default exception class';
 
 done_testing;
 
 # Cleanup
-io( $dumped     )->unlink;
-io( $translate  )->unlink;
-io( catfile( qw(t ipc_srlock.lck) ) )->unlink;
-io( catfile( qw(t ipc_srlock.shm) ) )->unlink;
+io( $dumped )->unlink;
 io( $cache_file )->unlink;
+io( catfile( qw( t ipc_srlock.lck ) ) )->unlink;
+io( catfile( qw( t ipc_srlock.shm ) ) )->unlink;
 
 # Local Variables:
 # mode: perl
