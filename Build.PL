@@ -25,7 +25,7 @@ my $prereqs  = {
   },
   'requires' => {
     'CHI' => '0.58',
-    'Cache::FastMmap' => '1.36',
+    'Cache::FastMmap' => '1.40',
     'Class::Method::ModifiersX::Augment' => '0.001',
     'Class::Null' => '2.101420',
     'File::Path' => '2.08',
@@ -37,7 +37,7 @@ my $prereqs  = {
     'Try::Tiny' => '0.18',
     'Type::Tiny' => '0.030',
     'Unexpected' => 'v0.20.0',
-    'namespace::clean' => '0.23',
+    'namespace::clean' => '0.24',
     'namespace::sweep' => '0.006',
     'perl' => '5.010001'
   },

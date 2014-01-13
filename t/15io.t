@@ -1,8 +1,8 @@
-# @(#)$Ident: 15io.t 2013-12-31 16:59 pjf ;
+# @(#)$Ident: 15io.t 2014-01-13 18:06 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.30.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.31.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use File::Spec::Functions   qw( catdir catfile curdir updir );
 use FindBin                 qw( $Bin );
 use lib                 catdir( $Bin, updir, 'lib' );
@@ -28,9 +28,8 @@ use File::pushd  qw( tempd );
 use Path::Tiny   qw( );
 use Scalar::Util qw( blessed );
 use Test::Deep   qw( cmp_deeply );
-use File::DataClass::Constants;
+use File::DataClass::IO;
 
-use_ok 'File::DataClass::IO';
 isa_ok( io( $PROGRAM_NAME ), 'File::DataClass::IO' );
 
 my $io; my $osname = lc $OSNAME;
@@ -56,7 +55,7 @@ subtest 'Deliberate errors' => sub {
 
    eval { io( 'qwerty' )->empty };
 
-   like $EVAL_ERROR, qr{ File \s+ \S+ \s+ not \s+ found }mx, 'No test empty';
+   like $EVAL_ERROR, qr{ Path \s+ \S+ \s+ not \s+ found }mx, 'No test empty';
 
    eval { io( 'qwerty' )->encoding };
 
@@ -68,6 +67,11 @@ subtest 'Deliberate errors' => sub {
 
    like $EVAL_ERROR, qr{ Path \s+ \S+ \s+ not \s+ removed }mx,
       'Cannot remove non existant directory';
+
+   eval { io( { name => undef } ) };
+
+   like $EVAL_ERROR, qr{ \Qnot a simple string\E }mx,
+      'Undefined name not alllowed';
 };
 
 subtest 'Polymorphic Constructor' => sub {
@@ -80,6 +84,8 @@ subtest 'Polymorphic Constructor' => sub {
       'Constructs from hashref';
    $io = io( [ qw( t mydir file1 ) ], 'r', oct '400' ); $io = io( $io );
    ok $io->exists, 'Constructs from object';
+   $io = io( $io, { mode => 'a+' } );
+   is $io->mode, 'a+', 'Constructs from object - merges hashref';
    $io = io( [ qw( t mydir file1 ) ], { perms => oct '400' } );
    ok $io->exists && (sprintf "%o", $io->_perms & 07777) eq '400',
       'Constructs from name and hashref';
@@ -93,7 +99,7 @@ subtest 'Polymorphic Constructor' => sub {
    is io( '~/foo/bar' ), "${homedir}/foo/bar", 'Expands tilde with longer path';
    $io = io( '~/foo/bar/' );
    is $io, "${homedir}/foo/bar", 'Expands tilde, longer path and trailing "/"';
-   is io( CURDIR ), Cwd::getcwd, 'Constructs from "."';
+   is io( curdir ), Cwd::getcwd, 'Constructs from "."';
 
    my $ptt = Path::Tiny::path( 't' );
 
@@ -143,11 +149,13 @@ subtest 'File::Spec::Functions' => sub {
 };
 
 subtest 'Absolute/relative pathname conversions' => sub {
+   $io = io()->absolute( 't' );
+   is "${io}", 't', 'Absolute - defaults to base';
    $io = io( $PROGRAM_NAME )->absolute;
    is "${io}", File::Spec->rel2abs( $PROGRAM_NAME ), 'Absolute';
    $io->relative;
    is "${io}", File::Spec->abs2rel( $PROGRAM_NAME ), 'Relative';
-   ok io( q(t) )->absolute->next->is_absolute, 'Absolute directory paths';
+   ok io( 't' )->absolute->next->is_absolute, 'Absolute directory paths';
 
    my $tmp = File::Spec->tmpdir;
 
@@ -380,21 +388,28 @@ subtest 'Creates a file using atomic write' => sub {
 };
 
 # Substitution
-$io = io( [ qw( t output substitute ) ] );
+$io = io [ qw( t output substitute ) ];
 $io->println( qw( line1 line2 line3 ) );
 $io->substitute( 'line2', 'changed' );
 is( ($io->chomp->getlines( $RS ))[ 1 ], 'changed',
     'Substitutes one value for another' );
 
-subtest 'Copy' => sub {
-   my $to = io( [ qw( t output copy ) ] );
+subtest 'Copy / Move' => sub {
+   my $all = $io->close->all; my $to = io [ qw( t output copy ) ];
 
    $io->close; $io->copy( $to );
-   is $io->all, $to->all, 'Copies a file - object target';
+   is $to->all, $all, 'Copies a file - object target';
    $to->unlink; $io->copy( [ qw( t output copy ) ] );
-   is $io->all, $to->all, 'Copies a file - constructs target';
+   is $to->all, $all, 'Copies a file - constructs target';
    $to->unlink; $io->copy( Path::Tiny::path( "${to}" ) );
-   is $io->all, $to->all, 'Copies a file - foreign object target';
+   is $to->all, $all, 'Copies a file - foreign object target';
+   $io = $to; $to = io [ qw( t output object_target ) ]; $io = $io->move( $to );
+   is $io->all, $all, 'Moves a file - object target';
+   $to = [ qw( t output constructs_target ) ]; $io = $io->move( $to );
+   is $io->all, $all, 'Moves a file - constructs target';
+   $to = Path::Tiny::path( io( [ qw( t output foreign_object ) ] )->pathname );
+   $io = $io->move( $to );
+   is $io->all, $all, 'Moves a file - foreign object target';
 };
 
 SKIP: {
@@ -487,8 +502,8 @@ SKIP: {
 
       $_->touch for (map { io( $_ )->assert_filepath } @tree);
 
-      symlink io( [ 'cccc', 'eeee' ] ), io( 'pppp' );
-      symlink io( [ 'aaaa.txt'     ] ), io( 'qqqq.txt' );
+      CORE::symlink io( [ 'cccc', 'eeee' ] ), io( 'pppp' );
+      CORE::symlink io( [ 'aaaa.txt'     ] ), io( 'qqqq.txt' );
 
       subtest 'Follow' => sub {
          my $dir = io( '.' )->deep; my @files = ();

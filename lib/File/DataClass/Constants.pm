@@ -1,23 +1,22 @@
-# @(#)$Ident: Constants.pm 2013-12-25 15:34 pjf ;
+# @(#)$Ident: Constants.pm 2014-01-12 21:24 pjf ;
 
 package File::DataClass::Constants;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.30.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.31.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Exporter 5.57 qw( import );
+use Exporter 5.57           qw( import );
 use File::DataClass::Exception;
 
-our @EXPORT = qw( ARRAY CODE CURDIR CYGWIN EVIL EXCEPTION_CLASS EXTENSIONS
-                  FALSE HASH LANG LOCALIZE NO_UMASK_STACK NUL PERMS SPC
-                  STAT_FIELDS TILDE TRUE );
+our @EXPORT = qw( ARRAY CODE CYGWIN EVIL EXCEPTION_CLASS FALSE HASH
+                  LANG LOCALIZE NO_UMASK_STACK NUL PERMS SPC
+                  STAT_FIELDS STORAGE_BASE TILDE TRUE );
 
 my $Exception_Class = 'File::DataClass::Exception';
 
 sub ARRAY    () { 'ARRAY'    }
 sub CODE     () { 'CODE'     }
-sub CURDIR   () { '.'        }
 sub CYGWIN   () { 'cygwin'   }
 sub EVIL     () { 'mswin32'  }
 sub FALSE    () { 0          }
@@ -31,17 +30,16 @@ sub TILDE    () { '~'        }
 sub TRUE     () { 1          }
 
 sub EXCEPTION_CLASS () { __PACKAGE__->Exception_Class }
-sub EXTENSIONS      () { { '.json' => [ 'JSON' ],
-                           '.xml'  => [ 'XML::Simple', 'XML::Bare' ], } }
 sub NO_UMASK_STACK  () { -1 }
 sub STAT_FIELDS     () { qw( device inode mode nlink uid gid device_id
                              size atime mtime ctime blksize blocks ) }
+sub STORAGE_BASE    () { 'File::DataClass::Storage' }
 
 sub Exception_Class {
    my ($self, $class) = @_; defined $class or return $Exception_Class;
 
    $class->can( 'throw' )
-       or die "Class ${class} is not loaded or has no 'throw' method";
+       or die "Class '${class}' is not loaded or has no 'throw' method";
 
    return $Exception_Class = $class;
 }
@@ -58,7 +56,7 @@ File::DataClass::Constants - Definitions of constant values
 
 =head1 Version
 
-This document describes version v0.30.$Rev: 1 $
+This document describes version v0.31.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -74,8 +72,8 @@ Exports a list of subroutines each of which returns a constants value
 
 =head2 Exception_Class
 
-Class method. An accessor/mutator for the classname returned by the
-L</EXCEPTION_CLASS> method
+Class method. An accessor / mutator for the classname returned by the
+L</EXCEPTION_CLASS> function
 
 =head2 C<ARRAY>
 
@@ -84,10 +82,6 @@ String ARRAY
 =head2 C<CODE>
 
 String CODE
-
-=head2 C<CURDIR>
-
-Symbol representing the current working directory. A dot
 
 =head2 C<CYGWIN>
 
@@ -100,10 +94,6 @@ The devil's spawn
 =head2 C<EXCEPTION_CLASS>
 
 The class to use when throwing exceptions
-
-=head2 C<EXTENSIONS>
-
-Hash ref that map filename extensions (keys) onto storage subclasses (values)
 
 =head2 C<FALSE>
 
@@ -142,6 +132,10 @@ Space character
 =head2 C<STAT_FIELDS>
 
 The list of fields returned by the core C<stat> function
+
+=head2 C<STORAGE_BASE>
+
+The prefix for storage classes
 
 =head2 C<TILDE>
 
