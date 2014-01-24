@@ -25,7 +25,6 @@ lib/File/DataClass/Types.pm
 t/01always_pass.t
 t/02pod.t
 t/03podcoverage.t
-t/04critic.t
 t/05kwalitee.t
 t/06yaml.t
 t/07podspelling.t
@@ -37,7 +36,6 @@ t/17constraints.t
 t/20data-class.t
 t/21hash-merge.t
 t/50json.t
-t/critic.rc
 t/default.json
 t/lib/TestTypo.pm
 t/mydir/dir1/dira/dirx/file1
