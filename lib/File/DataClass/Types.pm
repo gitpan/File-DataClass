@@ -1,20 +1,17 @@
-# @(#)$Ident: Types.pm 2013-09-13 17:49 pjf ;
-
 package File::DataClass::Types;
 
 use strict;
 use warnings;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use File::DataClass::IO;
-use Scalar::Util            qw( blessed dualvar );
-use Type::Library               -base, -declare =>
-                            qw( Cache DummyClass HashRefOfBools Lock
-                                OctalNum Result Path Directory File );
-use Type::Utils             qw( as coerce extends from
-                                message subtype via where );
-use Unexpected::Functions   qw( inflate_message );
+use Scalar::Util          qw( blessed dualvar );
+use Type::Library             -base, -declare =>
+                          qw( Cache DummyClass HashRefOfBools Lock
+                              OctalNum Result Path Directory File );
+use Type::Utils           qw( as coerce extends from
+                              message subtype via where );
+use Unexpected::Functions qw( inflate_message );
 
 BEGIN { extends q(Unexpected::Types) };
 
@@ -139,20 +136,16 @@ __END__
 
 =head1 Name
 
-File::DataClass::Types - Role defining package constraints
-
-=head1 Version
-
-This document describes version v0.33.$Rev: 1 $
+File::DataClass::Types - A type constraint library
 
 =head1 Synopsis
 
    use Moo;
-   use File::DataClass::Types q(Path Directory File);
+   use File::DataClass::Types qw( Path Directory File );
 
 =head1 Description
 
-Defines the constraints used in this distribution
+Defines the type constraints used in this distribution
 
 =head1 Configuration and Environment
 
@@ -164,13 +157,21 @@ Defines these subtypes
 
 Is a L<File::DataClass::Cache>
 
-=item C<Exception>
+=item C<DummyClass>
 
-Can C<throw>
+A string value 'none'
+
+=item C<HashRefOfBools>
+
+Coerces a hash ref of boolean true values from the keys in an array ref
 
 =item C<Lock>
 
 Is a L<Class::Null> or can C<set> and C<reset>
+
+=item C<OctalNum>
+
+Coerces a string to a number which is stored in octal
 
 =item C<Path>
 

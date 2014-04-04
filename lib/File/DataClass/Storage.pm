@@ -1,9 +1,6 @@
-# @(#)$Ident: Storage.pm 2014-01-15 16:32 pjf ;
-
 package File::DataClass::Storage;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Null;
@@ -160,7 +157,7 @@ sub txn_do {
 sub update {
    my ($self, $path, $result, $updating, $cond) = @_;
 
-   defined $updating or $updating = TRUE; $cond ||= sub { TRUE };
+   $updating //= TRUE; $cond //= sub { TRUE };
 
    my $updated = $self->create_or_update( $path, $result, $updating, $cond )
       or throw class => NothingUpdated, level => 2;
@@ -255,10 +252,6 @@ __END__
 =head1 Name
 
 File::DataClass::Storage - Storage base class
-
-=head1 Version
-
-This document describes version v0.33.$Rev: 1 $
 
 =head1 Synopsis
 

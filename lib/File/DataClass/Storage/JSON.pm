@@ -1,14 +1,12 @@
-# @(#)$Ident: JSON.pm 2014-01-12 21:03 pjf ;
-
 package File::DataClass::Storage::JSON;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
-use File::DataClass::Functions qw( extension_map );
+use File::DataClass::Functions qw( extension_map throw );
 use JSON                       qw();
 use MooX::Augment -class;
+use Try::Tiny;
 
 extends qw(File::DataClass::Storage);
 
@@ -22,7 +20,13 @@ augment '_read_file' => sub {
    # The filter causes the data to be untainted (running suid). I shit you not
    my $json = JSON->new->canonical->filter_json_object( sub { $_[ 0 ] } );
 
-   return $rdr->empty ? {} : $json->utf8( 0 )->decode( $rdr->all );
+   $rdr->empty and return {}; my $content;
+
+   try   { $content = $json->utf8( 0 )->decode( $rdr->all ) }
+   catch { s{ at \s [^ ]+ \s line \s \d+ \. }{}mx;
+           throw error => "${_} in file ${rdr}" };
+
+   return $content;
 };
 
 augment '_write_file' => sub {
@@ -44,10 +48,6 @@ __END__
 =head1 Name
 
 File::DataClass::Storage::JSON - Read/write JSON data storage model
-
-=head1 Version
-
-This document describes version v0.33.$Rev: 1 $
 
 =head1 Synopsis
 

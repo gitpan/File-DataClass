@@ -1,10 +1,7 @@
-# @(#)$Ident: HashMerge.pm 2013-12-29 03:32 pjf ;
-
 package File::DataClass::HashMerge;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 sub merge {
    my ($self, $dest_ref, $src, $filter) = @_; my $updated = 0;
@@ -38,10 +35,10 @@ sub _merge_attr {
    elsif ($to and ref $to eq 'ARRAY') {
       $updated = $self->_merge_attr_arrays( $to, $from );
    }
-   elsif ($to and $to ne $from) {
+   elsif (defined $to and $to ne $from) {
       $updated = 1; ${ $to_ref } = $from;
    }
-   elsif (not $to and defined $from) {
+   elsif (not defined $to) {
       if (ref $from eq 'HASH') {
          scalar keys %{ $from } > 0 and $updated = 1
             and ${ $to_ref } = $from;
@@ -104,10 +101,6 @@ __END__
 =head1 Name
 
 File::DataClass::HashMerge - Merge hashes with update flag
-
-=head1 Version
-
-This document describes version v0.33.$Rev: 1 $
 
 =head1 Synopsis
 

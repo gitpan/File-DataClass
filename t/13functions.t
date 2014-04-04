@@ -1,11 +1,8 @@
-# @(#)Ident: 13functions.t 2014-01-12 19:21 pjf ;
-
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 1 $ =~ /\d+/gmx );
-use File::Spec::Functions   qw( catdir updir );
-use FindBin                 qw( $Bin );
-use lib                 catdir( $Bin, updir, 'lib' ), catdir( $Bin, 'lib' );
+use File::Spec::Functions qw( catdir updir );
+use FindBin               qw( $Bin );
+use lib               catdir( $Bin, updir, 'lib' ), catdir( $Bin, 'lib' );
 
 use Test::More;
 use Test::Requires { version => 0.88 };
@@ -40,11 +37,11 @@ eval { ensure_class_loaded( 'DoesNotExists' ) };
 
 like $EVAL_ERROR, qr{ \Qt locate DoesNotExists\E }mx, 'Package not loaded';
 
-is extension_map( '.json' ), undef, 'Extension map defaults empty';
 extension_map( 'test', [ qw( .test .test ) ] );
 extension_map();
-is extension_map( '.json' )->[ 0 ], 'JSON', 'Extension map loads on first use';
-is extension_map( '.test' )->[ 1 ], undef, 'Extension map deduplicates';
+is extension_map->{ '.json' }->[ 0 ], 'JSON',
+   'Extension map loads on first use';
+is extension_map->{ '.test' }->[ 1 ], undef, 'Extension map deduplicates';
 
 ok !is_arrayref(), 'Is array ref without an argument';
 ok !is_coderef(),  'Is code  ref without an argument';

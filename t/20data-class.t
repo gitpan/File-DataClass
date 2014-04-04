@@ -1,11 +1,8 @@
-# @(#)$Ident: 20data-class.t 2014-01-12 18:52 pjf ;
-
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
-use File::Spec::Functions   qw( catdir catfile updir );
-use FindBin                 qw( $Bin );
-use lib                 catdir( $Bin, updir, 'lib' );
+use File::Spec::Functions qw( catdir catfile updir );
+use FindBin               qw( $Bin );
+use lib               catdir( $Bin, updir, 'lib' );
 
 use Test::More;
 use Test::Requires { version => 0.88 };
@@ -47,8 +44,6 @@ my $schema     = File::DataClass::Schema->new
 
 isa_ok $schema, 'File::DataClass::Schema';
 
-is $schema->extensions->{ '.json' }->[ 0 ], 'JSON', 'Default extension';
-
 ok !-f $cache_file, 'Cache file not created';
 
 $schema = File::DataClass::Schema->new
@@ -64,6 +59,16 @@ like $e, qr{ \QPath 'nonexistant_path' not found\E }msx,
 is ref $e, 'File::DataClass::Exception', 'Default exception class';
 
 ok -f $cache_file, 'Cache file found'; ! -f $cache_file and warn "${e}\n";
+
+eval { $schema->cache->cache->on_set_error->() }; $e = $EVAL_ERROR;
+
+ok ! $e, 'Calls cache on_set_error'; $e and warn "${e}\n";
+
+SKIP: {
+   $ENV{AUTHOR_TESTING} or skip 'Deprecated method only for developers', 1;
+
+   ok ref $schema->extensions eq 'HASH', 'Schema extensions returns a hash';
+}
 
 my $data = test( $schema, 'load', $path, catfile( qw( t other.json ) ) );
 
