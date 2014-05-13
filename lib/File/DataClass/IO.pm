@@ -26,7 +26,7 @@ use Unexpected::Types          qw( ArrayRef Bool CodeRef Int Maybe Object
                                    PositiveInt RegexpRef SimpleStr Str );
 
 use namespace::clean -except => [ 'import', 'meta' ];
-use overload '""' => sub { shift->pathname }, fallback => 1;
+use overload '""' => sub { $_[ 0 ]->pathname }, fallback => 1;
 
 our @EXPORT    = qw( io );
 
@@ -46,6 +46,7 @@ has 'name'          => is => 'rwp',  isa => SimpleStr,      default => NUL,
    coerce           => \&__coerce_name,                     lazy    => TRUE  ;
 has '_perms'        => is => 'rwp',  isa => PositiveInt,    default => PERMS,
    init_arg         => 'perms'                                               ;
+has 'reverse'       => is => 'lazy', isa => Bool,           default => FALSE ;
 has 'sort'          => is => 'lazy', isa => Bool,           default => TRUE  ;
 has 'type'          => is => 'rwp',  isa => Maybe[$IO_TYPE]                  ;
 
@@ -88,9 +89,11 @@ sub __build_attr_from { # Differentiate constructor method signatures
 }
 
 sub __clone_one_of_us {
-   my $clone = { %{ $_[ 0 ] } }; $clone->{perms} = delete $clone->{_perms};
+   my ($self, $params) = @_; $self->reverse; $self->sort; # Force evaluation
 
-   is_hashref $_[ 1 ] and $clone = { %{ $clone }, %{ $_[ 1 ] } };
+   my $clone = { %{ $self }, %{ $params // {} } };
+
+   $clone->{perms} = delete $clone->{_perms};
 
    return $clone;
 }
@@ -196,6 +199,7 @@ sub assert_dirpath {
 
    $self->_umask_pop;
 
+   # uncoverable branch true
    -d $dir_name or $self->_throw( error => 'Path [_1] cannot create: [_2]',
                                   args  => [ $dir_name, $OS_ERROR ] );
    return $dir_name;
@@ -293,17 +297,19 @@ sub canonpath {
 sub catdir {
    my ($self, @rest) = @_;
 
-   my @args = grep { defined and length } $self->name, @rest;
+   my $params = (is_hashref $rest[ -1 ]) ? pop @rest : {};
+   my $args   = [ grep { defined and length } $self->name, @rest ];
 
-   return $self->_constructor( \@args )->dir;
+   return $self->_constructor( $args, $params )->dir;
 }
 
 sub catfile {
    my ($self, @rest) = @_;
 
-   my @args = grep { defined and length } $self->name, @rest;
+   my $params = (is_hashref $rest[ -1 ]) ? pop @rest : {};
+   my $args   = [ grep { defined and length } $self->name, @rest ];
 
-   return $self->_constructor( \@args )->file;
+   return $self->_constructor( $args, $params )->file;
 }
 
 sub chmod {
@@ -388,7 +394,7 @@ sub copy {
 }
 
 sub cwd {
-   return $_[ 0 ]->_constructor( Cwd::getcwd() );
+   my $self = shift; return $self->_constructor( Cwd::getcwd(), @_ );
 }
 
 sub deep {
@@ -492,7 +498,10 @@ sub _find {
          and push @all, $io->_find( $files, $dirs, $level ? $level - 1 : 0 );
    }
 
-   return $self->sort ? sort { $a->name cmp $b->name } @all : @all;
+   not $self->sort and return @all;
+
+   return $self->reverse ? reverse sort { $a->name cmp $b->name } @all
+        :                          sort { $a->name cmp $b->name } @all;
 }
 
 sub _get_atomic_path {
@@ -553,7 +562,11 @@ sub _init {
 }
 
 sub _init_type_from_fs {
-   return -f $_[ 0 ]->name ? $_[ 0 ]->file : -d _ ? $_[ 0 ]->dir : undef;
+   my $self = shift;
+
+   $self->name or $self->_throw( class => Unspecified, args => [ 'path name' ]);
+
+   return -f $self->name ? $self->file : -d _ ? $self->dir : undef;
 }
 
 sub io (;@) { # Exported function
@@ -692,9 +705,11 @@ sub move {
 sub next {
    my $self = shift; defined (my $name = $self->read_dir) or return;
 
-   my $io = $self->_constructor( [ $self->name, $name ] );
+   my $io = $self->_constructor( [ $self->name, $name ], {
+      reverse => $self->reverse, sort => $self->sort } );
 
    defined $self->_filter and $io->filter( $self->_filter );
+
    return $io;
 }
 
@@ -1130,6 +1145,11 @@ File open mode. Defaults to 'r' for reading. Can any one of; 'a',
 Defaults to undef. This must be set in the call to the constructor or
 soon after. Can be a C<coderef>, an C<objectref>, an C<arrayref>, or
 a scalar. After coercion to a scalar leading tilde expansion takes place
+
+=item C<reverse>
+
+Boolean defaults to false. Reverse the direction of the sort on the output
+of the directory listings
 
 =item C<sort>
 
