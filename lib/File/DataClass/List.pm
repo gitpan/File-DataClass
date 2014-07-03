@@ -1,9 +1,9 @@
 package File::DataClass::List;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-use File::DataClass::Types qw( ArrayRef Bool HashRef Result Undef );
 use Moo;
+use File::DataClass::Types qw( ArrayRef Bool HashRef Result Undef );
 
 has 'found'  => is => 'ro', isa => Bool,     default => 0;
 has 'labels' => is => 'ro', isa => HashRef,  default => sub { return {} };

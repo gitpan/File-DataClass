@@ -3,6 +3,8 @@ use warnings;
 
 use Module::Build 0.4004;
 
+sub testing { $ENV{AUTOMATED_TESTING} || $ENV{PERL_CPAN_REPORTER_CONFIG}
+                                      || $ENV{PERL5_CPANPLUS_IS_VERSION} }
 sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 my $perl_ver = 5.010001;
@@ -37,17 +39,15 @@ my $prereqs  = {
     'Try::Tiny' => '0.18',
     'Type::Tiny' => '0.030',
     'Unexpected' => 'v0.23.0',
+    'namespace::autoclean' => '0.19',
     'namespace::clean' => '0.24',
-    'namespace::sweep' => '0.006',
-    'perl' => '5.010001'
+    'perl' => '5.010001',
+    'strictures' => '1.004004'
   },
 };
 
-if ($] < $perl_ver) {
-   $ENV{AUTOMATED_TESTING}
-      or $ENV{PERL_CPAN_REPORTER_CONFIG}
-      or $ENV{PERL5_CPANPLUS_IS_VERSION}
-      or whimper "Minimum required Perl version is ${perl_ver}";
+if ($] < $perl_ver) { # Not interested in reports below min perl ver
+   testing or whimper "Minimum required Perl version is ${perl_ver}";
    $prereqs->{build_requires} = { %{ $prereqs->{configure_requires} } };
    $prereqs->{build_requires}->{ 'Test::Requires' } = 0.06;
    delete $prereqs->{requires};
