@@ -33,16 +33,15 @@ my $prereqs  = {
     'Hash::Merge' => '0.12',
     'JSON::MaybeXS' => '1.001000',
     'Module::Pluggable' => '3.9',
-    'Module::Runtime' => '0.013',
-    'Moo' => '1.004002',
+    'Module::Runtime' => '0.014',
+    'Moo' => '1.005',
     'MooX::ClassStash' => '0.005',
-    'Try::Tiny' => '0.18',
-    'Type::Tiny' => '0.030',
-    'Unexpected' => 'v0.23.0',
+    'Try::Tiny' => '0.22',
+    'Type::Tiny' => '>= 0.042, != 0.44',
+    'Unexpected' => 'v0.26.0',
     'namespace::autoclean' => '0.19',
-    'namespace::clean' => '0.24',
-    'perl' => '5.010001',
-    'strictures' => '1.004004'
+    'namespace::clean' => '0.25',
+    'perl' => '5.010001'
   },
 };
 
