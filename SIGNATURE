@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.66.
+signed via the Module::Signature module, version 0.73.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,14 +14,14 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 2cb7cc908246d921e00cf9f92fea7728604225e0 Build.PL
-SHA1 654df3583a634916318a016e62864d921d60de31 Changes
+SHA1 c8e5276aaa70ae809610c4e40497ebe140da4b32 Build.PL
+SHA1 1a7544dc1823bb29d958990e56d6e221bba72ea9 Changes
 SHA1 b8415dc6fd6293b168bcc15a552f4383175e2f2f LICENSE
 SHA1 4210091bd405fcb6099d8d056e7c2694d641a591 MANIFEST
-SHA1 b5b0608768c7e939106358c047fd4ea5c4438fe6 META.json
-SHA1 38c203ccd5a58656be2bc0dd807a4ba091787276 META.yml
-SHA1 ec7ff1043aba130b97e587dea52537b788836150 README
-SHA1 cd0b50da59c20e6def97492fe44fc5ea59d20951 lib/File/DataClass.pm
+SHA1 6ae8b180ecae628cfede3edc5877c5c268fc27df META.json
+SHA1 ef87bfa69278b5660ce7a923dbce3b15b4a72f36 META.yml
+SHA1 a40ea8ff9d1d3cef69beec325f1ecfc97a747601 README
+SHA1 4563cb9b27c3f687c4c88fbb703fbd15277be26c lib/File/DataClass.pm
 SHA1 0a527e8cf87ac6260e885865f0d1676635af4aea lib/File/DataClass/Cache.pm
 SHA1 77e64f61bc3a64971d29dbad8f433480eae979fb lib/File/DataClass/Constants.pm
 SHA1 7018f6a179cf4d91103795b8d2f07a3b6bcd706a lib/File/DataClass/Exception.pm
@@ -63,11 +63,11 @@ SHA1 c0908aadd4d891db9a460dace4f012b6e8a36eff t/other.json
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJTxnIVAAoJEK492j4Im1BpyboH/0C7xbYUXyunrOz6BzJ4k0V+
-vaB+9M7jTF/Oc2tzl9rhvjbCmzY7Erw6XVevezLXyXUC8rdUqDmXbuEDbIaiUyxT
-J4emiNiOxpxhTZzWVAb/Og+Mb+O/4iggoDUxcfqj0xkjcsoyhqcMfQsMzBhB6Vbs
-jCl8FyGYxEihPdvmiuzrDmuaHMBQtNaXVtKTaGtFgAZaBOEBFUwMKQMjv4Bx/caS
-ivsMpdOH300WktVdZnCT1UL6xLBzuDtX5WWP8u8VD7aRmK2tDRTccj/POk72e63s
-YvUvWHQcLZJqxx1oo6bPt/V5+FlKq0rK0K4KsfJqOpWECD2WCv9O1gpKNPsk9j0=
-=oqjT
+iQEcBAEBAgAGBQJT8oUTAAoJEK492j4Im1BpXE4IAMN/s/nuEBTrc6PCyd8cjZwL
+w9dkkdziSp2/RZtG6nwHk82YIjDrASVJ7IHE4g8DLD97KjSL/Nx+T9PMeAaYzRcL
+683keEtk+nuTYq/SRQtZfUQtGpee1r/96Ib2jxqf0Mcrv4mHInXCNzjWksIRgqO5
+z6DvCfMV7jyRRdCerhbnUGYEtt2qvYTBHTnA16kZOfTimlE+QrmHyy3fWLC4nWmw
+qQjBIiywqf93O4/Ns2K4mx9l9GJQqOEovHmBX7iXHJQyDD3V0sKbTcRMXnoeyyEv
+2crizOpAMpFmuTP+NAHchFnPwkIDpo4I6LDcjgVFaFbNMifrhh6grFHOSoqgxb4=
+=WRMf
 -----END PGP SIGNATURE-----
