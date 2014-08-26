@@ -29,52 +29,52 @@ no_index:
 provides:
   File::DataClass:
     file: lib/File/DataClass.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Cache:
     file: lib/File/DataClass/Cache.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Constants:
     file: lib/File/DataClass/Constants.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Exception:
     file: lib/File/DataClass/Exception.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Functions:
     file: lib/File/DataClass/Functions.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::HashMerge:
     file: lib/File/DataClass/HashMerge.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::IO:
     file: lib/File/DataClass/IO.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::List:
     file: lib/File/DataClass/List.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Result:
     file: lib/File/DataClass/Result.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::ResultSet:
     file: lib/File/DataClass/ResultSet.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::ResultSource:
     file: lib/File/DataClass/ResultSource.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Schema:
     file: lib/File/DataClass/Schema.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Storage:
     file: lib/File/DataClass/Storage.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Storage::Any:
     file: lib/File/DataClass/Storage/Any.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Storage::JSON:
     file: lib/File/DataClass/Storage/JSON.pm
-    version: v0.45.1
+    version: v0.45.5
   File::DataClass::Types:
     file: lib/File/DataClass/Types.pm
-    version: v0.45.1
+    version: v0.45.5
 requires:
   CHI: '0.58'
   Cache::FastMmap: '1.40'
@@ -89,7 +89,7 @@ requires:
   Moo: '1.006'
   MooX::ClassStash: '0.005'
   Try::Tiny: '0.22'
-  Type::Tiny: '1.000003'
+  Type::Tiny: '1.000002'
   Unexpected: v0.29.0
   namespace::autoclean: '0.19'
   namespace::clean: '0.25'
@@ -98,4 +98,5 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-DataClass
   homepage: https://metacpan.org/author/PJFL
   license: http://dev.perl.org/licenses/
-version: 0.45.1
+  repository: git://github.com/pjfl/p5-file-dataclass.git
+version: 0.45.5
