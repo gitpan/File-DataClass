@@ -54,7 +54,7 @@
             "MooX::ClassStash" : "0.005",
             "Try::Tiny" : "0.22",
             "Type::Tiny" : "1.000002",
-            "Unexpected" : "v0.29.0",
+            "Unexpected" : "v0.33.0",
             "namespace::autoclean" : "0.19",
             "namespace::clean" : "0.25",
             "perl" : "5.010001"
@@ -64,67 +64,67 @@
    "provides" : {
       "File::DataClass" : {
          "file" : "lib/File/DataClass.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Cache" : {
          "file" : "lib/File/DataClass/Cache.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Constants" : {
          "file" : "lib/File/DataClass/Constants.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Exception" : {
          "file" : "lib/File/DataClass/Exception.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Functions" : {
          "file" : "lib/File/DataClass/Functions.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::HashMerge" : {
          "file" : "lib/File/DataClass/HashMerge.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::IO" : {
          "file" : "lib/File/DataClass/IO.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::List" : {
          "file" : "lib/File/DataClass/List.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Result" : {
          "file" : "lib/File/DataClass/Result.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::ResultSet" : {
          "file" : "lib/File/DataClass/ResultSet.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::ResultSource" : {
          "file" : "lib/File/DataClass/ResultSource.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Schema" : {
          "file" : "lib/File/DataClass/Schema.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Storage" : {
          "file" : "lib/File/DataClass/Storage.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Storage::Any" : {
          "file" : "lib/File/DataClass/Storage/Any.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Storage::JSON" : {
          "file" : "lib/File/DataClass/Storage/JSON.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       },
       "File::DataClass::Types" : {
          "file" : "lib/File/DataClass/Types.pm",
-         "version" : "v0.48.3"
+         "version" : "v0.49.1"
       }
    },
    "release_status" : "stable",
@@ -143,6 +143,6 @@
          "web" : "http://github.com/pjfl/p5-file-dataclass"
       }
    },
-   "version" : "0.48.3"
+   "version" : "0.49.1"
 }
 
