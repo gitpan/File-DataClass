@@ -4,7 +4,7 @@ Name
 
 Version
 
-    This document describes version v0.50.$Rev: 3 $ of File::DataClass
+    This document describes version v0.51.$Rev: 1 $ of File::DataClass
 
 Synopsis
 
@@ -56,8 +56,11 @@ Dependencies
 
 Incompatibilities
 
-    On MSWin32 and Cygwin it is assumed that NTFS is being used and that it
+    On mswin32 and Cygwin it is assumed that NTFS is being used and that it
     does not support mtime so caching on those platforms is disabled
+
+    Due to the absence of an mswin32 environment for testing purposes that
+    platform is not supported
 
 Bugs and Limitations
 
