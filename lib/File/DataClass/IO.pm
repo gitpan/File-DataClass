@@ -9,7 +9,10 @@ use Exporter 5.57              qw( import );
 use Fcntl                      qw( :flock :seek );
 use File::Basename               ( );
 use File::Copy                   ( );
-use File::DataClass::Constants;
+use File::DataClass::Constants qw( CYGWIN EVIL EXCEPTION_CLASS FALSE
+                                   LOCK_BLOCKING LOCK_NONBLOCKING
+                                   NO_UMASK_STACK NUL PERMS STAT_FIELDS
+                                   TILDE TRUE );
 use File::DataClass::Functions qw( first_char is_arrayref is_coderef
                                    is_hashref is_member thread_id throw );
 use File::Spec                   ( );
@@ -35,6 +38,32 @@ my  $IO_TYPE   = enum 'IO_Type' => [ qw( dir file ) ];
 my  $LC_OSNAME = lc $OSNAME;
 my  $NTFS      = $LC_OSNAME eq EVIL || $LC_OSNAME eq CYGWIN ? TRUE : FALSE;
 
+# Private functions
+my $_expand_tilde = sub {
+  (my $path = $_[ 0 ]) =~ m{ \A ([~] [^/\\]*) .* }mx;
+
+   my ($dir) = glob( $1 ); $path =~ s{ \A ([~] [^/\\]*) }{$dir}mx;
+
+   return $path;
+};
+
+my $_coerce_name = sub {
+   my $name = shift;
+
+   not defined $name          and return;
+   is_coderef  $name          and $name =  $name->();
+   blessed     $name          and $name =  "${name}";
+   is_arrayref $name          and $name =  File::Spec->catfile( @{ $name } );
+   curdir eq   $name          and $name =  Cwd::getcwd();
+   first_char  $name eq TILDE and $name =  $_expand_tilde->( $name );
+   length      $name > 1      and $name =~ s{ [/\\] \z }{}mx;
+   return $name;
+};
+
+my $_include_path = sub {
+   return (not defined $_[ 0 ] or (map { $_[ 0 ]->() } ($_[ 1 ]))[ 0 ]);
+};
+
 # Public attributes
 has 'autoclose'     => is => 'lazy', isa => Bool,           default => TRUE  ;
 has 'have_lock'     => is => 'rwp',  isa => Bool,           default => FALSE ;
@@ -42,7 +71,7 @@ has 'io_handle'     => is => 'rwp',  isa => Maybe[Object]                    ;
 has 'is_open'       => is => 'rwp',  isa => Bool,           default => FALSE ;
 has 'mode'          => is => 'rwp',  isa => $IO_MODE,       default => 'r'   ;
 has 'name'          => is => 'rwp',  isa => SimpleStr,      default => NUL,
-   coerce           => \&__coerce_name,                     lazy    => TRUE  ;
+   coerce           => $_coerce_name,                       lazy    => TRUE  ;
 has '_perms'        => is => 'rwp',  isa => PositiveInt,    default => PERMS,
    init_arg         => 'perms'                                               ;
 has 'reverse'       => is => 'lazy', isa => Bool,           default => FALSE ;
@@ -70,24 +99,7 @@ has '_umask'        => is => 'rw',   isa => ArrayRef[Int],
    default          => sub { [] };
 
 # Construction
-around 'BUILDARGS' => sub {
-   my ($orig, $class, @args) = @_; return __build_attr_from( @args );
-};
-
-sub __build_attr_from { # Differentiate constructor method signatures
-   my $n = 0; $n++ while (defined $_[ $n ]);
-
-   return               ( $n == 0 ) ? {}
-        : __is_one_of_us( $_[ 0 ] ) ? __clone_one_of_us( @_ )
-        :     is_hashref( $_[ 0 ] ) ? { %{ $_[ 0 ] } }
-        :               ( $n == 1 ) ? { __inline_args( 1, @_ ) }
-        :     is_hashref( $_[ 1 ] ) ? { name => $_[ 0 ], %{ $_[ 1 ] } }
-        :               ( $n == 2 ) ? { __inline_args( 2, @_ ) }
-        :               ( $n == 3 ) ? { __inline_args( 3, @_ ) }
-                                    : { @_ };
-}
-
-sub __clone_one_of_us {
+my $_clone_one_of_us = sub {
    my ($self, $params) = @_;
 
    $self->autoclose; $self->reverse; $self->sort; # Force evaluation
@@ -97,44 +109,312 @@ sub __clone_one_of_us {
 
    $clone->{perms} //= $perms;
    return $clone;
-}
+};
 
-sub __coerce_name {
-   my $name = shift;
-
-   not defined $name          and return;
-   is_coderef  $name          and $name =  $name->();
-   blessed     $name          and $name =  "${name}";
-   is_arrayref $name          and $name =  File::Spec->catfile( @{ $name } );
-   curdir eq   $name          and $name =  Cwd::getcwd();
-   first_char  $name eq TILDE and $name =  __expand_tilde( $name );
-   length      $name > 1      and $name =~ s{ [/\\] \z }{}mx;
-   return $name;
-}
-
-sub __expand_tilde {
-  (my $path = $_[ 0 ]) =~ m{ \A ([~] [^/\\]*) .* }mx;
-
-   my ($dir) = glob( $1 ); $path =~ s{ \A ([~] [^/\\]*) }{$dir}mx;
-
-   return $path;
-}
-
-sub __inline_args {
+my $_inline_args = sub {
    my $n = shift; return (map { $ARG_NAMES[ $_ ] => $_[ $_ ] } 0 .. $n - 1);
-}
+};
 
-sub __is_one_of_us {
+my $_is_one_of_us = sub {
    return (blessed $_[ 0 ]) && $_[ 0 ]->isa( __PACKAGE__ );
+};
+
+my $_build_attr_from = sub { # Differentiate constructor method signatures
+   my $n = 0; $n++ while (defined $_[ $n ]);
+
+   return                 ( $n == 0 ) ? {}
+        : $_is_one_of_us->( $_[ 0 ] ) ? $_clone_one_of_us->( @_ )
+        :       is_hashref( $_[ 0 ] ) ? { %{ $_[ 0 ] } }
+        :                 ( $n == 1 ) ? { $_inline_args->( 1, @_ ) }
+        :       is_hashref( $_[ 1 ] ) ? { name => $_[ 0 ], %{ $_[ 1 ] } }
+        :                 ( $n == 2 ) ? { $_inline_args->( 2, @_ ) }
+        :                 ( $n == 3 ) ? { $_inline_args->( 3, @_ ) }
+                                      : { @_ };
+};
+
+around 'BUILDARGS' => sub {
+   my ($orig, $class, @args) = @_; return $_build_attr_from->( @args );
+};
+
+sub _build__dir_pattern {
+   my $self = shift; my $pat = NUL;
+
+   my $curdir = curdir; my $updir = File::Spec->updir;
+
+   $curdir and $pat  = "\Q${curdir}\E"; # uncoverable condition left
+   $curdir and $updir and $pat .= '|';  # uncoverable condition left
+   $updir  and $pat .= "\Q${updir}\E";  # uncoverable condition left
+
+   return qr{ \A (?:$pat) \z }mx;
 }
 
-# Public and private methods
+# Private methods
+my $_all_file_contents = sub {
+   my $self = shift; $self->is_open or $self->assert_open;
+
+   local $RS = undef; my $content = $self->io_handle->getline;
+
+   $self->error_check; $self->autoclose and $self->close;
+
+   return $content;
+};
+
+my $_constructor = sub {
+   my $self = shift; return (blessed $self)->new( @_ );
+};
+
+my $_find; $_find = sub {
+   my ($self, $files, $dirs, $level) = @_; my (@all, $io);
+
+   my $filter = $self->_filter; my $follow = not $self->_no_follow;
+
+   defined $level or $level = $self->_deep ? 0 : 1;
+
+   while ($io = $self->next) {
+      my $is_dir = $io->is_dir; defined $is_dir or next;
+
+      (($files and not $is_dir) or ($dirs and $is_dir))
+         and $_include_path->( $filter, $io ) and push @all, $io;
+
+      $is_dir and ($follow or not $io->is_link) and $level != 1
+         and push @all, $io->$_find( $files, $dirs, $level ? $level - 1 : 0 );
+   }
+
+   not $self->sort and return @all;
+
+   return $self->reverse ? reverse sort { $a->name cmp $b->name } @all
+                         :         sort { $a->name cmp $b->name } @all;
+};
+
+my $_get_atomic_path = sub {
+   my $self = shift; my $path = $self->filepath; my $file;
+
+   my $infix = $self->_atomic_infix; my $tid = thread_id;
+
+   $infix =~ m{ \%P }mx and $infix =~ s{ \%P }{$PID}gmx;
+   $infix =~ m{ \%T }mx and $infix =~ s{ \%T }{$tid}gmx;
+
+   if ($infix =~ m{ \* }mx) {
+      my $name = $self->filename; ($file = $infix) =~ s{ \* }{$name}mx;
+   }
+   else { $file = $self->filename.$infix }
+
+   return $path ? File::Spec->catfile( $path, $file ) : $file;
+};
+
+my $_init = sub {
+   my ($self, $type, $name) = @_;
+
+   $self->_set_io_handle( undef );
+   $self->_set_is_open  ( FALSE );
+   $self->_set_name     ( $name ) if ($name);
+   $self->_set_mode     ( 'r'   );
+   $self->_set_type     ( $type );
+
+   return $self;
+};
+
+my $_mkdir_perms = sub { # Take file perms and add execute if read is true
+   my $perms = $_[ 1 ] || $_[ 0 ]->_perms;
+
+   return (($perms & oct '0444') >> 2) | $perms;
+};
+
+my $_push_layer = sub {
+   my ($self, $layer) = @_; $layer //= NUL;
+
+   is_member $layer, $self->_layers and return FALSE;
+   push @{ $self->_layers }, $layer;
+   return TRUE;
+};
+
+my $_sane_binmode = sub {
+   my ($self, $layer) = @_;
+
+   return $layer ? CORE::binmode( $self->io_handle, $layer )
+                 : CORE::binmode( $self->io_handle );
+};
+
+my $_throw = sub {
+   my ($self, @args) = @_; eval { $self->unlock }; throw @args;
+};
+
+my $_umask_pop = sub {
+   my $self = shift; my $perms = $self->_umask->[ -1 ];
+
+   (defined $perms and $perms != NO_UMASK_STACK) or return umask;
+
+   umask pop @{ $self->_umask };
+   return $perms;
+};
+
+my $_umask_push = sub {
+   my ($self, $perms) = @_; $perms or return umask;
+
+   my $first = $self->_umask->[ 0 ];
+
+   defined $first and $first == NO_UMASK_STACK and return umask;
+
+   $perms ^= oct '0777'; push @{ $self->_umask }, umask $perms;
+
+   return $perms;
+};
+
+my $_untainted_perms = sub {
+   my $self = shift; $self->exists or return; my $perms = 0;
+
+   $self->stat->{mode} =~ m{ \A (\d+) \z }mx and $perms = $1;
+
+   return $perms & oct '07777';
+};
+
+my $_assert_open_backwards = sub {
+   my ($self, @args) = @_; $self->is_open and return;
+
+   require File::ReadBackwards;
+
+   $self->_set_io_handle( File::ReadBackwards->new( $self->name, @args ) )
+      or $self->$_throw( 'File [_1] cannot open backwards: [_2]',
+                         [ $self->name, $OS_ERROR ] );
+   $self->_set_is_open( TRUE );
+   $self->_set_mode( 'r' );
+   $self->set_lock;
+   $self->set_binmode;
+   return;
+};
+
+my $_init_type_from_fs = sub {
+   my $self = shift;
+
+   $self->name or $self->$_throw( Unspecified, [ 'path name' ] );
+
+   return -f $self->name ? $self->file : -d _ ? $self->dir : undef;
+};
+
+my $_open_args = sub {
+   my ($self, $mode, $perms) = @_;
+
+   $self->name or $self->$_throw( Unspecified, [ 'path name' ] );
+
+   my $pathname = $self->_atomic && !$self->is_reading( $mode )
+                ? $self->$_get_atomic_path : $self->name;
+
+   $perms = $self->$_untainted_perms || $perms || $self->_perms;
+
+   return ($pathname, $self->_set_mode( $mode ), $self->_set__perms( $perms ));
+};
+
+my $_open_dir = sub {
+   my ($self, $path) = @_;
+
+   $self->_assert and $self->assert_dirpath( $path );
+   $self->_set_io_handle( IO::Dir->new( $path ) )
+      or $self->$_throw( 'Directory [_1] cannot open', [ $path ] );
+   $self->_set_is_open( TRUE );
+   return $self;
+};
+
+my $_open_file = sub {
+   my ($self, $path, $mode, $perms) = @_;
+
+   $self->_assert and $self->assert_filepath; $self->$_umask_push( $perms );
+
+   unless ($self->_set_io_handle( IO::File->new( $path, $mode ) )) {
+      $self->$_umask_pop;
+      $self->$_throw( 'File [_1] cannot open', [ $path ] );
+   }
+
+   $self->$_umask_pop;
+   # TODO: Not necessary on normal systems
+   $self->is_writing and CORE::chmod $perms, $path;
+   $self->_set_is_open( TRUE );
+   $self->set_lock;
+   $self->set_binmode;
+   return $self;
+};
+
+my $_print = sub {
+   my ($self, @args) = @_;
+
+   for (@args) {
+      print {$self->io_handle} $_
+         or $self->$_throw( 'IO error: [_1]', [ $OS_ERROR ] );
+   }
+
+   return $self;
+};
+
+my $_rename_atomic = sub {
+   my $self = shift; my $path = $self->$_get_atomic_path; -f $path or return;
+
+   File::Copy::move( $path, $self->name ) and return;
+
+   $NTFS or $self->$_throw( 'Path [_1] move to [_2] failed: [_3]',
+                           [ $path, $self->name, $OS_ERROR ] );
+
+   # Try this instead on ntfs
+   warn 'NTFS: Path '.$self->name." move failure: ${OS_ERROR}\n";
+   eval { unlink $self->name }; my $os_error;
+   File::Copy::copy( $path, $self->name ) or $os_error = $OS_ERROR;
+   eval { unlink $path };
+   $os_error and $self->$_throw( 'Path [_1] copy to [_2] failed: [_3]',
+                                [ $path, $self->name, $os_error ] );
+   return;
+};
+
+my $_close_and_rename = sub { # This creates a race condition
+   # uncoverable subroutine
+   my $self = shift; # uncoverable statement
+
+   my $handle; $self->unlock;
+
+   if ($handle = $self->io_handle) { $handle->close; delete $self->{io_handle} }
+
+   $self->_atomic and $self->$_rename_atomic;
+
+   return $self;
+};
+
+my $_getline_backwards = sub {
+   my ($self, @args) = @_; $self->$_assert_open_backwards( @args );
+
+   return $self->io_handle->readline;
+};
+
+my $_println = sub {
+   return shift->$_print( map { m{ [\n] \z }mx ? ($_) : ($_, "\n") } @_ );
+};
+
+my $_rename_and_close = sub { # This does not create a race condition
+   my $self = shift; my $handle;
+
+   $self->_atomic and $self->$_rename_atomic; $self->unlock;
+
+   if ($handle = $self->io_handle) { $handle->close; delete $self->{io_handle} }
+
+   return $self;
+};
+
+my $_getlines_backwards = sub {
+   my $self = shift; my (@lines, $line);
+
+   while (defined ($line = $self->$_getline_backwards)) { push @lines, $line }
+
+   return @lines;
+};
+
+# Exported functions
+sub io (;@) {
+   return __PACKAGE__->new( @_ );
+}
+
+# Public methods
 sub abs2rel {
    return File::Spec->abs2rel( $_[ 0 ]->name, $_[ 1 ] );
 }
 
 sub absolute {
-   my ($self, $base) = @_; $base and $base = __coerce_name( $base );
+   my ($self, $base) = @_; $base and $base = $_coerce_name->( $base );
 
    $self->_set_name( $self->name ? $self->rel2abs( $base ) : $base );
    return $self;
@@ -143,27 +423,17 @@ sub absolute {
 sub all {
    my ($self, $level) = @_;
 
-   $self->is_dir and return $self->_find( TRUE, TRUE, $level );
+   $self->is_dir and return $self->$_find( TRUE, TRUE, $level );
 
-   return $self->_all_file_contents;
+   return $self->$_all_file_contents;
 }
 
 sub all_dirs {
-   return $_[ 0 ]->_find( FALSE, TRUE, $_[ 1 ] );
+   return $_[ 0 ]->$_find( FALSE, TRUE, $_[ 1 ] );
 }
 
 sub all_files {
-   return $_[ 0 ]->_find( TRUE, FALSE, $_[ 1 ] );
-}
-
-sub _all_file_contents {
-   my $self = shift; $self->is_open or $self->assert_open;
-
-   local $RS = undef; my $content = $self->io_handle->getline;
-
-   $self->error_check; $self->autoclose and $self->close;
-
-   return $content;
+   return $_[ 0 ]->$_find( TRUE, FALSE, $_[ 1 ] );
 }
 
 sub append {
@@ -172,7 +442,7 @@ sub append {
    if ($self->is_open and not $self->is_reading) { $self->seek( 0, SEEK_END ) }
    else { $self->assert_open( 'a' ) }
 
-   return $self->_print( @args );
+   return $self->$_print( @args );
 }
 
 sub appendln {
@@ -181,7 +451,7 @@ sub appendln {
    if ($self->is_open and not $self->is_reading) { $self->seek( 0, SEEK_END ) }
    else { $self->assert_open( 'a' ) }
 
-   return $self->_println( @args );
+   return $self->$_println( @args );
 }
 
 sub assert {
@@ -193,7 +463,7 @@ sub assert_dirpath {
 
    $dir_name or return; -d $dir_name and return $dir_name;
 
-   my $perms = $self->_mkdir_perms; $self->_umask_push( oct '07777' );
+   my $perms = $self->$_mkdir_perms; $self->$_umask_push( oct '07777' );
 
    unless (CORE::mkdir( $dir_name, $perms )) {
       require File::Path;
@@ -201,18 +471,18 @@ sub assert_dirpath {
       File::Path::make_path( $dir_name, { mode => $perms } );
    }
 
-   $self->_umask_pop;
+   $self->$_umask_pop;
 
    # uncoverable branch true
-   -d $dir_name or $self->_throw( error => 'Path [_1] cannot create: [_2]',
-                                  args  => [ $dir_name, $OS_ERROR ] );
+   -d $dir_name or $self->$_throw( 'Path [_1] cannot create: [_2]',
+                                  [ $dir_name, $OS_ERROR ] );
    return $dir_name;
 }
 
 sub assert_filepath {
    my $self = shift; my $dir;
 
-   $self->name or $self->_throw( class => Unspecified, args => [ 'path name' ]);
+   $self->name or $self->$_throw( Unspecified, [ 'path name' ] );
 
    (undef, $dir) = File::Spec->splitpath( $self->name );
 
@@ -222,21 +492,6 @@ sub assert_filepath {
 
 sub assert_open {
    return $_[ 0 ]->open( $_[ 1 ] || 'r', $_[ 2 ] );
-}
-
-sub _assert_open_backwards {
-   my ($self, @args) = @_; $self->is_open and return;
-
-   require File::ReadBackwards;
-
-   $self->_set_io_handle( File::ReadBackwards->new( $self->name, @args ) )
-      or $self->_throw( error => 'File [_1] cannot open backwards: [_2]',
-                        args  => [ $self->name, $OS_ERROR ] );
-   $self->_set_is_open( TRUE );
-   $self->_set_mode( 'r' );
-   $self->set_lock;
-   $self->set_binmode;
-   return;
 }
 
 sub atomic {
@@ -264,7 +519,7 @@ sub basename {
 sub binary {
    my $self = shift;
 
-   $self->_push_layer( ':raw' ) and $self->is_open and $self->_sane_binmode;
+   $self->$_push_layer( ':raw' ) and $self->is_open and $self->$_sane_binmode;
 
    return $self;
 }
@@ -272,8 +527,8 @@ sub binary {
 sub binmode {
    my ($self, $layer) = @_;
 
-   $self->_push_layer( $layer )
-      and $self->is_open and $self->_sane_binmode( $layer );
+   $self->$_push_layer( $layer )
+      and $self->is_open and $self->$_sane_binmode( $layer );
 
    return $self;
 }
@@ -298,18 +553,6 @@ sub buffer {
    return $self->{buffer};
 }
 
-sub _build__dir_pattern {
-   my $self = shift; my $pat = NUL;
-
-   my $curdir = curdir; my $updir = File::Spec->updir;
-
-   $curdir and $pat  = "\Q${curdir}\E"; # uncoverable condition left
-   $curdir and $updir and $pat .= '|';  # uncoverable condition left
-   $updir  and $pat .= "\Q${updir}\E";  # uncoverable condition left
-
-   return qr{ \A (?:$pat) \z }mx;
-}
-
 sub canonpath {
    return File::Spec->canonpath( $_[ 0 ]->name );
 }
@@ -320,7 +563,7 @@ sub catdir {
    my $params = (is_hashref $rest[ -1 ]) ? pop @rest : {};
    my $args   = [ grep { defined and length } $self->name, @rest ];
 
-   return $self->_constructor( $args, $params )->dir;
+   return $self->$_constructor( $args, $params )->dir;
 }
 
 sub catfile {
@@ -329,7 +572,7 @@ sub catfile {
    my $params = (is_hashref $rest[ -1 ]) ? pop @rest : {};
    my $args   = [ grep { defined and length } $self->name, @rest ];
 
-   return $self->_constructor( $args, $params )->file;
+   return $self->$_constructor( $args, $params )->file;
 }
 
 sub chmod {
@@ -348,11 +591,11 @@ sub chown {
    my ($self, $uid, $gid) = @_;
 
    (defined $uid and defined $gid)
-      or $self->_throw( class => Unspecified, args => [ 'user or group id' ] );
+      or $self->$_throw( Unspecified, [ 'user or group id' ] );
 
    1 == CORE::chown $uid, $gid, $self->name
-      or $self->_throw( error => 'Path [_1 chown failed to [_2]/[_3]',
-                        args  => [ $self->name, $uid, $gid ] );
+      or $self->$_throw( 'Path [_1 chown failed to [_2]/[_3]',
+                        [ $self->name, $uid, $gid ] );
    return $self;
 }
 
@@ -363,7 +606,7 @@ sub clear {
 sub close {
    my $self = shift; $self->is_open or return $self;
 
-   if ($NTFS) { $self->_close_and_rename } else { $self->_rename_and_close }
+   if ($NTFS) { $self->$_close_and_rename } else { $self->$_rename_and_close }
 
    $self->_set_io_handle( undef );
    $self->_set_is_open  ( FALSE );
@@ -371,50 +614,23 @@ sub close {
    return $self;
 }
 
-sub _close_and_rename { # This creates a race condition
-   # uncoverable subroutine
-   my $self = shift; # uncoverable statement
-
-   my $handle; $self->unlock;
-
-   if ($handle = $self->io_handle) { $handle->close; delete $self->{io_handle} }
-
-   $self->_atomic and $self->_rename_atomic;
-
-   return $self;
-}
-
-sub _rename_and_close { # This does not create a race condition
-   my $self = shift; my $handle;
-
-   $self->_atomic and $self->_rename_atomic; $self->unlock;
-
-   if ($handle = $self->io_handle) { $handle->close; delete $self->{io_handle} }
-
-   return $self;
-}
-
-sub _constructor {
-   my $self = shift; return (blessed $self)->new( @_ );
-}
-
 sub copy {
    my ($self, $to) = @_;
 
-   $to or $self->_throw( class => Unspecified, args => [ 'copy to' ] );
+   $to or $self->$_throw( Unspecified, [ 'copy to' ] );
 
    (blessed $to and $to->isa( __PACKAGE__ ))
-      or $to = $self->_constructor( $to );
+      or $to = $self->$_constructor( $to );
 
    File::Copy::copy( $self->name, $to->pathname )
-      or $self->_throw( error => 'Cannot copy [_1] to [_2]',
-                        args  => [ $self->name, $to->pathname ] );
+      or $self->$_throw( 'Cannot copy [_1] to [_2]',
+                         [ $self->name, $to->pathname ] );
 
    return $to;
 }
 
 sub cwd {
-   my $self = shift; return $self->_constructor( Cwd::getcwd(), @_ );
+   my $self = shift; return $self->$_constructor( Cwd::getcwd(), @_ );
 }
 
 sub deep {
@@ -422,7 +638,7 @@ sub deep {
 }
 
 sub delete {
-   my $self = shift; my $path = $self->_get_atomic_path;
+   my $self = shift; my $path = $self->$_get_atomic_path;
 
    $self->_atomic and -f $path and unlink $path;
 
@@ -445,8 +661,30 @@ sub DEMOLISH {
    $_[ 0 ]->_atomic ? $_[ 0 ]->delete : $_[ 0 ]->close; return;
 }
 
+sub digest { # Robbed from Path::Tiny
+   my ($self, @args) = @_; my $n = 0; $n++ while (defined $args[ $n ]);
+
+   my $args = (              $n == 0) ? { algorithm => 'SHA-256'  }
+            : (is_hashref $args[ 0 ]) ? { algorithm => 'SHA-256',
+                                          %{ $args[ 0 ] } }
+            : (              $n == 1) ? { algorithm => $args[ 0 ] }
+                                      : { algorithm => $args[ 0 ],
+                                          %{ $args[ 1 ] } };
+
+   require Digest; my $digest = Digest->new( $args->{algorithm} );
+
+   if ($args->{block_size}) {
+      $self->binmode( ':unix' )->lock->block_size( $args->{block_size} );
+
+      while ($self->read) { $digest->add( ${ $self->buffer } ); $self->clear; }
+   }
+   else { $digest->add( $self->binmode( ':unix' )->lock->all ) }
+
+   return $digest->hexdigest;
+}
+
 sub dir {
-   return shift->_init( 'dir', @_ );
+   return shift->$_init( 'dir', @_ );
 }
 
 sub dirname {
@@ -456,10 +694,9 @@ sub dirname {
 sub encoding {
    my ($self, $encoding) = @_;
 
-   $encoding or $self->_throw
-      ( class => Unspecified, args => [ 'encoding value' ] );
-   $self->_push_layer( ":encoding($encoding)" )
-      and $self->is_open and $self->_sane_binmode( ":encoding($encoding)" );
+   $encoding or $self->$_throw( Unspecified, [ 'encoding value' ] );
+   $self->$_push_layer( ":encoding($encoding)" )
+      and $self->is_open and $self->$_sane_binmode( ":encoding($encoding)" );
    return $self;
 }
 
@@ -468,7 +705,7 @@ sub error_check {
 
    $self->io_handle->can( 'error' ) or return;
    $self->io_handle->error or return;
-   $self->_throw( error => 'IO error: [_1]', args => [ $OS_ERROR ] );
+   $self->$_throw( 'IO error: [_1]', [ $OS_ERROR ] );
    return;
 }
 
@@ -477,7 +714,7 @@ sub exists {
 }
 
 sub file {
-   return shift->_init( 'file', @_ );
+   return shift->$_init( 'file', @_ );
 }
 
 sub filename {
@@ -498,49 +735,10 @@ sub filter {
    defined $_[ 1 ] and $_[ 0 ]->_filter( $_[ 1 ] ); return $_[ 0 ];
 }
 
-sub _find {
-   my ($self, $files, $dirs, $level) = @_; my (@all, $io);
-
-   my $filter = $self->_filter; my $follow = not $self->_no_follow;
-
-   defined $level or $level = $self->_deep ? 0 : 1;
-
-   while ($io = $self->next) {
-      my $is_dir = $io->is_dir; defined $is_dir or next;
-
-      (($files and not $is_dir) or ($dirs and $is_dir))
-         and __include_path( $filter, $io ) and push @all, $io;
-
-      $is_dir and ($follow or not $io->is_link) and $level != 1
-         and push @all, $io->_find( $files, $dirs, $level ? $level - 1 : 0 );
-   }
-
-   not $self->sort and return @all;
-
-   return $self->reverse ? reverse sort { $a->name cmp $b->name } @all
-        :                          sort { $a->name cmp $b->name } @all;
-}
-
-sub _get_atomic_path {
-   my $self = shift; my $path = $self->filepath; my $file;
-
-   my $infix = $self->_atomic_infix; my $tid = thread_id;
-
-   $infix =~ m{ \%P }mx and $infix =~ s{ \%P }{$PID}gmx;
-   $infix =~ m{ \%T }mx and $infix =~ s{ \%T }{$tid}gmx;
-
-   if ($infix =~ m{ \* }mx) {
-      my $name = $self->filename; ($file = $infix) =~ s{ \* }{$name}mx;
-   }
-   else { $file = $self->filename.$infix }
-
-   return $path ? File::Spec->catfile( $path, $file ) : $file;
-}
-
 sub getline {
    my ($self, $separator) = @_;
 
-   $self->_backwards and return $self->_getline_backwards;
+   $self->_backwards and return $self->$_getline_backwards;
 
    my $line; $self->assert_open;
 
@@ -555,16 +753,10 @@ sub getline {
    return;
 }
 
-sub _getline_backwards {
-   my ($self, @args) = @_; $self->_assert_open_backwards( @args );
-
-   return $self->io_handle->readline;
-}
-
 sub getlines {
    my ($self, $separator) = @_;
 
-   $self->_backwards and return $self->_getlines_backwards;
+   $self->_backwards and return $self->$_getlines_backwards;
 
    my @lines; $self->assert_open;
 
@@ -580,14 +772,6 @@ sub getlines {
    return ();
 }
 
-sub _getlines_backwards {
-   my $self = shift; my @lines;
-
-   while (defined (my $line = $self->_getline_backwards)) { push @lines, $line }
-
-   return @lines;
-}
-
 sub head {
    my ($self, $lines) = @_; my @res; $lines //= 10; $self->close;
 
@@ -599,34 +783,6 @@ sub head {
    return wantarray ? @res : join NUL, @res;
 }
 
-sub __include_path {
-   return (not defined $_[ 0 ] or (map { $_[ 0 ]->() } ($_[ 1 ]))[ 0 ]);
-}
-
-sub _init {
-   my ($self, $type, $name) = @_;
-
-   $self->_set_io_handle( undef );
-   $self->_set_is_open  ( FALSE );
-   $self->_set_name     ( $name ) if ($name);
-   $self->_set_mode     ( 'r'   );
-   $self->_set_type     ( $type );
-
-   return $self;
-}
-
-sub _init_type_from_fs {
-   my $self = shift;
-
-   $self->name or $self->_throw( class => Unspecified, args => [ 'path name' ]);
-
-   return -f $self->name ? $self->file : -d _ ? $self->dir : undef;
-}
-
-sub io (;@) { # Exported function
-   return __PACKAGE__->new( @_ );
-}
-
 sub is_absolute {
    return File::Spec->file_name_is_absolute( $_[ 0 ]->name );
 }
@@ -634,7 +790,7 @@ sub is_absolute {
 sub is_dir {
    my $self = shift; $self->name or return FALSE;
 
-   $self->type or $self->_init_type_from_fs or return FALSE;
+   $self->type or $self->$_init_type_from_fs or return FALSE;
 
    return $self->type eq 'dir' ? TRUE : FALSE;
 }
@@ -642,7 +798,7 @@ sub is_dir {
 sub is_empty {
    my $self = shift; my $name = $self->name; my $empty;
 
-   $self->exists  or  $self->_throw( class => PathNotFound, args => [ $name ] );
+   $self->exists  or  $self->$_throw( PathNotFound, [ $name ] );
    $self->is_file and return -z $name ? TRUE : FALSE;
    $empty = $self->next ? FALSE : TRUE; $self->close;
    return $empty;
@@ -657,7 +813,7 @@ sub is_executable {
 sub is_file {
    my $self = shift; $self->name or return FALSE;
 
-   $self->type or $self->_init_type_from_fs;
+   $self->type or $self->$_init_type_from_fs;
 
    return $self->type && $self->type eq 'file' ? TRUE : FALSE;
 }
@@ -694,7 +850,7 @@ sub iterator {
          while (defined (my $path = $dirs[ 0 ]->next)) {
             $deep and $path->is_dir and ($follow or not $path->is_link)
                and unshift @dirs, $path;
-            __include_path( $filter, $path ) and return $path;
+            $_include_path->( $filter, $path ) and return $path;
          }
 
          shift @dirs;
@@ -713,50 +869,44 @@ sub lock {
 }
 
 sub mkdir {
-   my ($self, $perms) = @_; $perms ||= $self->_mkdir_perms;
+   my ($self, $perms) = @_; $perms ||= $self->$_mkdir_perms;
 
-   $self->_umask_push( oct '07777' );
+   $self->$_umask_push( oct '07777' );
 
    CORE::mkdir( $self->name, $perms );
 
-   $self->_umask_pop;
+   $self->$_umask_pop;
 
-   -d $self->name or $self->_throw( error => 'Path [_1] cannot create: [_2]',
-                                    args  => [ $self->name, $OS_ERROR ] );
+   -d $self->name or $self->$_throw( 'Path [_1] cannot create: [_2]',
+                                     [ $self->name, $OS_ERROR ] );
    return $self;
 }
 
-sub _mkdir_perms {
-   my $perms = $_[ 1 ] || $_[ 0 ]->_perms;
-
-   return (($perms & oct '0444') >> 2) | $perms;
-}
-
 sub mkpath {
-   my ($self, $perms) = @_; $perms ||= $self->_mkdir_perms;
+   my ($self, $perms) = @_; $perms ||= $self->$_mkdir_perms;
 
-   $self->_umask_push( oct '07777' ); require File::Path;
+   $self->$_umask_push( oct '07777' ); require File::Path;
 
    File::Path::make_path( $self->name, { mode => $perms } );
 
-   $self->_umask_pop;
+   $self->$_umask_pop;
 
-   -d $self->name or $self->_throw( error => 'Path [_1] cannot create: [_2]',
-                                    args  => [ $self->name, $OS_ERROR ] );
+   -d $self->name or $self->$_throw( 'Path [_1] cannot create: [_2]',
+                                     [ $self->name, $OS_ERROR ] );
    return $self;
 }
 
 sub move {
    my ($self, $to) = @_;
 
-   $to or $self->_throw( class => Unspecified, args => [ 'move to' ] );
+   $to or $self->$_throw( Unspecified, [ 'move to' ] );
 
    (blessed $to and $to->isa( __PACKAGE__ ))
-      or $to = $self->_constructor( $to );
+      or $to = $self->$_constructor( $to );
 
    File::Copy::move( $self->name, $to->pathname )
-      or $self->_throw( error => 'Cannot move [_1] to [_2]',
-                        args  => [ $self->name, $to->pathname ] );
+      or $self->$_throw( 'Cannot move [_1] to [_2]',
+                         [ $self->name, $to->pathname ] );
 
    return $to;
 }
@@ -764,7 +914,7 @@ sub move {
 sub next {
    my $self = shift; defined (my $name = $self->read_dir) or return;
 
-   my $io = $self->_constructor( [ $self->name, $name ], {
+   my $io = $self->$_constructor( [ $self->name, $name ], {
       reverse => $self->reverse, sort => $self->sort } );
 
    defined $self->_filter and $io->filter( $self->_filter );
@@ -787,61 +937,18 @@ sub open {
       and '+' eq (substr $self->mode, 1, 1) || NUL
       and $self->seek( 0, SEEK_SET )
       and return $self;
-   $self->type or $self->_init_type_from_fs; $self->type or $self->file;
+   $self->type or $self->$_init_type_from_fs; $self->type or $self->file;
    $self->is_open and $self->close;
 
    return $self->is_dir
-        ? $self->_open_dir ( $self->_open_args( $mode, $perms ) )
-        : $self->_open_file( $self->_open_args( $mode, $perms ) );
-}
-
-sub _open_args {
-   my ($self, $mode, $perms) = @_;
-
-   $self->name or $self->_throw( class => Unspecified, args => [ 'path name' ]);
-
-   my $pathname = $self->_atomic && !$self->is_reading( $mode )
-                ? $self->_get_atomic_path : $self->name;
-
-   $perms = $self->_untainted_perms || $perms || $self->_perms;
-
-   return ($pathname, $self->_set_mode( $mode ), $self->_set__perms( $perms ));
-}
-
-sub _open_dir {
-   my ($self, $path) = @_;
-
-   $self->_assert and $self->assert_dirpath( $path );
-   $self->_set_io_handle( IO::Dir->new( $path ) )
-      or $self->_throw( error => 'Directory [_1] cannot open',
-                        args  => [ $path ] );
-   $self->_set_is_open( TRUE );
-   return $self;
-}
-
-sub _open_file {
-   my ($self, $path, $mode, $perms) = @_;
-
-   $self->_assert and $self->assert_filepath; $self->_umask_push( $perms );
-
-   unless ($self->_set_io_handle( IO::File->new( $path, $mode ) )) {
-      $self->_umask_pop;
-      $self->_throw( error => 'File [_1] cannot open', args => [ $path ] );
-   }
-
-   $self->_umask_pop;
-   # TODO: Not necessary on normal systems
-   $self->is_writing and CORE::chmod $perms, $path;
-   $self->_set_is_open( TRUE );
-   $self->set_lock;
-   $self->set_binmode;
-   return $self;
+        ? $self->$_open_dir ( $self->$_open_args( $mode, $perms ) )
+        : $self->$_open_file( $self->$_open_args( $mode, $perms ) );
 }
 
 sub parent {
    my ($self, $count) = @_; my $parent = $self; $count ||= 1;
 
-   $parent = $self->_constructor( $parent->dirname ) while ($count--);
+   $parent = $self->$_constructor( $parent->dirname ) while ($count--);
 
    return $parent;
 }
@@ -855,34 +962,11 @@ sub perms {
 }
 
 sub print {
-   return shift->assert_open( 'w' )->_print( @_ );
-}
-
-sub _print {
-   my ($self, @args) = @_;
-
-   for (@args) {
-      print {$self->io_handle} $_
-         or $self->_throw( error => 'IO error: [_1]', args => [ $OS_ERROR ] );
-   }
-
-   return $self;
+   return shift->assert_open( 'w' )->$_print( @_ );
 }
 
 sub println {
-   return shift->assert_open( 'w' )->_println( @_ );
-}
-
-sub _println {
-   return shift->_print( map { m{ [\n] \z }mx ? ($_) : ($_, "\n") } @_ );
-}
-
-sub _push_layer {
-   my ($self, $layer) = @_; $layer //= NUL;
-
-   is_member $layer, $self->_layers and return FALSE;
-   push @{ $self->_layers }, $layer;
-   return TRUE;
+   return shift->assert_open( 'w' )->$_println( @_ );
 }
 
 sub read {
@@ -930,24 +1014,6 @@ sub relative {
    $_[ 0 ]->_set_name( $_[ 0 ]->abs2rel ); return $_[ 0 ];
 }
 
-sub _rename_atomic {
-   my $self = shift; my $path = $self->_get_atomic_path; -f $path or return;
-
-   File::Copy::move( $path, $self->name ) and return;
-
-   $NTFS or $self->_throw( error => 'Path [_1] move to [_2] failed: [_3]',
-                           args  => [ $path, $self->name, $OS_ERROR ] );
-
-   # Try this instead on Winshite
-   warn 'NTFS: Path '.$self->name." move failure: ${OS_ERROR}\n";
-   eval { unlink $self->name }; my $os_error;
-   File::Copy::copy( $path, $self->name ) or $os_error = $OS_ERROR;
-   eval { unlink $path };
-   $os_error and $self->_throw( error => 'Path [_1] copy to [_2] failed: [_3]',
-                                args  => [ $path, $self->name, $os_error ] );
-   return;
-}
-
 sub reset {
    my $self = shift; $self->close;
 
@@ -960,8 +1026,8 @@ sub rmdir {
    my $self = shift;
 
    CORE::rmdir $self->name
-      or $self->_throw( error => 'Path [_1] not removed: [_2]',
-                        args  => [ $self->name, $OS_ERROR ] );
+      or $self->$_throw( 'Path [_1] not removed: [_2]',
+                         [ $self->name, $OS_ERROR ] );
    return $self;
 }
 
@@ -969,13 +1035,6 @@ sub rmtree {
    my ($self, @args) = @_; require File::Path;
 
    return File::Path::remove_tree( $self->name, @args );
-}
-
-sub _sane_binmode {
-   my ($self, $layer) = @_;
-
-   return $layer ? CORE::binmode( $self->io_handle, $layer )
-                 : CORE::binmode( $self->io_handle );
 }
 
 sub seek {
@@ -998,7 +1057,7 @@ sub set_binmode {
       is_member NUL, $self->_layers or unshift @{ $self->_layers }, NUL;
    }
 
-   $self->_sane_binmode( $_ ) for (@{ $self->_layers });
+   $self->$_sane_binmode( $_ ) for (@{ $self->_layers });
 
    return $self;
 }
@@ -1051,7 +1110,7 @@ sub substitute {
 
    $search or return $self; $replace ||= NUL;
 
-   my $wtr = io( $self->name )->perms( $self->_untainted_perms )->atomic;
+   my $wtr = io( $self->name )->perms( $self->$_untainted_perms )->atomic;
 
    for ($self->getlines) { s{ $search }{$replace}gmx; $wtr->print( $_ ) }
 
@@ -1063,7 +1122,7 @@ sub tail {
    my ($self, $lines, @args) = @_; my @res; $lines //= 10; $self->close;
 
    while ($lines--) {
-      unshift @res, ($self->_getline_backwards( @args ) or last);
+      unshift @res, ($self->$_getline_backwards( @args ) or last);
    }
 
    $self->close;
@@ -1079,7 +1138,7 @@ sub tempfile {
    $tmpfh   = File::Temp->new
       ( DIR => $tempdir, TEMPLATE => (sprintf $tmplt, $PID) );
 
-   my $t = $self->_constructor( $tmpfh->filename )->file;
+   my $t = $self->$_constructor( $tmpfh->filename )->file;
 
    $t->_set_io_handle( $tmpfh );
    $t->_set_is_open( TRUE );
@@ -1087,40 +1146,13 @@ sub tempfile {
    return $t;
 }
 
-sub _throw {
-   my ($self, @args) = @_; eval { $self->unlock }; throw @args;
-
-   return; # Not reached
-}
-
 sub touch {
    my ($self, $time) = @_; $self->name or return; $time //= time;
 
-   -e $self->name or $self->_open_file( $self->_open_args( 'w' ) )->close;
+   -e $self->name or $self->$_open_file( $self->$_open_args( 'w' ) )->close;
 
    utime $time, $time, $self->name;
    return $self;
-}
-
-sub _umask_pop {
-   my $self = shift; my $perms = $self->_umask->[ -1 ];
-
-   (defined $perms and $perms != NO_UMASK_STACK) or return umask;
-
-   umask pop @{ $self->_umask };
-   return $perms;
-}
-
-sub _umask_push {
-   my ($self, $perms) = @_; $perms or return umask;
-
-   my $first = $self->_umask->[ 0 ];
-
-   defined $first and $first == NO_UMASK_STACK and return umask;
-
-   $perms ^= oct '0777'; push @{ $self->_umask }, umask $perms;
-
-   return $perms;
 }
 
 sub unlink {
@@ -1135,14 +1167,6 @@ sub unlock {
 
    $self->_set_have_lock( FALSE );
    return $self;
-}
-
-sub _untainted_perms {
-   my $self = shift; $self->exists or return; my $perms = 0;
-
-   $self->stat->{mode} =~ m{ \A (\d+) \z }mx and $perms = $1;
-
-   return $perms & oct '07777';
 }
 
 sub utf8 {
@@ -1530,6 +1554,18 @@ the template filename pattern if required
 
 If this is an atomic file update calls the L</delete> method. If the
 object is still open it calls the L</close> method
+
+=head2 digest
+
+   $hex_digest = io( 'path_to_file' )->digest( $algorithm, $options );
+
+Returns a hexadecimal string which is calculated from the contents of the
+specified file. The arguments are optional. The algorithm defaults to
+C<SHA-256>. The C<$options> hash reference takes the C<block_size> parameter
+which causes the file to read through the buffer C<block_size> bytes at a
+time
+
+This was robbed from L<Path::Tiny>
 
 =head2 dir
 
@@ -1921,7 +1957,7 @@ and the temporary directory defaults to F</tmp>
 
 =head2 _throw
 
-   io( 'path_to_file' )->_throw( error => 'message', args => [] );
+   io( 'path_to_file' )->_throw( 'message', [] );
 
 Exposes the C<throw> method in the exception class
 

@@ -4,7 +4,7 @@ use 5.01;
 use namespace::autoclean;
 
 use Moo;
-use File::DataClass::Constants;
+use File::DataClass::Constants qw( FALSE NUL SPC TRUE );
 use File::DataClass::Functions qw( merge_attributes throw );
 use File::DataClass::Types     qw( Bool Cache ClassName HashRef
                                    LoadableClass Object Str );
@@ -18,14 +18,27 @@ has 'cache_attributes' => is => 'ro',   isa => HashRef, default => sub { {} };
 has 'cache_class'      => is => 'lazy', isa => LoadableClass,
    default             => 'Cache::FastMmap';
 
-has 'debug'            => is => 'ro',   isa => Bool, default => FALSE;
-
 has 'log'              => is => 'ro',   isa => Object,
    default             => sub { Class::Null->new };
 
 
 has '_mtimes_key'      => is => 'ro',   isa => Str, default => '_mtimes';
 
+# Private methods
+my $_get_key_and_newest = sub {
+   my ($self, $paths) = @_; my $newest = 0; my $valid = TRUE;  my $key;
+
+   for my $path (grep { length } map { "${_}" } @{ $paths }) {
+      $key .= $key ? "~${path}" : $path; my $mtime = $self->get_mtime( $path );
+
+      if ($mtime) { $mtime > $newest and $newest = $mtime }
+      else { $valid = FALSE }
+   }
+
+   return ($key, $valid ? $newest : undef);
+};
+
+# Construction
 around 'BUILDARGS' => sub {
    my ($orig, $class, @args) = @_; my $attr = $orig->( $class, @args );
 
@@ -36,7 +49,7 @@ around 'BUILDARGS' => sub {
 
    my $builder = delete $attr->{builder} or return $attr;
 
-   merge_attributes $attr, $builder, [ qw( debug log ) ];
+   merge_attributes $attr, $builder, [ 'log' ];
 
    return $attr;
 };
@@ -53,7 +66,7 @@ sub get {
 
 sub get_by_paths {
    my ($self, $paths) = @_;
-   my ($key, $newest) = $self->_get_key_and_newest( $paths );
+   my ($key, $newest) = $self->$_get_key_and_newest( $paths );
 
    return ($self->get( $key ), $newest);
 }
@@ -80,9 +93,9 @@ sub set {
    $meta //= { mtime => undef }; # uncoverable condition false
 
    try {
-      $key eq $self->_mtimes_key and throw error => 'key not allowed';
+      $key eq $self->_mtimes_key and throw 'key not allowed';
       $self->cache->set( $key, { data => $data, meta => $meta } )
-         or throw error => 'set operation returned false';
+         or throw 'set operation returned false';
       $self->set_mtime( $key, $meta->{mtime} );
    }
    catch { $self->log->error( "Cache key ${key} set failed - ${_}" ) };
@@ -93,7 +106,7 @@ sub set {
 sub set_by_paths {
    my ($self, $paths, $data, $meta) = @_;
 
-   my ($key, $newest) = $self->_get_key_and_newest( $paths );
+   my ($key, $newest) = $self->$_get_key_and_newest( $paths );
 
    $meta //= {}; # uncoverable condition false
    $meta->{mtime} = $newest;
@@ -110,20 +123,6 @@ sub set_mtime {
 
       return $mtimes;
    } );
-}
-
-# Private methods
-sub _get_key_and_newest {
-   my ($self, $paths) = @_; my $newest = 0; my $valid = TRUE;  my $key;
-
-   for my $path (grep { length } map { "${_}" } @{ $paths }) {
-      $key .= $key ? "~${path}" : $path; my $mtime = $self->get_mtime( $path );
-
-      if ($mtime) { $mtime > $newest and $newest = $mtime }
-      else { $valid = FALSE }
-   }
-
-   return ($key, $valid ? $newest : undef);
 }
 
 1;
@@ -186,10 +185,6 @@ A hash ref passed to the L<CHI> constructor
 =item C<cache_class>
 
 The class name of the cache object, defaults to L<CHI>
-
-=item C<debug>
-
-Boolean which defaults to false
 
 =item C<log>
 

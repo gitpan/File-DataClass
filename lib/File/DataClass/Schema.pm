@@ -5,7 +5,7 @@ use namespace::autoclean;
 use Moo;
 use Class::Null;
 use File::DataClass::Cache;
-use File::DataClass::Constants;
+use File::DataClass::Constants qw( EXCEPTION_CLASS FALSE NUL PERMS TRUE );
 use File::DataClass::Functions qw( ensure_class_loaded first_char
                                    qualify_storage_class map_extension2class
                                    merge_attributes supported_extensions
@@ -31,8 +31,6 @@ has 'cache_attributes'         => is => 'ro',   isa => HashRef,
 
 has 'cache_class'              => is => 'ro',   isa => ClassName | DummyClass,
    default                     => 'File::DataClass::Cache';
-
-has 'debug'                    => is => 'ro',   isa => Bool, default => FALSE;
 
 has 'lock'                     => is => 'lazy', isa => Lock,
    default                     => sub { Class::Null->new };
@@ -66,6 +64,14 @@ has 'tempdir'                  => is => 'ro',   isa => Directory,
    coerce                      => Directory->coercion,
    default                     => sub { File::Spec->tmpdir };
 
+# Private methods
+my $_constructor = sub {
+   my $class = shift;
+   my $attr  = { cache_class => 'none', storage_class => 'Any' };
+
+   return $class->new( $attr );
+};
+
 # Construction
 around 'BUILDARGS' => sub {
    my ($orig, $class, @args) = @_; my $attr = $orig->( $class, @args );
@@ -73,7 +79,7 @@ around 'BUILDARGS' => sub {
    my $builder = delete $attr->{builder} or return $attr;
    my $config  = $builder->can( 'config' ) ? $builder->config : {};
 
-   merge_attributes $attr, $builder, [ qw( debug lock log tempdir ) ];
+   merge_attributes $attr, $builder, [ qw( lock log tempdir ) ];
    merge_attributes $attr, $config,  [ qw( tempdir ) ];
 
    return $attr;
@@ -124,7 +130,7 @@ sub _build_storage {
 
 # Public methods
 sub dump {
-   my ($self, $args) = @_; blessed $self or $self = $self->_constructor;
+   my ($self, $args) = @_; blessed $self or $self = $self->$_constructor;
 
    my $path = $args->{path} || $self->path;
 
@@ -144,7 +150,7 @@ sub extensions { # Deprecated
 }
 
 sub load {
-   my ($self, @paths) = @_; blessed $self or $self = $self->_constructor;
+   my ($self, @paths) = @_; blessed $self or $self = $self->$_constructor;
 
    $paths[ 0 ] or $paths[ 0 ] = $self->path;
 
@@ -160,10 +166,10 @@ sub resultset {
 sub source {
    my ($self, $moniker) = @_;
 
-   $moniker or throw Unspecified, args => [ 'result source' ];
+   $moniker or throw Unspecified, [ 'result source' ];
 
    my $source = $self->source_registrations->{ $moniker }
-      or throw 'Result source [_1] unknown', args => [ $moniker ];
+      or throw 'Result source [_1] unknown', [ $moniker ];
 
    return $source;
 }
@@ -175,7 +181,7 @@ sub sources {
 sub translate {
    my ($self, $args) = @_;
 
-   my $class      = blessed $self       || $self;
+   my $class      = blessed $self       || $self; # uncoverable condition false
    my $from_class = $args->{from_class} || 'Any';
    my $to_class   = $args->{to_class  } || 'Any';
    my $attrs      = { path => $args->{from}, storage_class => $from_class };
@@ -184,14 +190,6 @@ sub translate {
    $attrs = { path => $args->{to}, storage_class => $to_class };
    $class->new( $attrs )->dump( { data => $data } );
    return;
-}
-
-# Private methods
-sub _constructor {
-   my $class = shift;
-   my $attr  = { cache_class => 'none', storage_class => 'Any' };
-
-   return $class->new( $attr );
 }
 
 1;
@@ -250,10 +248,6 @@ Passed to the L<Cache::Cache> constructor
 
 Classname used to create the cache object. Defaults to
 L<File::DataClass::Cache>
-
-=item C<debug>
-
-Writes debug information to the log object if set to true
 
 =item C<lock>
 
@@ -373,8 +367,7 @@ Reads a file in one format and writes it back out in another format
 
 =head1 Diagnostics
 
-Setting the C<debug> attribute to true will cause the log object's
-debug method to be called with useful information
+None
 
 =head1 Dependencies
 

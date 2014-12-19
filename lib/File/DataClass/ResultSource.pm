@@ -3,10 +3,10 @@ package File::DataClass::ResultSource;
 use namespace::autoclean;
 
 use Moo;
-use File::DataClass::Constants;
+use File::DataClass::Constants qw( FALSE NUL TRUE );
 use File::DataClass::ResultSet;
-use File::DataClass::Types qw( ArrayRef ClassName HashRef
-                               Object SimpleStr Str );
+use File::DataClass::Types     qw( ArrayRef ClassName HashRef
+                                   Object SimpleStr Str );
 
 has 'attributes'           => is => 'ro', isa => ArrayRef[Str],
    default                 => sub { [] };
@@ -33,6 +33,16 @@ has 'schema'               => is => 'ro', isa => Object,
 
 has '_attributes' => is => 'lazy', isa => HashRef, init_arg => undef;
 
+# Construction
+sub _build__attributes {
+   my $self = shift; my $attr = {};
+
+   $attr->{ $_ } = TRUE for (@{ $self->attributes });
+
+   return $attr;
+}
+
+# Public methods
 sub columns {
    return @{ $_[ 0 ]->attributes };
 }
@@ -49,15 +59,6 @@ sub resultset {
    my $attrs = { %{ $self->resultset_attributes }, result_source => $self };
 
    return $self->resultset_class->new( $attrs );
-}
-
-# Private methods
-sub _build__attributes {
-   my $self = shift; my $attr = {};
-
-   $attr->{ $_ } = TRUE for (@{ $self->attributes });
-
-   return $attr;
 }
 
 1;
